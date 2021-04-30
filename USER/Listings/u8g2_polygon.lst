@@ -1,0 +1,373 @@
+C51 COMPILER V9.01   U8G2_POLYGON                                                          04/30/2021 10:55:21 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8G2_POLYGON
+OBJECT MODULE PLACED IN .\Objects\u8g2_polygon.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8g2_polygon.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROW
+                    -SE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRI
+                    -NT(.\Listings\u8g2_polygon.lst) TABS(2) OBJECT(.\Objects\u8g2_polygon.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8g22_polygon.c
+   4          
+   5          */  
+   6          
+   7          
+   8          #include "u8g2.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+   9          
+  10          
+  11          
+  12          
+  13          /*===========================================*/
+  14          /* local definitions */
+  15          
+  16          typedef int16_t pg_word_t;
+  17          
+  18          
+  19          struct pg_point_struct
+  20          {
+  21            pg_word_t x;
+  22            pg_word_t y;
+  23          };
+  24          
+  25          typedef struct _pg_struct pg_struct;  /* forward declaration */
+  26          
+  27          struct pg_edge_struct
+  28          {
+  29            pg_word_t x_direction;  /* 1, if x2 is greater than x1, -1 otherwise */
+  30            pg_word_t height;
+  31            pg_word_t current_x_offset;
+  32            pg_word_t error_offset;
+  33            
+  34            /* --- line loop --- */
+  35            pg_word_t current_y;
+  36            pg_word_t max_y;
+  37            pg_word_t current_x;
+  38            pg_word_t error;
+  39          
+  40            /* --- outer loop --- */
+  41            uint8_t (*next_idx_fn)(pg_struct *pg, uint8_t i);
+  42            uint8_t curr_idx;
+  43          };
+  44          
+  45          /* maximum number of points in the polygon */
+  46          /* can be redefined, but highest possible value is 254 */
+  47          #define PG_MAX_POINTS 6
+  48          
+  49          /* index numbers for the pge structures below */
+  50          #define PG_LEFT 0
+C51 COMPILER V9.01   U8G2_POLYGON                                                          04/30/2021 10:55:21 PAGE 2   
+
+  51          #define PG_RIGHT 1
+  52          
+  53          
+  54          struct _pg_struct
+  55          {
+  56            struct pg_point_struct list[PG_MAX_POINTS];
+  57            uint8_t cnt;
+  58            uint8_t is_min_y_not_flat;
+  59            pg_word_t total_scan_line_cnt;
+  60            struct pg_edge_struct pge[2]; /* left and right line draw structures */
+  61          };
+  62          
+  63          
+  64          /*===========================================*/
+  65          /* procedures, which should not be inlined (save as much flash ROM as possible */
+  66          
+  67          #define PG_NOINLINE U8G2_NOINLINE
+  68          
+  69          static uint8_t pge_Next(struct pg_edge_struct *pge) PG_NOINLINE;
+  70          static uint8_t pg_inc(pg_struct *pg, uint8_t i) PG_NOINLINE;
+  71          static uint8_t pg_dec(pg_struct *pg, uint8_t i) PG_NOINLINE;
+  72          static void pg_expand_min_y(pg_struct *pg, pg_word_t min_y, uint8_t pge_idx) PG_NOINLINE;
+  73          static void pg_line_init(pg_struct * const pg, uint8_t pge_index) PG_NOINLINE;
+  74          
+  75          /*===========================================*/
+  76          /* line draw algorithm */
+  77          
+  78          static uint8_t pge_Next(struct pg_edge_struct *pge)
+  79          {
+  80   1        if ( pge->current_y >= pge->max_y )
+  81   1          return 0;
+  82   1        
+  83   1        pge->current_x += pge->current_x_offset;
+  84   1        pge->error += pge->error_offset;
+  85   1        if ( pge->error > 0 )
+  86   1        {
+  87   2          pge->current_x += pge->x_direction;
+  88   2          pge->error -= pge->height;
+  89   2        }  
+  90   1        
+  91   1        pge->current_y++;
+  92   1        return 1;
+  93   1      }
+  94          
+  95          /* assumes y2 > y1 */
+  96          static void pge_Init(struct pg_edge_struct *pge, pg_word_t x1, pg_word_t y1, pg_word_t x2, pg_word_t y2)
+  97          {
+  98   1        pg_word_t dx = x2 - x1;
+  99   1        pg_word_t width;
+ 100   1      
+ 101   1        pge->height = y2 - y1;
+ 102   1        pge->max_y = y2;
+ 103   1        pge->current_y = y1;
+ 104   1        pge->current_x = x1;
+ 105   1      
+ 106   1        if ( dx >= 0 )
+ 107   1        {
+ 108   2          pge->x_direction = 1;
+ 109   2          width = dx;
+ 110   2          pge->error = 0;
+ 111   2        }
+ 112   1        else
+C51 COMPILER V9.01   U8G2_POLYGON                                                          04/30/2021 10:55:21 PAGE 3   
+
+ 113   1        {
+ 114   2          pge->x_direction = -1;
+ 115   2          width = -dx;
+ 116   2          pge->error = 1 - pge->height;
+ 117   2        }
+ 118   1        
+ 119   1        pge->current_x_offset = dx / pge->height;
+ 120   1        pge->error_offset = width % pge->height;
+ 121   1      }
+ 122          
+ 123          /*===========================================*/
+ 124          /* convex polygon algorithm */
+ 125          
+ 126          static uint8_t pg_inc(pg_struct *pg, uint8_t i)
+ 127          {
+ 128   1          i++;
+ 129   1          if ( i >= pg->cnt )
+ 130   1            i = 0;
+ 131   1          return i;
+ 132   1      }
+ 133          
+ 134          static uint8_t pg_dec(pg_struct *pg, uint8_t i)
+ 135          {
+ 136   1          i--;
+ 137   1          if ( i >= pg->cnt )
+ 138   1            i = pg->cnt-1;
+ 139   1          return i;
+ 140   1      }
+ 141          
+ 142          static void pg_expand_min_y(pg_struct *pg, pg_word_t min_y, uint8_t pge_idx)
+ 143          {
+ 144   1        uint8_t i = pg->pge[pge_idx].curr_idx;
+ 145   1        for(;;)
+ 146   1        {
+ 147   2          i = pg->pge[pge_idx].next_idx_fn(pg, i);
+ 148   2          if ( pg->list[i].y != min_y )
+ 149   2            break;  
+ 150   2          pg->pge[pge_idx].curr_idx = i;
+ 151   2        }
+ 152   1      }
+ 153          
+ 154          static uint8_t pg_prepare(pg_struct *pg)
+ 155          {
+ 156   1        pg_word_t max_y;
+ 157   1        pg_word_t min_y;
+ 158   1        uint8_t i;
+ 159   1      
+ 160   1        /* setup the next index procedures */
+ 161   1        pg->pge[PG_RIGHT].next_idx_fn = pg_inc;
+ 162   1        pg->pge[PG_LEFT].next_idx_fn = pg_dec;
+ 163   1        
+ 164   1        /* search for highest and lowest point */
+ 165   1        max_y = pg->list[0].y;
+ 166   1        min_y = pg->list[0].y;
+ 167   1        pg->pge[PG_LEFT].curr_idx = 0;
+ 168   1        for( i = 1; i < pg->cnt; i++ )
+ 169   1        {
+ 170   2          if ( max_y < pg->list[i].y )
+ 171   2          {
+ 172   3            max_y = pg->list[i].y;
+ 173   3          }
+ 174   2          if ( min_y > pg->list[i].y )
+C51 COMPILER V9.01   U8G2_POLYGON                                                          04/30/2021 10:55:21 PAGE 4   
+
+ 175   2          {
+ 176   3            pg->pge[PG_LEFT].curr_idx = i;
+ 177   3            min_y = pg->list[i].y;
+ 178   3          }
+ 179   2        }
+ 180   1      
+ 181   1        /* calculate total number of scan lines */
+ 182   1        pg->total_scan_line_cnt = max_y;
+ 183   1        pg->total_scan_line_cnt -= min_y;
+ 184   1        
+ 185   1        /* exit if polygon height is zero */
+ 186   1        if ( pg->total_scan_line_cnt == 0 )
+ 187   1          return 0;
+ 188   1        
+ 189   1        /* if the minimum y side is flat, try to find the lowest and highest x points */
+ 190   1        pg->pge[PG_RIGHT].curr_idx = pg->pge[PG_LEFT].curr_idx;  
+ 191   1        pg_expand_min_y(pg, min_y, PG_RIGHT);
+ 192   1        pg_expand_min_y(pg, min_y, PG_LEFT);
+ 193   1        
+ 194   1        /* check if the min side is really flat (depends on the x values) */
+ 195   1        pg->is_min_y_not_flat = 1;
+ 196   1        if ( pg->list[pg->pge[PG_LEFT].curr_idx].x != pg->list[pg->pge[PG_RIGHT].curr_idx].x )
+ 197   1        {
+ 198   2          pg->is_min_y_not_flat = 0;
+ 199   2        }
+ 200   1        else
+ 201   1        {
+ 202   2          pg->total_scan_line_cnt--;
+ 203   2          if ( pg->total_scan_line_cnt == 0 )
+ 204   2            return 0;
+ 205   2        }
+ 206   1      
+ 207   1        return 1;
+ 208   1      }
+ 209          
+ 210          static void pg_hline(pg_struct *pg, u8g2_t *u8g2)
+ 211          {
+ 212   1        pg_word_t x1, x2, y;
+ 213   1        x1 = pg->pge[PG_LEFT].current_x;
+ 214   1        x2 = pg->pge[PG_RIGHT].current_x;
+ 215   1        y = pg->pge[PG_RIGHT].current_y;
+ 216   1        
+ 217   1        if ( y < 0 )
+ 218   1          return;
+ 219   1        if ( y >= u8g2_GetDisplayHeight(u8g2) )  // does not work for 256x64 display???
+ 220   1          return;
+ 221   1        if ( x1 < x2 )
+ 222   1        {
+ 223   2          if ( x2 < 0 )
+ 224   2            return;
+ 225   2          if ( x1 >= u8g2_GetDisplayWidth(u8g2) )
+ 226   2            return;
+ 227   2          if ( x1 < 0 )
+ 228   2            x1 = 0;
+ 229   2          if ( x2 >= u8g2_GetDisplayWidth(u8g2) )
+ 230   2            x2 = u8g2_GetDisplayWidth(u8g2);
+ 231   2          u8g2_DrawHLine(u8g2, x1, y, x2 - x1);
+ 232   2        }
+ 233   1        else
+ 234   1        {
+ 235   2          if ( x1 < 0 )
+ 236   2            return;
+C51 COMPILER V9.01   U8G2_POLYGON                                                          04/30/2021 10:55:21 PAGE 5   
+
+ 237   2          if ( x2 >= u8g2_GetDisplayWidth(u8g2) )
+ 238   2            return;
+ 239   2          if ( x2 < 0 )
+ 240   2            x1 = 0;
+ 241   2          if ( x1 >= u8g2_GetDisplayWidth(u8g2) )
+ 242   2            x1 = u8g2_GetDisplayWidth(u8g2);
+ 243   2          u8g2_DrawHLine(u8g2, x2, y, x1 - x2);
+ 244   2        }
+ 245   1      }
+ 246          
+ 247          static void pg_line_init(pg_struct * const pg, uint8_t pge_index)
+ 248          {
+ 249   1        struct pg_edge_struct  *pge = pg->pge+pge_index;
+ 250   1        uint8_t idx;  
+ 251   1        pg_word_t x1;
+ 252   1        pg_word_t y1;
+ 253   1        pg_word_t x2;
+ 254   1        pg_word_t y2;
+ 255   1      
+ 256   1        idx = pge->curr_idx;  
+ 257   1        y1 = pg->list[idx].y;
+ 258   1        x1 = pg->list[idx].x;
+ 259   1        idx = pge->next_idx_fn(pg, idx);
+ 260   1        y2 = pg->list[idx].y;
+ 261   1        x2 = pg->list[idx].x; 
+ 262   1        pge->curr_idx = idx;
+ 263   1        
+ 264   1        pge_Init(pge, x1, y1, x2, y2);
+ 265   1      }
+ 266          
+ 267          static void pg_exec(pg_struct *pg, u8g2_t *u8g2)
+ 268          {
+ 269   1        pg_word_t i = pg->total_scan_line_cnt;
+ 270   1      
+ 271   1        /* first line is skipped if the min y line is not flat */
+ 272   1        pg_line_init(pg, PG_LEFT);    
+ 273   1        pg_line_init(pg, PG_RIGHT);
+ 274   1        
+ 275   1        if ( pg->is_min_y_not_flat != 0 )
+ 276   1        {
+ 277   2          pge_Next(&(pg->pge[PG_LEFT])); 
+ 278   2          pge_Next(&(pg->pge[PG_RIGHT]));
+ 279   2        }
+ 280   1      
+ 281   1        do
+ 282   1        {
+ 283   2          pg_hline(pg, u8g2);
+ 284   2          while ( pge_Next(&(pg->pge[PG_LEFT])) == 0 )
+ 285   2          {
+ 286   3            pg_line_init(pg, PG_LEFT);
+ 287   3          }
+ 288   2          while ( pge_Next(&(pg->pge[PG_RIGHT])) == 0 )
+ 289   2          {
+ 290   3            pg_line_init(pg, PG_RIGHT);
+ 291   3          }
+ 292   2          i--;
+ 293   2        } while( i > 0 );
+ 294   1      }
+ 295          
+ 296          /*===========================================*/
+ 297          /* API procedures */
+ 298          
+C51 COMPILER V9.01   U8G2_POLYGON                                                          04/30/2021 10:55:21 PAGE 6   
+
+ 299          static void pg_ClearPolygonXY(pg_struct *pg)
+ 300          {
+ 301   1        pg->cnt = 0;
+ 302   1      }
+ 303          
+ 304          static void pg_AddPolygonXY(pg_struct *pg, int16_t x, int16_t y)
+ 305          {
+ 306   1        if ( pg->cnt < PG_MAX_POINTS )
+ 307   1        {
+ 308   2          pg->list[pg->cnt].x = x;
+ 309   2          pg->list[pg->cnt].y = y;
+ 310   2          pg->cnt++;
+ 311   2        }
+ 312   1      }
+ 313          
+ 314          static void pg_DrawPolygon(pg_struct *pg, u8g2_t *u8g2)
+ 315          {
+ 316   1        if ( pg_prepare(pg) == 0 )
+ 317   1          return;
+ 318   1        pg_exec(pg, u8g2);
+ 319   1      }
+ 320          
+ 321          pg_struct u8g2_pg;
+ 322          
+ 323          void u8g2_ClearPolygonXY(void)
+ 324          {
+ 325   1        pg_ClearPolygonXY(&u8g2_pg);
+ 326   1      }
+ 327          
+ 328          void u8g2_AddPolygonXY(U8X8_UNUSED u8g2_t *u8g2, int16_t x, int16_t y)
+ 329          {
+ 330   1        pg_AddPolygonXY(&u8g2_pg, x, y);
+ 331   1      }
+ 332          
+ 333          void u8g2_DrawPolygon(u8g2_t *u8g2)
+ 334          {
+ 335   1        pg_DrawPolygon(&u8g2_pg, u8g2);
+ 336   1      }
+ 337          
+ 338          void u8g2_DrawTriangle(u8g2_t *u8g2, int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, int16_t y
+             -2)
+ 339          {
+ 340   1        u8g2_ClearPolygonXY();
+ 341   1        u8g2_AddPolygonXY(u8g2, x0, y0);
+ 342   1        u8g2_AddPolygonXY(u8g2, x1, y1);
+ 343   1        u8g2_AddPolygonXY(u8g2, x2, y2);
+ 344   1        u8g2_DrawPolygon(u8g2);
+ 345   1      }
+ 346          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

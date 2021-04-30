@@ -1,0 +1,231 @@
+C51 COMPILER V9.01   U8G2_BOX                                                              04/30/2021 10:55:16 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8G2_BOX
+OBJECT MODULE PLACED IN .\Objects\u8g2_box.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8g2_box.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROWSE I
+                    -NCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRINT(.
+                    -\Listings\u8g2_box.lst) TABS(2) OBJECT(.\Objects\u8g2_box.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8g2_box.c
+   4          
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          */
+  35          
+  36          #include "u8g2.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  37          
+  38          /*
+  39            draw a filled box
+  40            restriction: does not work for w = 0 or h = 0
+  41          */
+  42          void u8g2_DrawBox(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h)
+  43          {
+  44   1      #ifdef U8G2_WITH_INTERSECTION
+  45   1        if ( u8g2_IsIntersection(u8g2, x, y, x+w, y+h) == 0 ) 
+  46   1          return;
+  47   1      #endif /* U8G2_WITH_INTERSECTION */
+  48   1        while( h != 0 )
+  49   1        { 
+  50   2          u8g2_DrawHVLine(u8g2, x, y, w, 0);
+C51 COMPILER V9.01   U8G2_BOX                                                              04/30/2021 10:55:16 PAGE 2   
+
+  51   2          y++;    
+  52   2          h--;
+  53   2        }
+  54   1      }
+  55          
+  56          
+  57          /*
+  58            draw a frame (empty box)
+  59            restriction: does not work for w = 0 or h = 0
+  60            ToDo:
+  61              pixel in the corners are drawn twice. This could be optimized.
+  62          */
+  63          void u8g2_DrawFrame(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h)
+  64          {
+  65   1        u8g2_uint_t xtmp = x;
+  66   1        
+  67   1      #ifdef U8G2_WITH_INTERSECTION
+  68   1        if ( u8g2_IsIntersection(u8g2, x, y, x+w, y+h) == 0 ) 
+  69   1          return;
+  70   1      #endif /* U8G2_WITH_INTERSECTION */
+  71   1        
+  72   1        u8g2_DrawHVLine(u8g2, x, y, w, 0);
+  73   1        u8g2_DrawHVLine(u8g2, x, y, h, 1);
+  74   1        x+=w;
+  75   1        x--;
+  76   1        u8g2_DrawHVLine(u8g2, x, y, h, 1);
+  77   1        y+=h;
+  78   1        y--;
+  79   1        u8g2_DrawHVLine(u8g2, xtmp, y, w, 0);
+  80   1      }
+  81          
+  82          
+  83          
+  84          
+  85          void u8g2_DrawRBox(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h, u8g2_uint_t r
+             -)
+  86          {
+  87   1        u8g2_uint_t xl, yu;
+  88   1        u8g2_uint_t yl, xr;
+  89   1      
+  90   1      #ifdef U8G2_WITH_INTERSECTION
+  91   1        if ( u8g2_IsIntersection(u8g2, x, y, x+w, y+h) == 0 ) 
+  92   1          return;
+  93   1      #endif /* U8G2_WITH_INTERSECTION */
+  94   1      
+  95   1        xl = x;
+  96   1        xl += r;
+  97   1        yu = y;
+  98   1        yu += r;
+  99   1       
+ 100   1        xr = x;
+ 101   1        xr += w;
+ 102   1        xr -= r;
+ 103   1        xr -= 1;
+ 104   1        
+ 105   1        yl = y;
+ 106   1        yl += h;
+ 107   1        yl -= r; 
+ 108   1        yl -= 1;
+ 109   1      
+ 110   1        u8g2_DrawDisc(u8g2, xl, yu, r, U8G2_DRAW_UPPER_LEFT);
+ 111   1        u8g2_DrawDisc(u8g2, xr, yu, r, U8G2_DRAW_UPPER_RIGHT);
+C51 COMPILER V9.01   U8G2_BOX                                                              04/30/2021 10:55:16 PAGE 3   
+
+ 112   1        u8g2_DrawDisc(u8g2, xl, yl, r, U8G2_DRAW_LOWER_LEFT);
+ 113   1        u8g2_DrawDisc(u8g2, xr, yl, r, U8G2_DRAW_LOWER_RIGHT);
+ 114   1      
+ 115   1        {
+ 116   2          u8g2_uint_t ww, hh;
+ 117   2      
+ 118   2          ww = w;
+ 119   2          ww -= r;
+ 120   2          ww -= r;
+ 121   2          xl++;
+ 122   2          yu++;
+ 123   2          
+ 124   2          if ( ww >= 3 )
+ 125   2          {
+ 126   3            ww -= 2;
+ 127   3            u8g2_DrawBox(u8g2, xl, y, ww, r+1);
+ 128   3            u8g2_DrawBox(u8g2, xl, yl, ww, r+1);
+ 129   3          }
+ 130   2          
+ 131   2          hh = h;
+ 132   2          hh -= r;
+ 133   2          hh -= r;
+ 134   2          //h--;
+ 135   2          if ( hh >= 3 )
+ 136   2          {
+ 137   3            hh -= 2;
+ 138   3            u8g2_DrawBox(u8g2, x, yu, w, hh);
+ 139   3          }
+ 140   2        }
+ 141   1      }
+ 142          
+ 143          
+ 144          void u8g2_DrawRFrame(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h, u8g2_uint_t
+             - r)
+ 145          {
+ 146   1        u8g2_uint_t xl, yu;
+ 147   1      
+ 148   1      #ifdef U8G2_WITH_INTERSECTION
+ 149   1        if ( u8g2_IsIntersection(u8g2, x, y, x+w, y+h) == 0 ) 
+ 150   1          return;
+ 151   1      #endif /* U8G2_WITH_INTERSECTION */
+ 152   1      
+ 153   1        xl = x;
+ 154   1        xl += r;
+ 155   1        yu = y;
+ 156   1        yu += r;
+ 157   1       
+ 158   1        {
+ 159   2          u8g2_uint_t yl, xr;
+ 160   2            
+ 161   2          xr = x;
+ 162   2          xr += w;
+ 163   2          xr -= r;
+ 164   2          xr -= 1;
+ 165   2          
+ 166   2          yl = y;
+ 167   2          yl += h;
+ 168   2          yl -= r; 
+ 169   2          yl -= 1;
+ 170   2      
+ 171   2          u8g2_DrawCircle(u8g2, xl, yu, r, U8G2_DRAW_UPPER_LEFT);
+ 172   2          u8g2_DrawCircle(u8g2, xr, yu, r, U8G2_DRAW_UPPER_RIGHT);
+C51 COMPILER V9.01   U8G2_BOX                                                              04/30/2021 10:55:16 PAGE 4   
+
+ 173   2          u8g2_DrawCircle(u8g2, xl, yl, r, U8G2_DRAW_LOWER_LEFT);
+ 174   2          u8g2_DrawCircle(u8g2, xr, yl, r, U8G2_DRAW_LOWER_RIGHT);
+ 175   2        }
+ 176   1      
+ 177   1        {
+ 178   2          u8g2_uint_t ww, hh;
+ 179   2      
+ 180   2          ww = w;
+ 181   2          ww -= r;
+ 182   2          ww -= r;
+ 183   2          hh = h;
+ 184   2          hh -= r;
+ 185   2          hh -= r;
+ 186   2          
+ 187   2          xl++;
+ 188   2          yu++;
+ 189   2          
+ 190   2          if ( ww >= 3 )
+ 191   2          {
+ 192   3            ww -= 2;
+ 193   3            h--;
+ 194   3            u8g2_DrawHLine(u8g2, xl, y, ww);
+ 195   3            u8g2_DrawHLine(u8g2, xl, y+h, ww);
+ 196   3          }
+ 197   2          
+ 198   2          if ( hh >= 3 )
+ 199   2          {
+ 200   3            hh -= 2;
+ 201   3            w--;
+ 202   3            u8g2_DrawVLine(u8g2, x, yu, hh);
+ 203   3            u8g2_DrawVLine(u8g2, x+w, yu, hh);
+ 204   3          }
+ 205   2        }
+ 206   1      }
+ 207          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

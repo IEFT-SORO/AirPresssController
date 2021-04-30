@@ -1,0 +1,224 @@
+C51 COMPILER V9.01   U8X8_D_LS013B7DH03                                                    04/30/2021 10:55:24 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_LS013B7DH03
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_ls013b7dh03.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_ls013b7dh03.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED
+                    -) BROWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTE
+                    -ND PRINT(.\Listings\u8x8_d_ls013b7dh03.lst) TABS(2) OBJECT(.\Objects\u8x8_d_ls013b7dh03.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_ls013b7dh03.c
+   4            
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          
+  35            The LS013B7DH02 is a simple display and controller
+  36            --> no support for contrast adjustment, flip and power down.
+  37          */
+  38          
+  39          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  40          
+  41          #define SWAP8(a) ((((a) & 0x80) >> 7) | (((a) & 0x40) >> 5) | (((a) & 0x20) >> 3) | (((a) & 0x10) >> 1) | 
+             -(((a) & 0x08) << 1) | (((a) & 0x04) << 3) | (((a) & 0x02) << 5) | (((a) & 0x01) << 7))
+  42          
+  43          #define LS013B7DH03_CMD_UPDATE     (0x01)
+  44          #define LS013B7DH03_CMD_ALL_CLEAR  (0x04)
+  45          #define LS013B7DH03_VAL_TRAILER    (0x00)
+  46          
+  47          static const u8x8_display_info_t u8x8_ls013b7dh03_128x128_display_info =
+  48          {
+  49            /* chip_enable_level = */ 1,
+C51 COMPILER V9.01   U8X8_D_LS013B7DH03                                                    04/30/2021 10:55:24 PAGE 2   
+
+  50            /* chip_disable_level = */ 0,
+  51            /* post_chip_enable_wait_ns = */ 50,
+  52            /* pre_chip_disable_wait_ns = */ 50,
+  53            /* reset_pulse_width_ms = */ 1,
+  54            /* post_reset_wait_ms = */ 6,
+  55            /* sda_setup_time_ns = */ 227,  /* 227 nsec according to the datasheet */   
+  56            /* sck_pulse_width_ns = */  255,  /* 450 nsec according to the datasheet */
+  57            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+  58            /* spi_mode = */ 2,   /* active low, rising edge */
+  59            /* i2c_bus_clock_100kHz = */ 4,
+  60            /* data_setup_time_ns = */ 100,
+  61            /* write_pulse_width_ns = */ 100,
+  62            /* tile_width = */ 16,
+  63            /* tile_hight = */ 16,
+  64            /* default_x_offset = */ 0,
+  65            /* flipmode_x_offset = */ 0,
+  66            /* pixel_width = */ 128,
+  67            /* pixel_height = */ 128
+  68          };
+  69          
+  70          uint8_t u8x8_d_ls013b7dh03_128x128(u8x8_t *u8x8, uint8_t msg, U8X8_UNUSED uint8_t arg_int, void *arg_ptr)
+  71          {
+  72   1        uint8_t y, c, i;
+  73   1        uint8_t *ptr;
+  74   1        switch(msg)
+  75   1        {
+  76   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+  77   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_ls013b7dh03_128x128_display_info);
+  78   2            break;
+  79   2          case U8X8_MSG_DISPLAY_INIT:
+  80   2            u8x8_d_helper_display_init(u8x8);
+  81   2      
+  82   2            /* clear screen */
+  83   2            u8x8_cad_StartTransfer(u8x8);
+  84   2            u8x8_cad_SendCmd(u8x8, SWAP8(LS013B7DH03_CMD_ALL_CLEAR) );
+  85   2            u8x8_cad_SendCmd(u8x8, LS013B7DH03_VAL_TRAILER);
+  86   2            u8x8_cad_EndTransfer(u8x8);
+  87   2      
+  88   2            break;
+  89   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+  90   2            /* not available for the ls013b7dh03 */
+  91   2            break;
+  92   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+  93   2            /* each tile is 8 lines, with the data starting at the left edge */
+  94   2            y = ((((u8x8_tile_t *)arg_ptr)->y_pos) * 8) + 1;
+  95   2      
+  96   2            c = ((u8x8_tile_t *)arg_ptr)->cnt;
+  97   2            ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+  98   2      
+  99   2            /* send data mode byte */
+ 100   2            u8x8_cad_StartTransfer(u8x8);
+ 101   2            u8x8_cad_SendCmd(u8x8, SWAP8(LS013B7DH03_CMD_UPDATE) );
+ 102   2      
+ 103   2            /* send 8 lines of 16 bytes (=128 pixels) */
+ 104   2            for( i = 0; i < 8; i++ )
+ 105   2            {
+ 106   3              u8x8_cad_SendCmd(u8x8, SWAP8(y + i) );
+ 107   3              u8x8_cad_SendData(u8x8, c, ptr);
+*** ERROR C208 IN LINE 107 OF ..\U8G2\CSRC\U8X8_D_LS013B7DH03.C: '_u8x8_cad_SendData': too many actual parameters
+ 108   3              u8x8_cad_SendCmd(u8x8, LS013B7DH03_VAL_TRAILER);
+ 109   3      
+C51 COMPILER V9.01   U8X8_D_LS013B7DH03                                                    04/30/2021 10:55:24 PAGE 3   
+
+ 110   3              ptr += c;
+ 111   3            }
+ 112   2      
+ 113   2            /* finish with a trailing byte */
+ 114   2            u8x8_cad_SendCmd(u8x8, LS013B7DH03_VAL_TRAILER);
+ 115   2            u8x8_cad_EndTransfer(u8x8);
+ 116   2      
+ 117   2            break;
+ 118   2          default:
+ 119   2            return 0;
+ 120   2        }
+ 121   1        return 1;
+ 122   1      }
+ 123          
+ 124          
+ 125          static const u8x8_display_info_t u8x8_ls027b7dh01_400x240_display_info =
+ 126          {
+ 127            /* chip_enable_level = */ 1,
+ 128            /* chip_disable_level = */ 0,
+ 129            /* post_chip_enable_wait_ns = */ 50,
+ 130            /* pre_chip_disable_wait_ns = */ 50,
+ 131            /* reset_pulse_width_ms = */ 1,
+ 132            /* post_reset_wait_ms = */ 6,
+ 133            /* sda_setup_time_ns = */ 227,  /* 227 nsec according to the datasheet */   
+ 134            /* sck_pulse_width_ns = */  255,  /* 450 nsec according to the datasheet */
+ 135            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 136            /* spi_mode = */ 2,   /* active low, rising edge */
+ 137            /* i2c_bus_clock_100kHz = */ 4,
+ 138            /* data_setup_time_ns = */ 100,
+ 139            /* write_pulse_width_ns = */ 100,
+ 140            /* tile_width = */ 50,
+ 141            /* tile_hight = */ 30,
+ 142            /* default_x_offset = */ 0,
+ 143            /* flipmode_x_offset = */ 0,
+ 144            /* pixel_width = */ 400,
+ 145            /* pixel_height = */ 240
+ 146          };
+ 147          
+ 148          uint8_t u8x8_d_ls027b7dh01_400x240(u8x8_t *u8x8, uint8_t msg, U8X8_UNUSED uint8_t arg_int, void *arg_ptr)
+ 149          {
+ 150   1        switch(msg)
+ 151   1        {
+ 152   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 153   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_ls027b7dh01_400x240_display_info);
+ 154   2            break;
+ 155   2          default:
+ 156   2            return u8x8_d_ls013b7dh03_128x128(u8x8, msg, arg_int, arg_ptr);
+ 157   2        }    
+ 158   1        return 1;
+ 159   1      }
+ 160          
+ 161          static const u8x8_display_info_t u8x8_ls013b7dh05_144x168_display_info =
+ 162          {
+ 163            /* chip_enable_level = */ 1,
+ 164            /* chip_disable_level = */ 0,
+ 165            /* post_chip_enable_wait_ns = */ 50,
+ 166            /* pre_chip_disable_wait_ns = */ 50,
+ 167            /* reset_pulse_width_ms = */ 1,
+ 168            /* post_reset_wait_ms = */ 6,
+ 169            /* sda_setup_time_ns = */ 227,  /* 227 nsec according to the datasheet */   
+ 170            /* sck_pulse_width_ns = */  255,  /* 450 nsec according to the datasheet */
+C51 COMPILER V9.01   U8X8_D_LS013B7DH03                                                    04/30/2021 10:55:24 PAGE 4   
+
+ 171            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 172            /* spi_mode = */ 2,   /* active low, rising edge */
+ 173            /* i2c_bus_clock_100kHz = */ 4,
+ 174            /* data_setup_time_ns = */ 100,
+ 175            /* write_pulse_width_ns = */ 100,
+ 176            /* tile_width = */ 18,
+ 177            /* tile_hight = */ 21,
+ 178            /* default_x_offset = */ 0,
+ 179            /* flipmode_x_offset = */ 0,
+ 180            /* pixel_width = */ 144,
+ 181            /* pixel_height = */ 168
+ 182          };
+ 183          
+ 184          uint8_t u8x8_d_ls013b7dh05_144x168(u8x8_t *u8x8, uint8_t msg, U8X8_UNUSED uint8_t arg_int, void *arg_ptr)
+ 185          {
+ 186   1        switch(msg)
+ 187   1        {
+ 188   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 189   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_ls013b7dh05_144x168_display_info);
+ 190   2            break;
+ 191   2          default:
+ 192   2            return u8x8_d_ls013b7dh03_128x128(u8x8, msg, arg_int, arg_ptr);
+ 193   2        }    
+ 194   1        return 1;
+ 195   1      }
+ 196          
+ 197          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  4 ERROR(S)

@@ -1,0 +1,4 @@
+void StartScreen();
+
+
+void ShowScreen();

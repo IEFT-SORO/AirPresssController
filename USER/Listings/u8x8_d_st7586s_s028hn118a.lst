@@ -1,0 +1,283 @@
+C51 COMPILER V9.01   U8X8_D_ST7586S_S028HN118A                                             04/30/2021 10:55:31 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_ST7586S_S028HN118A
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_st7586s_s028hn118a.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_st7586s_s028hn118a.c LARGE WARNINGLEVEL(1) OPTIMIZE(
+                    -8,SPEED) BROWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJ
+                    -ECTEXTEND PRINT(.\Listings\u8x8_d_st7586s_s028hn118a.lst) TABS(2) OBJECT(.\Objects\u8x8_d_st7586s_s028hn118a.obj)
+
+line level    source
+
+   1          /*
+   2            u8x8_d_st7586s_s028hn118a.c
+   3            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   4            Copyright (c) 2018, olikraus@gmail.com
+   5            All rights reserved.
+   6            Redistribution and use in source and binary forms, with or without modification, 
+   7            are permitted provided that the following conditions are met:
+   8            * Redistributions of source code must retain the above copyright notice, this list 
+   9              of conditions and the following disclaimer.
+  10              
+  11            * Redistributions in binary form must reproduce the above copyright notice, this 
+  12              list of conditions and the following disclaimer in the documentation and/or other 
+  13              materials provided with the distribution.
+  14            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  15            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  16            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  17            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  18            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  19            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  20            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  21            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  22            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  23            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  24            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  25            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  26            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  27            
+  28          */
+  29          
+  30          #include "u8g2.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  31          
+  32          
+  33          static const uint8_t u8x8_d_st7586s_sleep_on[] = {
+  34            U8X8_START_TRANSFER(),  /* enable chip, delay is part of the transfer start */
+  35            U8X8_C(0x010), /* set power save mode */
+  36            U8X8_END_TRANSFER(),  /* disable chip */
+  37            U8X8_END()                  /* end of sequence */
+  38          };
+  39          
+  40          static const uint8_t u8x8_d_st7586s_sleep_off[] = {
+  41            U8X8_START_TRANSFER(),  /* enable chip, delay is part of the transfer start */
+  42            U8X8_C(0x011), //Sleep out
+  43            U8X8_DLY(50), /* delay 50 ms */
+  44            U8X8_END_TRANSFER(),  /* disable chip */
+  45            U8X8_END()                  /* end of sequence */
+  46          };
+  47          
+  48          static const uint8_t u8x8_d_st7586s_s028hn118a_flip0_seq[] = {
+  49            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  50            U8X8_C(0x036),        /* Scan Direction Setting */
+C51 COMPILER V9.01   U8X8_D_ST7586S_S028HN118A                                             04/30/2021 10:55:31 PAGE 2   
+
+  51            U8X8_A(0x000),        /* COM0 -> COM159 SEG0 -> SEG384 */
+  52            U8X8_C(0x037),        /* Start line 0 */
+  53            U8X8_A(0x000),
+  54            U8X8_END_TRANSFER(),              /* disable chip */
+  55            U8X8_END()                  /* end of sequence */
+  56          };
+  57          
+  58          static const uint8_t u8x8_d_st7586s_s028hn118a_flip1_seq[] = {
+  59            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  60            U8X8_C(0x036),        /* Scan Direction Setting */
+  61            U8X8_A(0x0C8),        /* COM159 -> COM0 SEG384 -> SEG0 */
+  62            U8X8_C(0x037),        /* Start line 24 */
+  63            U8X8_A(0x018),
+  64            U8X8_END_TRANSFER(),              /* disable chip */
+  65            U8X8_END()                  /* end of sequence */
+  66          };
+  67          
+  68          static uint8_t u8x8_d_st7586s_common(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr) {
+  69   1        uint8_t c;
+  70   1        uint8_t *ptr;
+  71   1        uint8_t i, byte;
+  72   1        uint32_t input;
+  73   1        uint8_t output[8];
+  74   1        switch (msg) {
+  75   2        case U8X8_MSG_DISPLAY_DRAW_TILE:
+  76   2          u8x8_cad_StartTransfer(u8x8); // OK Start transfer
+  77   2          u8x8_cad_SendCmd(u8x8, 0x02B);  /* Row Address Setting */
+  78   2          u8x8_cad_SendArg(u8x8, 0x000);
+  79   2          u8x8_cad_SendArg(u8x8, 0x008 * ((u8x8_tile_t *)arg_ptr)->y_pos);
+  80   2          u8x8_cad_SendArg(u8x8, 0x000);
+  81   2          u8x8_cad_SendArg(u8x8, u8x8->display_info->pixel_height - 1);  /* should this be u8x8->display_info->p
+             -ixel_height - 1 */
+  82   2          u8x8_cad_SendCmd(u8x8, 0x02C);  /* cmd write display data to ram */
+  83   2          c = ((u8x8_tile_t *) arg_ptr)->cnt; //
+  84   2          c *= 8;
+  85   2          ptr = ((u8x8_tile_t *) arg_ptr)->tile_ptr;  //
+  86   2      
+  87   2      // The ST7586S has an unusual 3 pixels per byte format so here we read in 3 bytes (24 pixels) and
+  88   2      // pack that into 8 bytes of 3 pixels each  
+  89   2        while (c > 0) {
+  90   3            input = (((uint32_t)ptr[0] << 16) | ((uint32_t)ptr[1] << 8) | (uint32_t)ptr[2]);
+  91   3            for (i=0; i<8; i++)
+  92   3            {
+  93   4              byte = 0;
+  94   4              if (input & 0x800000)          // if bit 23
+  95   4                  byte = byte | 0xC0;  //set pixel 1
+  96   4              if (input & 0x400000)          // if bit 22
+  97   4                  byte = byte | 0x18;  //set pixel 2
+  98   4          if (input & 0x200000)          // if bit 22
+  99   4            byte = byte | 0x3;  //set pixel 3
+ 100   4          output[i] = byte;
+ 101   4              input <<= 3;
+ 102   4            }
+ 103   3            u8x8_cad_SendData(u8x8, 8, output);
+*** ERROR C208 IN LINE 103 OF ..\U8G2\CSRC\U8X8_D_ST7586S_S028HN118A.C: '_u8x8_cad_SendData': too many actual parameters
+ 104   3            ptr += 3;
+ 105   3            c -= 3;
+ 106   3          }
+ 107   2          u8x8_cad_EndTransfer(u8x8);
+ 108   2          break;
+ 109   2        case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 110   2          if (arg_int == 0)
+C51 COMPILER V9.01   U8X8_D_ST7586S_S028HN118A                                             04/30/2021 10:55:31 PAGE 3   
+
+ 111   2            u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_sleep_off);
+*** ERROR C208 IN LINE 111 OF ..\U8G2\CSRC\U8X8_D_ST7586S_S028HN118A.C: '_u8x8_cad_SendSequence': too many actual parame
+             -ters
+ 112   2          else
+ 113   2            u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_sleep_on);
+*** ERROR C208 IN LINE 113 OF ..\U8G2\CSRC\U8X8_D_ST7586S_S028HN118A.C: '_u8x8_cad_SendSequence': too many actual parame
+             -ters
+ 114   2          break;
+ 115   2      #ifdef U8X8_WITH_SET_CONTRAST
+ 116   2        case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 117   2          u8x8_cad_StartTransfer(u8x8);
+ 118   2          u8x8_cad_SendCmd(u8x8, 0x0C0);
+ 119   2          u8x8_cad_SendArg(u8x8, arg_int);
+ 120   2          u8x8_cad_SendArg(u8x8, 0);
+ 121   2          u8x8_cad_EndTransfer(u8x8);
+ 122   2          break;
+ 123   2      #endif
+ 124   2        default:
+ 125   2          return 0;
+ 126   2        }
+ 127   1        return 1;
+ 128   1      }
+ 129          
+ 130          static const uint8_t u8x8_d_st7586s_s028hn118a_init_seq[] = {
+ 131            U8X8_END_TRANSFER(),/* disable chip */
+ 132          //  U8G_ESC_RST(15), /* hardware reset */
+ 133            U8X8_DLY(60),   /* Delay 60 ms */
+ 134            U8X8_START_TRANSFER(),/* enable chip */
+ 135          
+ 136            U8X8_C(0x001), // Soft reset
+ 137            U8X8_DLY(60), // Delay 120 ms
+ 138          
+ 139            U8X8_C(0x011), // Sleep Out
+ 140            U8X8_C(0x028), // Display OFF
+ 141            U8X8_DLY(25), // Delay 50 ms
+ 142          
+ 143            U8X8_CAA(0x0C0,0x0E5,0x00),// Vop = F0h in trace a bit too dark
+ 144          
+ 145            U8X8_CA(0x0C3,0x004), // BIAS = 1/10 0x04 in trace
+ 146          
+ 147            U8X8_CA(0x0C4,0x005), // Booster = x6 0x05 in trace
+ 148          
+ 149            U8X8_CA(0x0D0,0x01D), // Enable Analog Circuit
+ 150          
+ 151            U8X8_CA(0x0B3,0x000), // Set FOSC divider
+ 152          
+ 153            U8X8_CA(0x0B5,0x08B), // N-Line = 0
+ 154          
+ 155            U8X8_C(0x039), // 0x39 Monochrome mode. 0x38 - gray Mode
+ 156          
+ 157            U8X8_C(0x03A), // Enable DDRAM Interface
+ 158            U8X8_A(0x002), // monochrome and 4-level
+ 159          
+ 160            U8X8_C(0x036), // Scan Direction Setting
+ 161            U8X8_A(0x000), // COM0 -> COM159 SEG0 -> SEG384
+ 162          
+ 163            U8X8_C(0x0B0), // Duty Setting (num rows - 1)
+ 164            U8X8_A(0x087), // should be 0x87 but caused flicker 0x9F
+ 165          
+ 166            U8X8_C(0x020), // Display inversion off
+ 167          
+ 168            U8X8_C(0x02A), // Column Address Setting
+C51 COMPILER V9.01   U8X8_D_ST7586S_S028HN118A                                             04/30/2021 10:55:31 PAGE 4   
+
+ 169            U8X8_A(0x000), // COL0 -> COL127
+ 170            U8X8_A(0x000), // 
+ 171            U8X8_A(0x000), //
+ 172            U8X8_A(0x07f), // 128*3=384 pixels
+ 173          
+ 174            U8X8_C(0x02B), // Row Address Setting
+ 175            U8X8_A(0x000), // ROW0 -> ROW135
+ 176            U8X8_A(0x000), //
+ 177            U8X8_A(0x000), //
+ 178            U8X8_A(0x087), // 136 pixels
+ 179          
+ 180            U8X8_C(0x0F1), // Frame rate monochrome
+ 181            U8X8_A(0x00C), // The factory firmware set this to 49.0 Hz 0x07
+ 182            U8X8_A(0x00C), // This caused a shimmer under 50Hz LED lights
+ 183            U8X8_A(0x00C), // 69.0 Hz (0x0C) fixes this and should avoid the
+ 184            U8X8_A(0x00C), // issue in the US too
+ 185            
+ 186            U8X8_C(0x029), // Display ON
+ 187            U8X8_END()  /* end of sequence */
+ 188          };
+ 189          
+ 190          static const u8x8_display_info_t u8x8_st7586s_s028hn118a_display_info =
+ 191          {
+ 192            /* chip_enable_level = */ 0,
+ 193            /* chip_disable_level = */ 1,
+ 194          
+ 195            /* post_chip_enable_wait_ns = */ 5,
+ 196            /* pre_chip_disable_wait_ns = */ 5,
+ 197            /* reset_pulse_width_ms = */ 1,
+ 198            /* post_reset_wait_ms = */ 6,
+ 199            /* sda_setup_time_ns = */ 20,
+ 200            /* sck_pulse_width_ns = */  100,  /* datasheet ST7586S */
+ 201            /* sck_clock_hz = */ 8000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 202            /* ST7586+Atmega128RFA1 works with 8MHz */
+ 203            /* spi_mode = */ 3,   /* active high, rising edge */
+ 204            /* i2c_bus_clock_100kHz = */ 4,
+ 205            /* data_setup_time_ns = */ 20, /* datasheet suggests min 20 */
+ 206            /* write_pulse_width_ns = */ 40,
+ 207            /* tile_width = */ 48,
+ 208            /* tile_height = */ 17,
+ 209            /* default_x_offset = */ 0,
+ 210            /* flipmode_x_offset = */ 0,
+ 211            /* pixel_width = */ 384,
+ 212            /* pixel_height = */ 136
+ 213          };
+ 214          
+ 215          /*******************************************************************************
+ 216           * st7586s_s028hn118a driver. This is the display in the SMART Response XE. This requires 16 bit mode.
+ 217           ******************************************************************************/
+ 218          uint8_t u8x8_d_st7586s_s028hn118a(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr) {
+ 219   1        if (u8x8_d_st7586s_common(u8x8, msg, arg_int, arg_ptr) != 0)
+ 220   1          return 1;
+ 221   1        
+ 222   1        switch (msg) {
+ 223   2        case U8X8_MSG_DISPLAY_INIT:
+ 224   2          u8x8_d_helper_display_init(u8x8);
+ 225   2          u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_s028hn118a_init_seq);
+*** ERROR C208 IN LINE 225 OF ..\U8G2\CSRC\U8X8_D_ST7586S_S028HN118A.C: '_u8x8_cad_SendSequence': too many actual parame
+             -ters
+ 226   2          break;
+ 227   2        case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+C51 COMPILER V9.01   U8X8_D_ST7586S_S028HN118A                                             04/30/2021 10:55:31 PAGE 5   
+
+ 228   2          u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7586s_s028hn118a_display_info);
+ 229   2          break;
+ 230   2        case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 231   2          if ( arg_int == 0 )
+ 232   2          {
+ 233   3             u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_s028hn118a_flip0_seq);
+*** ERROR C208 IN LINE 233 OF ..\U8G2\CSRC\U8X8_D_ST7586S_S028HN118A.C: '_u8x8_cad_SendSequence': too many actual parame
+             -ters
+ 234   3             u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 235   3          }
+ 236   2          else
+ 237   2          {
+ 238   3            u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_s028hn118a_flip1_seq);
+*** ERROR C208 IN LINE 238 OF ..\U8G2\CSRC\U8X8_D_ST7586S_S028HN118A.C: '_u8x8_cad_SendSequence': too many actual parame
+             -ters
+ 239   3            u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 240   3          } 
+ 241   2          break;
+ 242   2        default:
+ 243   2          return 0;
+ 244   2        }
+ 245   1        return 1;
+ 246   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  9 ERROR(S)

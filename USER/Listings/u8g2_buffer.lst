@@ -1,0 +1,239 @@
+C51 COMPILER V9.01   U8G2_BUFFER                                                           04/30/2021 10:55:16 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8G2_BUFFER
+OBJECT MODULE PLACED IN .\Objects\u8g2_buffer.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8g2_buffer.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROWS
+                    -E INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRIN
+                    -T(.\Listings\u8g2_buffer.lst) TABS(2) OBJECT(.\Objects\u8g2_buffer.obj)
+
+line level    source
+
+   1          /* 
+   2          
+   3            u8g2_buffer.c 
+   4          
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          */
+  35          
+  36          #include "u8g2.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  37          #include <string.h>
+  38          
+  39          /*============================================*/
+  40          void u8g2_ClearBuffer(u8g2_t *u8g2)
+  41          {
+  42   1        size_t cnt;
+  43   1        cnt = u8g2_GetU8x8(u8g2)->display_info->tile_width;
+  44   1        cnt *= u8g2->tile_buf_height;
+  45   1        cnt *= 8;
+  46   1        memset(u8g2->tile_buf_ptr, 0, cnt);
+  47   1      }
+  48          
+  49          /*============================================*/
+  50          
+C51 COMPILER V9.01   U8G2_BUFFER                                                           04/30/2021 10:55:16 PAGE 2   
+
+  51          static void u8g2_send_tile_row(u8g2_t *u8g2, uint8_t src_tile_row, uint8_t dest_tile_row)
+  52          {
+  53   1        uint8_t *ptr;
+  54   1        uint16_t offset;
+  55   1        uint8_t w;
+  56   1        
+  57   1        w = u8g2_GetU8x8(u8g2)->display_info->tile_width;
+  58   1        offset = src_tile_row;
+  59   1        ptr = u8g2->tile_buf_ptr;
+  60   1        offset *= w;
+  61   1        offset *= 8;
+  62   1        ptr += offset;
+  63   1        u8x8_DrawTile(u8g2_GetU8x8(u8g2), 0, dest_tile_row, w, ptr);
+  64   1      }
+  65          
+  66          /* 
+  67            write the buffer to the display RAM. 
+  68            For most displays, this will make the content visible to the user.
+  69            Some displays (like the SSD1606) require a u8x8_RefreshDisplay()
+  70          */
+  71          static void u8g2_send_buffer(u8g2_t *u8g2) U8X8_NOINLINE;
+  72          static void u8g2_send_buffer(u8g2_t *u8g2)
+  73          {
+  74   1        uint8_t src_row;
+  75   1        uint8_t src_max;
+  76   1        uint8_t dest_row;
+  77   1        uint8_t dest_max;
+  78   1      
+  79   1        src_row = 0;
+  80   1        src_max = u8g2->tile_buf_height;
+  81   1        dest_row = u8g2->tile_curr_row;
+  82   1        dest_max = u8g2_GetU8x8(u8g2)->display_info->tile_height;
+  83   1        
+  84   1        do
+  85   1        {
+  86   2          u8g2_send_tile_row(u8g2, src_row, dest_row);
+  87   2          src_row++;
+  88   2          dest_row++;
+  89   2        } while( src_row < src_max && dest_row < dest_max );
+  90   1      }
+  91          
+  92          /* same as u8g2_send_buffer but also send the DISPLAY_REFRESH message (used by SSD1606) */
+  93          void u8g2_SendBuffer(u8g2_t *u8g2)
+  94          {
+  95   1        u8g2_send_buffer(u8g2);
+  96   1        u8x8_RefreshDisplay( u8g2_GetU8x8(u8g2) );  
+  97   1      }
+  98          
+  99          /*============================================*/
+ 100          void u8g2_SetBufferCurrTileRow(u8g2_t *u8g2, uint8_t row)
+ 101          {
+ 102   1        u8g2->tile_curr_row = row;
+ 103   1        u8g2->cb->update_dimension(u8g2);
+ 104   1        u8g2->cb->update_page_win(u8g2);
+ 105   1      }
+ 106          
+ 107          void u8g2_FirstPage(u8g2_t *u8g2)
+ 108          {
+ 109   1        if ( u8g2->is_auto_page_clear )
+ 110   1        {
+ 111   2          u8g2_ClearBuffer(u8g2);
+ 112   2        }
+C51 COMPILER V9.01   U8G2_BUFFER                                                           04/30/2021 10:55:16 PAGE 3   
+
+ 113   1        u8g2_SetBufferCurrTileRow(u8g2, 0);
+ 114   1      }
+ 115          
+ 116          uint8_t u8g2_NextPage(u8g2_t *u8g2)
+ 117          {
+ 118   1        uint8_t row;
+ 119   1        u8g2_send_buffer(u8g2);
+ 120   1        row = u8g2->tile_curr_row;
+ 121   1        row += u8g2->tile_buf_height;
+ 122   1        if ( row >= u8g2_GetU8x8(u8g2)->display_info->tile_height )
+ 123   1        {
+ 124   2          u8x8_RefreshDisplay( u8g2_GetU8x8(u8g2) );
+ 125   2          return 0;
+ 126   2        }
+ 127   1        if ( u8g2->is_auto_page_clear )
+ 128   1        {
+ 129   2          u8g2_ClearBuffer(u8g2);
+ 130   2        }
+ 131   1        u8g2_SetBufferCurrTileRow(u8g2, row);
+ 132   1        return 1;
+ 133   1      }
+ 134          
+ 135          
+ 136          
+ 137          /*============================================*/
+ 138          /*
+ 139            Description:
+ 140              Update a sub area of the display, given by tile position, width and height.
+ 141              The arguments are "tile" coordinates. Any u8g2 rotation is ignored.
+ 142              This procedure only checks whether full buffer mode is active.
+ 143              There is no error checking for the arguments: It is the responsibility of the
+ 144              user to ensure, that the provided arguments are correct.
+ 145          
+ 146            Limitations:
+ 147              - Only available in full buffer mode (will not do anything in page mode)
+ 148              - Tile positions and sizes (pixel position divided by 8)
+ 149              - Any display rotation/mirror is ignored
+ 150              - Only works with displays, which support U8x8 API
+ 151              - Will not send the e-paper refresh message (will probably not work with e-paper devices)
+ 152          */
+ 153          void u8g2_UpdateDisplayArea(u8g2_t *u8g2, uint8_t  tx, uint8_t ty, uint8_t tw, uint8_t th)
+ 154          {
+ 155   1        uint16_t page_size;
+ 156   1        uint8_t *ptr;
+ 157   1        
+ 158   1        /* check, whether we are in full buffer mode */
+ 159   1        if ( u8g2->tile_buf_height != u8g2_GetU8x8(u8g2)->display_info->tile_height )
+ 160   1          return; /* not in full buffer mode, do nothing */
+ 161   1      
+ 162   1        page_size = u8g2->pixel_buf_width;  /* 8*u8g2->u8g2_GetU8x8(u8g2)->display_info->tile_width */
+ 163   1          
+ 164   1        ptr = u8g2_GetBufferPtr(u8g2);
+ 165   1        ptr += tx*8;
+ 166   1        ptr += page_size*ty;
+ 167   1        
+ 168   1        while( th > 0 )
+ 169   1        {
+ 170   2          u8x8_DrawTile( u8g2_GetU8x8(u8g2), tx, ty, tw, ptr );
+ 171   2          ptr += page_size;
+ 172   2          ty++;
+ 173   2          th--;
+ 174   2        }  
+C51 COMPILER V9.01   U8G2_BUFFER                                                           04/30/2021 10:55:16 PAGE 4   
+
+ 175   1      }
+ 176          
+ 177          /* same as sendBuffer, but does not send the ePaper refresh message */
+ 178          void u8g2_UpdateDisplay(u8g2_t *u8g2)
+ 179          {
+ 180   1        u8g2_send_buffer(u8g2);
+ 181   1      }
+ 182          
+ 183          
+ 184          /*============================================*/
+ 185          
+ 186          /* vertical_top memory architecture */
+ 187          void u8g2_WriteBufferPBM(u8g2_t *u8g2, void (*out)(const char *s))
+ 188          {
+ 189   1        u8x8_capture_write_pbm_pre(u8g2_GetBufferTileWidth(u8g2), u8g2_GetBufferTileHeight(u8g2), out);
+ 190   1        u8x8_capture_write_pbm_buffer(u8g2_GetBufferPtr(u8g2), u8g2_GetBufferTileWidth(u8g2), u8g2_GetBufferTile
+             -Height(u8g2), u8x8_capture_get_pixel_1, out);
+ 191   1      }
+ 192          
+ 193          void u8g2_WriteBufferXBM(u8g2_t *u8g2, void (*out)(const char *s))
+ 194          {
+ 195   1        u8x8_capture_write_xbm_pre(u8g2_GetBufferTileWidth(u8g2), u8g2_GetBufferTileHeight(u8g2), out);
+ 196   1        u8x8_capture_write_xbm_buffer(u8g2_GetBufferPtr(u8g2), u8g2_GetBufferTileWidth(u8g2), u8g2_GetBufferTile
+             -Height(u8g2), u8x8_capture_get_pixel_1, out);
+ 197   1      }
+ 198          
+ 199          
+ 200          /* horizontal right memory architecture */
+ 201          /* SH1122, LD7032, ST7920, ST7986, LC7981, T6963, SED1330, RA8835, MAX7219, LS0 */ 
+ 202          void u8g2_WriteBufferPBM2(u8g2_t *u8g2, void (*out)(const char *s))
+ 203          {
+ 204   1        u8x8_capture_write_pbm_pre(u8g2_GetBufferTileWidth(u8g2), u8g2_GetBufferTileHeight(u8g2), out);
+ 205   1        u8x8_capture_write_pbm_buffer(u8g2_GetBufferPtr(u8g2), u8g2_GetBufferTileWidth(u8g2), u8g2_GetBufferTile
+             -Height(u8g2), u8x8_capture_get_pixel_2, out);
+ 206   1      }
+ 207          
+ 208          void u8g2_WriteBufferXBM2(u8g2_t *u8g2, void (*out)(const char *s))
+ 209          {
+ 210   1        u8x8_capture_write_xbm_pre(u8g2_GetBufferTileWidth(u8g2), u8g2_GetBufferTileHeight(u8g2), out);
+ 211   1        u8x8_capture_write_xbm_buffer(u8g2_GetBufferPtr(u8g2), u8g2_GetBufferTileWidth(u8g2), u8g2_GetBufferTile
+             -Height(u8g2), u8x8_capture_get_pixel_2, out);
+ 212   1      }
+ 213          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

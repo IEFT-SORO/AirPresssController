@@ -1,0 +1,401 @@
+C51 COMPILER V9.01   U8X8_D_SED1330                                                        04/30/2021 10:55:25 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_SED1330
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_sed1330.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_sed1330.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BR
+                    -OWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND P
+                    -RINT(.\Listings\u8x8_d_sed1330.lst) TABS(2) OBJECT(.\Objects\u8x8_d_sed1330.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_sed1330.c
+   4            
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          
+  35            The device might also work with the RA8835, SED1335 and SED1336 controller.
+  36            The following devices might be compatible:
+  37              RA8835
+  38              SED1330
+  39              SED1335
+  40              S1D13700
+  41          
+  42          
+  43          */
+  44          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  45          
+  46          
+  47          
+  48          static const uint8_t u8x8_d_sed1330_powersave0_seq[] = {
+  49            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  50            U8X8_CA(0x040, 0x030),    /* sys init (0x040) with one arg, where 0x030 is a wild guess */
+C51 COMPILER V9.01   U8X8_D_SED1330                                                        04/30/2021 10:55:25 PAGE 2   
+
+  51            U8X8_CA(0x059, 0x004),               /* send display on command (hex 0x059, see p37 ) */
+  52                        /* display cmd has one arg: 01010100 should enable all three blocks, but disable the cursor*/
+  53            
+  54            U8X8_END_TRANSFER(),              /* disable chip */
+  55            U8X8_END()                  /* end of sequence */
+  56          };
+  57          
+  58          static const uint8_t u8x8_d_sed1330_powersave1_seq[] = {
+  59            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  60            U8X8_CA(0x058, 0x000),               /* send display off command (hex 0x059, see p37) and turn of all ba
+             -nks */
+  61            /* maybe send a sleep in cmd */
+  62            //U8X8_C(0x053)       /* sleep in: 0x053 */
+  63            U8X8_END_TRANSFER(),              /* disable chip */
+  64            U8X8_END()                  /* end of sequence */
+  65          };
+  66          
+  67          
+  68          uint8_t u8x8_d_sed1330_common(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+  69          {
+  70   1        uint8_t c, i;
+  71   1        uint16_t y;
+  72   1        uint8_t *ptr;
+  73   1        switch(msg)
+  74   1        {
+  75   2          /* U8X8_MSG_DISPLAY_SETUP_MEMORY is handled by the calling function */
+  76   2          /*
+  77   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+  78   2            break;
+  79   2          case U8X8_MSG_DISPLAY_INIT:
+  80   2            break;
+  81   2          */
+  82   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+  83   2            if ( arg_int == 0 )
+  84   2        u8x8_cad_SendSequence(u8x8, u8x8_d_sed1330_powersave0_seq);
+*** ERROR C208 IN LINE 84 OF ..\U8G2\CSRC\U8X8_D_SED1330.C: '_u8x8_cad_SendSequence': too many actual parameters
+  85   2            else
+  86   2        u8x8_cad_SendSequence(u8x8, u8x8_d_sed1330_powersave1_seq);
+*** ERROR C208 IN LINE 86 OF ..\U8G2\CSRC\U8X8_D_SED1330.C: '_u8x8_cad_SendSequence': too many actual parameters
+  87   2            break;
+  88   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+  89   2            y = (((u8x8_tile_t *)arg_ptr)->y_pos);
+  90   2            y*=8;
+  91   2            y*= u8x8->display_info->tile_width;
+  92   2          
+  93   2            u8x8_cad_StartTransfer(u8x8);
+  94   2          
+  95   2            c = ((u8x8_tile_t *)arg_ptr)->cnt;  /* number of tiles */
+  96   2            ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr; /* data ptr to the tiles */
+  97   2            for( i = 0; i < 8; i++ )
+  98   2            {
+  99   3        u8x8_cad_SendCmd(u8x8, 0x046 ); /* CSRW command*/
+ 100   3        u8x8_cad_SendArg(u8x8, y&255);    /* CSRW low adr byte */
+ 101   3        u8x8_cad_SendArg(u8x8, y>>8);   /* CSRW high adr byte */
+ 102   3        u8x8_cad_SendCmd(u8x8, 0x042 ); /* MWRITE */
+ 103   3        
+ 104   3        u8x8_cad_SendData(u8x8, c, ptr);  /* note: SendData can not handle more than 255 bytes, send one line of d
+             -ata */
+*** ERROR C208 IN LINE 104 OF ..\U8G2\CSRC\U8X8_D_SED1330.C: '_u8x8_cad_SendData': too many actual parameters
+ 105   3        
+ 106   3        ptr += u8x8->display_info->tile_width;
+ 107   3        y += u8x8->display_info->tile_width;
+C51 COMPILER V9.01   U8X8_D_SED1330                                                        04/30/2021 10:55:25 PAGE 3   
+
+ 108   3            }
+ 109   2      
+ 110   2            /* sometimes the display switches off... so just sent a display on command */
+ 111   2            u8x8_cad_SendCmd(u8x8, 0x059 ); /* display on */
+ 112   2            u8x8_cad_SendArg(u8x8, 0x004);  /* arg for display on */
+ 113   2      
+ 114   2            u8x8_cad_EndTransfer(u8x8);
+ 115   2            //u8x8->gpio_and_delay_cb(u8x8, U8X8_MSG_DELAY_NANO, 200, NULL);  /* extra dely required */
+ 116   2      
+ 117   2            break;
+ 118   2          default:
+ 119   2            return 0;
+ 120   2        }
+ 121   1        return 1;
+ 122   1      }
+ 123          
+ 124          /*=============================================*/
+ 125          
+ 126          
+ 127          static const u8x8_display_info_t u8x8_sed1330_240x128_display_info =
+ 128          {
+ 129            /* chip_enable_level = */ 0,
+ 130            /* chip_disable_level = */ 1,
+ 131            
+ 132            /* post_chip_enable_wait_ns = */ 30,  /* G242CX Datasheet p5 */
+ 133            /* pre_chip_disable_wait_ns = */ 10,  /* G242CX Datasheet p5 */
+ 134            /* reset_pulse_width_ms = */ 1, 
+ 135            /* post_reset_wait_ms = */ 6, 
+ 136            /* sda_setup_time_ns = */ 20,   
+ 137            /* sck_pulse_width_ns = */  140,  
+ 138            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 139            /* spi_mode = */ 0,   
+ 140            /* i2c_bus_clock_100kHz = */ 4,
+ 141            /* data_setup_time_ns = */ 120,   /* G242CX Datasheet p5 */
+ 142            /* write_pulse_width_ns = */ 220,   /* G242CX Datasheet p5 */
+ 143            /* tile_width = */ 0x01e,
+ 144            /* tile_hight = */ 16,
+ 145            /* default_x_offset = */ 0,
+ 146            /* flipmode_x_offset = */ 0,
+ 147            /* pixel_width = */ 240,
+ 148            /* pixel_height = */ 128
+ 149          };
+ 150          
+ 151          /* 240x128 Seiko G242C */
+ 152          static const uint8_t u8x8_d_sed1330_240x128_init_seq[] = {
+ 153            U8X8_DLY(100),
+ 154            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 155            U8X8_DLY(100),
+ 156          
+ 157            /* system init command, see also u8x8_d_sed1330_powersave0_seq */
+ 158            U8X8_CA(0x040, 0x030),    /* sys init (0x040) with one arg, where 0x030 is a wild guess */
+ 159            /* system init has total 8 parameters, so 7 more are here */
+ 160            U8X8_A(0x087),        /* no idea here... WF (topmost bit) is set to one because it is suggested in the datas
+             -heet, lowest 3 bits refer to text mode only */
+ 161            U8X8_A(0x007),        /* FY: height of a char+1, does not matter here (hopefully), because we use graphics m
+             -ode only */
+ 162            U8X8_A(0x01d),        /* C/R: this could be the number of horizontal bytes - 1 (Value confirmed with app not
+             -es p41) */
+ 163            U8X8_A(0x050),          /* TC/R: According to app notes fOSC=6Mhz fFF=70Hz --> TC/R = 74d*/
+ 164            U8X8_A(0x080),        /* L/F: Lines per frame - 1, probably this is the height of the display - 1 (value con
+             -firmed with app notes p41)*/
+C51 COMPILER V9.01   U8X8_D_SED1330                                                        04/30/2021 10:55:25 PAGE 4   
+
+ 165            U8X8_A(0x01e),        /* Low byte of the virtual screen size. (Value confirmed with app notes p41)   */
+ 166            U8X8_A(0),          /* High byte of the virtual screen size, see also section 9.1.2 */
+ 167            
+ 168            U8X8_C(0x044),        /* SCROLL */
+ 169            U8X8_A(0x000),        
+ 170            U8X8_A(0x000),        
+ 171            U8X8_A(0x080),
+ 172            U8X8_A(0x000),
+ 173            U8X8_A(0x040),
+ 174            U8X8_A(0x080),
+ 175            U8X8_A(0x000),
+ 176            U8X8_A(0x000),
+ 177            U8X8_A(0x000),
+ 178            U8X8_A(0x000),
+ 179            
+ 180            U8X8_CA(0x05a, 0),      /* HDOT SCR: Horizontal dotwise scroll... set to 0 */
+ 181            
+ 182            U8X8_CA(0x05b, 0x0c),     /* OVLAY: 2-layer, all graphics, OR between layer 1 and 2 */
+ 183          
+ 184          
+ 185            U8X8_DLY(100),
+ 186            U8X8_END_TRANSFER(),              /* disable chip */
+ 187            U8X8_DLY(100),
+ 188          };
+ 189          
+ 190          /* RA8835 NHD-240128BZ */
+ 191          static const uint8_t u8x8_d_rh8835_nhd_240128_init_seq[] = {
+ 192            U8X8_DLY(100),
+ 193            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 194            U8X8_DLY(100),
+ 195          
+ 196            /* system init command, see also u8x8_d_sed1330_powersave0_seq */
+ 197            U8X8_CA(0x040, 0x030),    /* sys init (0x040) with one arg, where 0x030 is a wild guess */
+ 198            /* system init has total 8 parameters, so 7 more are here */
+ 199            U8X8_A(0x087),        /* no idea here... WF (topmost bit) is set to one because it is suggested in the datas
+             -heet, lowest 3 bits refer to text mode only */
+ 200            U8X8_A(0x007),        /* FY: height of a char+1, does not matter here (hopefully), because we use graphics m
+             -ode only */
+ 201            U8X8_A(0x01d),        /* C/R: this could be the number of horizontal bytes - 1 (Value confirmed with app not
+             -es p41) */
+ 202            U8X8_A(0x050),          /* TC/R: According to app notes fOSC=6Mhz fFF=70Hz --> TC/R = 74d*/
+ 203            U8X8_A(0x080),        /* L/F: Lines per frame - 1, probably this is the height of the display - 1 (value con
+             -firmed with app notes p41)*/
+ 204            U8X8_A(0x01e),        /* Low byte of the virtual screen size. (Value confirmed with app notes p41)   */
+ 205            U8X8_A(0),          /* High byte of the virtual screen size, see also section 9.1.2 */
+ 206          
+ 207            U8X8_C(0x044),        /* SCROLL */
+ 208            U8X8_A(0x000),        
+ 209            U8X8_A(0x000),        
+ 210            U8X8_A(0x080),
+ 211            U8X8_A(0x000),
+ 212            U8X8_A(0x040),
+ 213            U8X8_A(0x080),
+ 214            U8X8_A(0x000),
+ 215            U8X8_A(0x000),
+ 216            U8X8_A(0x000),
+ 217            U8X8_A(0x000),
+ 218            
+ 219            //U8X8_CA(0x05a, 0),      /* HDOT SCR: Horizontal dotwise scroll... set to 0 */
+ 220            
+ 221            U8X8_CA(0x05b, 0x0c),     /* OVLAY: 2-layer, all graphics, OR between layer 1 and 2 */
+ 222          
+C51 COMPILER V9.01   U8X8_D_SED1330                                                        04/30/2021 10:55:25 PAGE 5   
+
+ 223            //U8X8_CA(0x059, 0x04),               /* send display on command (hex 0x059, see p37 ) */
+ 224            
+ 225            U8X8_DLY(100),
+ 226            U8X8_END_TRANSFER(),              /* disable chip */
+ 227            U8X8_DLY(100),
+ 228            
+ 229          };
+ 230          
+ 231          
+ 232          uint8_t u8x8_d_sed1330_240x128(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 233          {
+ 234   1        switch(msg)
+ 235   1        {
+ 236   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 237   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_sed1330_240x128_display_info);
+ 238   2            break;
+ 239   2          case U8X8_MSG_DISPLAY_INIT:
+ 240   2            u8x8_d_helper_display_init(u8x8);
+ 241   2            u8x8_cad_SendSequence(u8x8, u8x8_d_sed1330_240x128_init_seq);
+*** ERROR C208 IN LINE 241 OF ..\U8G2\CSRC\U8X8_D_SED1330.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 242   2            break;
+ 243   2          default:
+ 244   2            return u8x8_d_sed1330_common(u8x8, msg, arg_int, arg_ptr);
+ 245   2        }
+ 246   1        return 1;
+ 247   1      }
+ 248          
+ 249          
+ 250          uint8_t u8x8_d_ra8835_nhd_240x128(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 251          {
+ 252   1        switch(msg)
+ 253   1        {
+ 254   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 255   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_sed1330_240x128_display_info);
+ 256   2            break;
+ 257   2          case U8X8_MSG_DISPLAY_INIT:
+ 258   2            u8x8_d_helper_display_init(u8x8);
+ 259   2            u8x8_cad_SendSequence(u8x8, u8x8_d_rh8835_nhd_240128_init_seq);
+*** ERROR C208 IN LINE 259 OF ..\U8G2\CSRC\U8X8_D_SED1330.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 260   2            break;
+ 261   2          default:
+ 262   2            return u8x8_d_sed1330_common(u8x8, msg, arg_int, arg_ptr);
+ 263   2        }
+ 264   1        return 1;
+ 265   1      }
+ 266          
+ 267          
+ 268          
+ 269          /*=============================================*/
+ 270          
+ 271          
+ 272          static const u8x8_display_info_t u8x8_sed1330_320x240_display_info =
+ 273          {
+ 274            /* chip_enable_level = */ 0,
+ 275            /* chip_disable_level = */ 1,
+ 276            
+ 277            /* post_chip_enable_wait_ns = */ 30,  /* G242CX Datasheet p5 */
+ 278            /* pre_chip_disable_wait_ns = */ 10,  /* G242CX Datasheet p5 */
+ 279            /* reset_pulse_width_ms = */ 1, 
+ 280            /* post_reset_wait_ms = */ 6, 
+ 281            /* sda_setup_time_ns = */ 20,   
+ 282            /* sck_pulse_width_ns = */  140,  
+C51 COMPILER V9.01   U8X8_D_SED1330                                                        04/30/2021 10:55:25 PAGE 6   
+
+ 283            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 284            /* spi_mode = */ 0,   
+ 285            /* i2c_bus_clock_100kHz = */ 4,
+ 286            /* data_setup_time_ns = */ 120,   /* G242CX Datasheet p5 */
+ 287            /* write_pulse_width_ns = */ 220,   /* G242CX Datasheet p5 */
+ 288            /* tile_width = */ 40,
+ 289            /* tile_hight = */ 30,
+ 290            /* default_x_offset = */ 0,
+ 291            /* flipmode_x_offset = */ 0,
+ 292            /* pixel_width = */ 320,
+ 293            /* pixel_height = */ 240
+ 294          };
+ 295          
+ 296          static const uint8_t u8x8_d_sed1330_320x240_init_seq[] = {
+ 297            U8X8_DLY(100),
+ 298            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 299            U8X8_DLY(100),
+ 300          
+ 301            /* system init command, see also u8x8_d_sed1330_powersave0_seq */
+ 302            U8X8_CA(0x040, 0x030),    /* sys init (0x040) with one arg, where 0x030 is a wild guess */
+ 303            /* system init has total 8 parameters, so 7 more are here */
+ 304            U8X8_A(0x087),        /* no idea here... WF (topmost bit) is set to one because it is suggested in the datas
+             -heet, lowest 3 bits refer to text mode only */
+ 305            U8X8_A(0x007),        /* FY: height of a char+1, does not matter here (hopefully), because we use graphics m
+             -ode only */
+ 306            U8X8_A(0x027),  /* 40-1 */    /* C/R: this could be the number of horizontal bytes - 1 (Value confirmed wit
+             -h app notes p41) */
+ 307            U8X8_A(0x039),          /* TC/R: According to app notes fOSC=6Mhz fFF=70Hz --> TC/R = 74d*/
+ 308            U8X8_A(0x0ef),        /* L/F: Lines per frame - 1, probably this is the height of the display - 1 (value con
+             -firmed with app notes p41)*/
+ 309            U8X8_A(0x028),        /* Low byte of the virtual screen size. (Value confirmed with app notes p41)   */
+ 310            U8X8_A(0),          /* High byte of the virtual screen size, see also section 9.1.2 */
+ 311            
+ 312            U8X8_C(0x044),        /* SCROLL */
+ 313            U8X8_A(0x000),        
+ 314            U8X8_A(0x000),        
+ 315            U8X8_A(0x0ef),
+ 316            U8X8_A(0x0b0),
+ 317            U8X8_A(0x004),
+ 318            U8X8_A(0x0ef),
+ 319            U8X8_A(0x000),
+ 320            U8X8_A(0x000),
+ 321            U8X8_A(0x000),
+ 322            U8X8_A(0x000),
+ 323            
+ 324            U8X8_CA(0x05a, 0),      /* HDOT SCR: Horizontal dotwise scroll... set to 0 */
+ 325            
+ 326            U8X8_CA(0x05b, 0x0c),     /* OVLAY: 2-layer, all graphics, OR between layer 1 and 2 */
+ 327          
+ 328          
+ 329            U8X8_DLY(100),
+ 330            U8X8_END_TRANSFER(),              /* disable chip */
+ 331            U8X8_DLY(100),
+ 332          };
+ 333          
+ 334          
+ 335          
+ 336          uint8_t u8x8_d_ra8835_320x240(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 337          {
+ 338   1        switch(msg)
+ 339   1        {
+C51 COMPILER V9.01   U8X8_D_SED1330                                                        04/30/2021 10:55:25 PAGE 7   
+
+ 340   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 341   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_sed1330_320x240_display_info);
+ 342   2            break;
+ 343   2          case U8X8_MSG_DISPLAY_INIT:
+ 344   2            u8x8_d_helper_display_init(u8x8);
+ 345   2            u8x8_cad_SendSequence(u8x8, u8x8_d_sed1330_320x240_init_seq);
+*** ERROR C208 IN LINE 345 OF ..\U8G2\CSRC\U8X8_D_SED1330.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 346   2            break;
+ 347   2          default:
+ 348   2            return u8x8_d_sed1330_common(u8x8, msg, arg_int, arg_ptr);
+ 349   2        }
+ 350   1        return 1;
+ 351   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  9 ERROR(S)

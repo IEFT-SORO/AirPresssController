@@ -1,0 +1,287 @@
+C51 COMPILER V9.01   U8X8_D_ST7588                                                         04/30/2021 10:55:31 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_ST7588
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_st7588.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_st7588.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BRO
+                    -WSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PR
+                    -INT(.\Listings\u8x8_d_st7588.lst) TABS(2) OBJECT(.\Objects\u8x8_d_st7588.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_st7588.c
+   4          
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2017, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33            
+  34            ST7588
+  35              - has 4 different I2C addresses 
+  36              - I2C protocol is identical to SSD13xx
+  37            
+  38          */
+  39          
+  40          
+  41          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  42          
+  43          /* function set, bit 2: power down, bit 3: MY, bit 4: MX, bit 5: must be 1 */
+  44          #define FS (0x020)
+  45          
+  46          /* not a real power down for the ST7588... just a display off */
+  47          static const uint8_t u8x8_d_st7588_128x64_powersave0_seq[] = {
+  48            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  49            U8X8_C( FS | 0x00 ),      /* select 00 commands */
+  50            //U8X8_C( 0x08 ),       /* display off */
+C51 COMPILER V9.01   U8X8_D_ST7588                                                         04/30/2021 10:55:31 PAGE 2   
+
+  51            U8X8_C( 0x0c ),       /* display on */
+  52            U8X8_END_TRANSFER(),              /* disable chip */
+  53            U8X8_END()                  /* end of sequence */
+  54          };
+  55          
+  56          static const uint8_t u8x8_d_st7588_128x64_powersave1_seq[] = {
+  57            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  58            U8X8_C( FS | 0x00 ),      /* select 00 commands */
+  59            U8X8_C( 0x08 ),       /* display off */
+  60            //U8X8_C( 0x0c ),       /* display on */
+  61            U8X8_END_TRANSFER(),              /* disable chip */
+  62            U8X8_END()                  /* end of sequence */
+  63          };
+  64          
+  65          
+  66          
+  67          
+  68          static uint8_t u8x8_d_st7588_128x64_generic(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+  69          {
+  70   1        uint8_t x, c;
+  71   1        uint8_t *ptr;
+  72   1        switch(msg)
+  73   1        {
+  74   2          /* handled by the calling function
+  75   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+  76   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7588_128x64_display_info);
+  77   2            break;
+  78   2          */
+  79   2          /* handled by the calling function
+  80   2          case U8X8_MSG_DISPLAY_INIT:
+  81   2            u8x8_d_helper_display_init(u8x8);
+  82   2            u8x8_cad_SendSequence(u8x8, u8x8_d_st7588_128x64_init_seq);    
+  83   2            break;
+  84   2          */
+  85   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+  86   2            if ( arg_int == 0 )
+  87   2        u8x8_cad_SendSequence(u8x8, u8x8_d_st7588_128x64_powersave0_seq);
+*** ERROR C208 IN LINE 87 OF ..\U8G2\CSRC\U8X8_D_ST7588.C: '_u8x8_cad_SendSequence': too many actual parameters
+  88   2            else
+  89   2        u8x8_cad_SendSequence(u8x8, u8x8_d_st7588_128x64_powersave1_seq);
+*** ERROR C208 IN LINE 89 OF ..\U8G2\CSRC\U8X8_D_ST7588.C: '_u8x8_cad_SendSequence': too many actual parameters
+  90   2      
+  91   2            /* restore orientation */
+  92   2            if ( u8x8->x_offset == 0 )
+  93   2        u8x8_cad_SendCmd(u8x8, FS );  /* select 00 commands */
+  94   2            else
+  95   2        u8x8_cad_SendCmd(u8x8, FS ^ 0x018 );  /* select 00 commands */
+  96   2            
+  97   2            break;
+  98   2      #ifdef U8X8_WITH_SET_CONTRAST
+  99   2          case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 100   2      
+ 101   2            u8x8_cad_StartTransfer(u8x8);
+ 102   2            
+ 103   2            u8x8_cad_SendCmd(u8x8, FS );
+ 104   2            u8x8_cad_SendArg(u8x8, 4 | (arg_int>>7) );
+ 105   2            u8x8_cad_SendCmd(u8x8, FS | 1);
+ 106   2            u8x8_cad_SendArg(u8x8, 0x080 | arg_int );
+ 107   2            
+ 108   2            /* restore orientation */
+ 109   2            if ( u8x8->x_offset == 0 )
+ 110   2        u8x8_cad_SendCmd(u8x8, FS );  /* select 00 commands */
+C51 COMPILER V9.01   U8X8_D_ST7588                                                         04/30/2021 10:55:31 PAGE 3   
+
+ 111   2            else
+ 112   2        u8x8_cad_SendCmd(u8x8, FS ^ 0x018 );  /* select 00 commands */
+ 113   2            u8x8_cad_EndTransfer(u8x8);
+ 114   2            break;
+ 115   2      #endif
+ 116   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 117   2            
+ 118   2            u8x8_cad_StartTransfer(u8x8);
+ 119   2            x = ((u8x8_tile_t *)arg_ptr)->x_pos;    
+ 120   2            x *= 8;
+ 121   2            
+ 122   2            x += u8x8->x_offset;
+ 123   2          
+ 124   2            if ( u8x8->x_offset == 0 )
+ 125   2        u8x8_cad_SendCmd(u8x8, FS );  /* select 00 commands */
+ 126   2            else
+ 127   2        u8x8_cad_SendCmd(u8x8, FS ^ 0x018 );  /* select 00 commands */
+ 128   2        
+ 129   2            u8x8_cad_SendCmd(u8x8, 0x040 | (((u8x8_tile_t *)arg_ptr)->y_pos));
+ 130   2            u8x8_cad_SendCmd(u8x8, 0x0e0 | ((x&15)));
+ 131   2            u8x8_cad_SendCmd(u8x8, 0x0f0 | (x>>4) );
+ 132   2          
+ 133   2            
+ 134   2            do
+ 135   2            {
+ 136   3        c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 137   3        ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 138   3        u8x8_cad_SendData(u8x8, c*8, ptr);  /* note: SendData can not handle more than 255 bytes */
+*** ERROR C208 IN LINE 138 OF ..\U8G2\CSRC\U8X8_D_ST7588.C: '_u8x8_cad_SendData': too many actual parameters
+ 139   3        arg_int--;
+ 140   3            } while( arg_int > 0 );
+ 141   2            
+ 142   2            u8x8_cad_EndTransfer(u8x8);
+ 143   2            break;
+ 144   2          default:
+ 145   2            return 0;
+ 146   2        }
+ 147   1        return 1;
+ 148   1      }
+ 149          
+ 150          /*=============================================*/
+ 151          
+ 152          static const u8x8_display_info_t u8x8_st7588_128x64_display_info =
+ 153          {
+ 154            /* chip_enable_level = */ 0,
+ 155            /* chip_disable_level = */ 1,
+ 156            
+ 157            /* post_chip_enable_wait_ns = */ 150,
+ 158            /* pre_chip_disable_wait_ns = */ 30,
+ 159            /* reset_pulse_width_ms = */ 5,   
+ 160            /* post_reset_wait_ms = */ 5,     /**/
+ 161            /* sda_setup_time_ns = */ 60,   /* */
+ 162            /* sck_pulse_width_ns = */ 60,  /*  */
+ 163            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 164            /* spi_mode = */ 0,   /* active high, rising edge */
+ 165            /* i2c_bus_clock_100kHz = */ 4, /* 400KHz */
+ 166            /* data_setup_time_ns = */ 80,
+ 167            /* write_pulse_width_ns = */ 50,  
+ 168            /* tile_width = */ 16,
+ 169            /* tile_hight = */ 8,
+ 170            /* default_x_offset = */ 0, /* must be 0, because this is checked also for normal mode */
+C51 COMPILER V9.01   U8X8_D_ST7588                                                         04/30/2021 10:55:31 PAGE 4   
+
+ 171            /* flipmode_x_offset = */ 4,    
+ 172            /* pixel_width = */ 128,
+ 173            /* pixel_height = */ 64
+ 174          };
+ 175          
+ 176          
+ 177          
+ 178          static const uint8_t u8x8_d_st7588_128x64_init_seq[] = {
+ 179              
+ 180            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 181          
+ 182            U8X8_C( FS | 0x03 ),      /* select 11 commands */
+ 183            U8X8_C( 0x03 ),       /* software reset */
+ 184          
+ 185            U8X8_C( FS | 0x00 ),      /* select 00 commands */
+ 186            U8X8_C( 0x08 ),       /* display off */
+ 187            //U8X8_C( 0x0c ),       /* display on */
+ 188            
+ 189            U8X8_C( FS | 0x01 ),      /* select 01 commands */
+ 190            U8X8_C( 0x08 ),       /* display confguration */
+ 191            U8X8_C( 0x12 ),       /* bias 1/9 */
+ 192            U8X8_C( 0x8f ),       /* Vop, lower 7 bits */
+ 193            
+ 194            U8X8_C( FS | 0x00 ),      /* select 00 commands */
+ 195            U8X8_C( 0x05),        /* Bit 0 contains high/low range for Vop */
+ 196            
+ 197            
+ 198            U8X8_C( FS | 0x03 ),      /* select 11 commands */
+ 199            U8X8_C( 0x0b),        /* Frame Rate: 73 Hz */
+ 200            
+ 201            
+ 202              
+ 203            U8X8_END_TRANSFER(),              /* disable chip */
+ 204            U8X8_END()                  /* end of sequence */
+ 205          };
+ 206          
+ 207          
+ 208          static const uint8_t u8x8_d_st7588_jlx12864_flip0_seq[] = {
+ 209            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 210            U8X8_C( FS ),         /* normal mode */
+ 211            U8X8_END_TRANSFER(),              /* disable chip */
+ 212            U8X8_END()                  /* end of sequence */
+ 213          };
+ 214          
+ 215          static const uint8_t u8x8_d_st7588_jlx12864_flip1_seq[] = {
+ 216            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 217            U8X8_C( FS ^ 0x018 ),         /* normal mode */
+ 218            U8X8_END_TRANSFER(),              /* disable chip */
+ 219            U8X8_END()                  /* end of sequence */
+ 220          };
+ 221          
+ 222          
+ 223          uint8_t u8x8_d_st7588_jlx12864(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 224          {
+ 225   1        if ( u8x8_d_st7588_128x64_generic(u8x8, msg, arg_int, arg_ptr) != 0 )
+ 226   1          return 1;
+ 227   1        if ( msg == U8X8_MSG_DISPLAY_SETUP_MEMORY )
+ 228   1        {
+ 229   2          u8x8_SetI2CAddress(u8x8, 0x07e);    /* the JLX12864 has 0x07e as a default address for I2C */
+ 230   2          u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7588_128x64_display_info);
+ 231   2          return 1;
+ 232   2        }
+C51 COMPILER V9.01   U8X8_D_ST7588                                                         04/30/2021 10:55:31 PAGE 5   
+
+ 233   1        else if ( msg == U8X8_MSG_DISPLAY_INIT )
+ 234   1        {
+ 235   2          u8x8_d_helper_display_init(u8x8);
+ 236   2          u8x8_cad_SendSequence(u8x8, u8x8_d_st7588_128x64_init_seq);    
+*** ERROR C208 IN LINE 236 OF ..\U8G2\CSRC\U8X8_D_ST7588.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 237   2          return 1;
+ 238   2        }
+ 239   1        else if  ( msg == U8X8_MSG_DISPLAY_SET_FLIP_MODE )
+ 240   1        {
+ 241   2          if ( arg_int == 0 )
+ 242   2          {
+ 243   3            u8x8_cad_SendSequence(u8x8, u8x8_d_st7588_jlx12864_flip0_seq);
+*** ERROR C208 IN LINE 243 OF ..\U8G2\CSRC\U8X8_D_ST7588.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 244   3            u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 245   3          }
+ 246   2          else
+ 247   2          {
+ 248   3            u8x8_cad_SendSequence(u8x8, u8x8_d_st7588_jlx12864_flip1_seq);
+*** ERROR C208 IN LINE 248 OF ..\U8G2\CSRC\U8X8_D_ST7588.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 249   3            u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 250   3          }
+ 251   2          return 1;
+ 252   2        }
+ 253   1        return 0;
+ 254   1      }
+ 255          
+ 256          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  9 ERROR(S)

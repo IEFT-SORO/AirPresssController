@@ -1,0 +1,174 @@
+C51 COMPILER V9.01   U8X8_MESSAGE                                                          04/30/2021 10:55:35 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_MESSAGE
+OBJECT MODULE PLACED IN .\Objects\u8x8_message.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_message.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROW
+                    -SE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRI
+                    -NT(.\Listings\u8x8_message.lst) TABS(2) OBJECT(.\Objects\u8x8_message.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_message.c
+   4            
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33            
+  34          */
+  35          
+  36          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  37          
+  38          uint8_t u8x8_draw_button_line(u8x8_t *u8x8, uint8_t y, uint8_t w, uint8_t cursor, const char *s)
+  39          {
+  40   1        uint8_t i;
+  41   1        uint8_t cnt;
+  42   1        uint8_t total;
+  43   1        uint8_t d;
+  44   1        uint8_t x;
+  45   1        cnt = u8x8_GetStringLineCnt(s);
+  46   1        
+  47   1        /* calculate the width of the button */
+  48   1        total = 0;
+  49   1        for( i = 0; i < cnt; i++ )
+  50   1        {
+C51 COMPILER V9.01   U8X8_MESSAGE                                                          04/30/2021 10:55:35 PAGE 2   
+
+  51   2          total += u8x8_GetUTF8Len(u8x8, u8x8_GetStringLineStart(i, s));
+  52   2        }
+  53   1        total += (cnt-1); /* had one space between the buttons */
+  54   1        
+  55   1        /* calculate the left offset */
+  56   1        d = 0;
+  57   1        if ( total < w )
+  58   1        {
+  59   2          d = w;
+  60   2          d -= total;
+  61   2          d /= 2;
+  62   2        }
+  63   1        
+  64   1        /* draw the buttons */
+  65   1        x = d;
+  66   1        u8x8_SetInverseFont(u8x8, 0);
+  67   1        for( i = 0; i < cnt; i++ )
+  68   1        {
+  69   2          if ( i == cursor )
+  70   2            u8x8_SetInverseFont(u8x8, 1);
+  71   2            
+  72   2          x+=u8x8_DrawUTF8(u8x8, x, y, u8x8_GetStringLineStart(i, s));
+  73   2          u8x8_SetInverseFont(u8x8, 0);
+  74   2          x+=u8x8_DrawUTF8(u8x8, x, y, " ");
+  75   2        }
+  76   1        
+  77   1        /* return the number of buttons */
+  78   1        return cnt;
+  79   1      }
+  80          
+  81          /*
+  82            title1: Multiple lines,separated by '\n'
+  83            title2: A single line/string which is terminated by '\0' or '\n' . "title2" accepts the return value fro
+             -m u8x8_GetStringLineStart()
+  84            title3: Multiple lines,separated by '\n'
+  85            buttons:  one more more buttons separated by '\n' and terminated with '\0'
+  86          */
+  87          
+  88          uint8_t u8x8_UserInterfaceMessage(u8x8_t *u8x8, const char *title1, const char *title2, const char *title3
+             -, const char *buttons)
+  89          {
+  90   1        uint8_t height;
+  91   1        uint8_t y;
+  92   1        uint8_t cursor = 0;
+  93   1        uint8_t button_cnt;
+  94   1        uint8_t event;
+  95   1      
+  96   1        u8x8_SetInverseFont(u8x8, 0);
+  97   1        
+  98   1        /* calculate overall height of the message box */
+  99   1        height = 1; /* button line */
+ 100   1        height += u8x8_GetStringLineCnt(title1);
+ 101   1        if ( title2 != NULL )
+ 102   1          height ++;
+ 103   1        height += u8x8_GetStringLineCnt(title3);
+ 104   1        
+ 105   1        /* calculate offset from top */
+ 106   1        y = 0;
+ 107   1        if ( height < u8x8_GetRows(u8x8)  )
+ 108   1        {
+ 109   2          y = u8x8_GetRows(u8x8);
+ 110   2          y -= height;
+C51 COMPILER V9.01   U8X8_MESSAGE                                                          04/30/2021 10:55:35 PAGE 3   
+
+ 111   2          y /= 2;
+ 112   2        }
+ 113   1      
+ 114   1        /* draw message box */
+ 115   1        
+ 116   1        u8x8_ClearDisplay(u8x8);   /* required, because not everything is filled */
+ 117   1        
+ 118   1        y += u8x8_DrawUTF8Lines(u8x8, 0, y, u8x8_GetCols(u8x8), title1);
+ 119   1        if ( title2 != NULL )
+ 120   1        {
+ 121   2          u8x8_DrawUTF8Line(u8x8, 0, y, u8x8_GetCols(u8x8), title2);
+ 122   2          y++;
+ 123   2        }
+ 124   1        y += u8x8_DrawUTF8Lines(u8x8, 0, y, u8x8_GetCols(u8x8), title3);
+ 125   1      
+ 126   1        button_cnt = u8x8_draw_button_line(u8x8, y, u8x8_GetCols(u8x8), cursor, buttons);
+ 127   1        
+ 128   1        for(;;)
+ 129   1        {
+ 130   2          event = u8x8_GetMenuEvent(u8x8);
+ 131   2          if ( event == U8X8_MSG_GPIO_MENU_SELECT )
+ 132   2            return cursor+1;
+ 133   2          else if ( event == U8X8_MSG_GPIO_MENU_HOME )
+ 134   2            break;
+ 135   2          else if ( event == U8X8_MSG_GPIO_MENU_NEXT || event == U8X8_MSG_GPIO_MENU_UP )
+ 136   2          {
+ 137   3            cursor++;
+ 138   3            if ( cursor >= button_cnt )
+ 139   3        cursor = 0;
+ 140   3            u8x8_draw_button_line(u8x8, y, u8x8_GetCols(u8x8), cursor, buttons);
+ 141   3          }
+ 142   2          else if ( event == U8X8_MSG_GPIO_MENU_PREV || event == U8X8_MSG_GPIO_MENU_DOWN  )
+ 143   2          {
+ 144   3            if ( cursor == 0 )
+ 145   3        cursor = button_cnt;
+ 146   3            cursor--;
+ 147   3            u8x8_draw_button_line(u8x8, y, u8x8_GetCols(u8x8), cursor, buttons);
+ 148   3          }    
+ 149   2        }  
+ 150   1        return 0;
+ 151   1      }
+ 152          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

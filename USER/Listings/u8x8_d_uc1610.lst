@@ -1,0 +1,338 @@
+C51 COMPILER V9.01   U8X8_D_UC1610                                                         04/30/2021 10:55:33 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_UC1610
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_uc1610.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_uc1610.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BRO
+                    -WSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PR
+                    -INT(.\Listings\u8x8_d_uc1610.lst) TABS(2) OBJECT(.\Objects\u8x8_d_uc1610.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_uc1610.c
+   4            
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34            
+  35            cad001
+  36            
+  37          */
+  38          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  39          
+  40          
+  41          
+  42          
+  43          static const uint8_t u8x8_d_uc1610_dogxl160_init_seq[] = {
+  44              
+  45            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  46          
+  47            U8X8_CA(0x0f1, 0x067),    /* set COM end (display height-1) */
+  48            U8X8_C(0x0c0),                  /* SEG & COM normal */
+  49            U8X8_C(0x040),                  /* set scroll line lsb to zero */
+  50            U8X8_C(0x050),                  /* set scroll line msb to zero */
+C51 COMPILER V9.01   U8X8_D_UC1610                                                         04/30/2021 10:55:33 PAGE 2   
+
+  51            U8X8_C(0x02b),                  /* set panelloading */
+  52            U8X8_C(0x0eb),                  /* set bias 1/2 */  
+  53            U8X8_CA(0x081, 0x05f),              /* set contrast */
+  54            
+  55            /*
+  56              AC0:  0: stop at boundary, 1: increment by one
+  57              AC1:  0: first column then page, 1: first page, then column increment
+  58              AC2:  0: increment page adr, 1: decrement page adr.
+  59            */
+  60            U8X8_C(0x08b),                  /* set auto increment, low bits are AC2 AC1 AC0 */
+  61            
+  62            /*
+  63              LC0:  0
+  64              MX: Mirror X
+  65              MY: Mirror Y
+  66            */  
+  67            U8X8_C(0x0c0),                  /* low bits are MY, MX, LC0 */
+  68            
+  69            U8X8_C(0x0f8),                  // window mode off
+  70            U8X8_C(0x010),                    // col high
+  71            U8X8_C(0x000),                    // col low
+  72            U8X8_C(0x0b0),                    // page
+  73            
+  74            U8X8_C(0x0a6),                  /* set normal pixel mode (not inverse) */
+  75            U8X8_C(0x0a4),                  /* set normal pixel mode (not all on) */
+  76          
+  77            /* test code 
+  78            U8X8_C(0x0af),                    // display on 
+  79            U8X8_C(0x0f8),                  // window mode off
+  80            U8X8_CA(0x0f4, 0),      // set window
+  81            U8X8_CA(0x0f5, 0),
+  82            U8X8_CA(0x0f6, 4),
+  83            U8X8_CA(0x0f7, 1),
+  84            U8X8_C(0x0f9),                  // window mode on
+  85            U8X8_D1(0x03),
+  86            U8X8_D1(0x0c0),
+  87            U8X8_D1(0x0ff),
+  88            U8X8_D1(0x0ff),
+  89            U8X8_D1(0x0ff),
+  90            U8X8_D1(0x0ff),
+  91            U8X8_D1(0x0ff),
+  92            U8X8_D1(0x0ff),
+  93            */
+  94            
+  95            U8X8_END_TRANSFER(),              /* disable chip */
+  96            U8X8_END()                  /* end of sequence */
+  97          };
+  98          
+  99          static const uint8_t u8x8_d_uc1610_dogxl160_powersave0_seq[] = {
+ 100            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 101            U8X8_C(0x0af),                    /* display on, UC1610 */
+ 102            U8X8_END_TRANSFER(),              /* disable chip */
+ 103            U8X8_END()                  /* end of sequence */
+ 104          };
+ 105          
+ 106          static const uint8_t u8x8_d_uc1610_dogxl160_powersave1_seq[] = {
+ 107            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 108            U8X8_C(0x0ae),                    /* display off,  UC1610 */
+ 109            U8X8_END_TRANSFER(),              /* disable chip */
+ 110            U8X8_END()                  /* end of sequence */
+ 111          };
+ 112          
+C51 COMPILER V9.01   U8X8_D_UC1610                                                         04/30/2021 10:55:33 PAGE 3   
+
+ 113          static const uint8_t u8x8_d_uc1610_dogxl160_flip0_seq[] = {
+ 114            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 115            /*
+ 116              LC0:  0
+ 117              MX: Mirror X
+ 118              MY: Mirror Y
+ 119            */  
+ 120            U8X8_C(0x0c0),                  /* low bits are MY, MX, LC0 */
+ 121            U8X8_END_TRANSFER(),              /* disable chip */
+ 122            U8X8_END()                  /* end of sequence */
+ 123          };
+ 124          
+ 125          static const uint8_t u8x8_d_uc1610_dogxl160_flip1_seq[] = {
+ 126            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 127            /*
+ 128              LC0:  0
+ 129              MX: Mirror X
+ 130              MY: Mirror Y
+ 131            */  
+ 132            U8X8_C(0x0c6),                  /* low bits are MY, MX, LC0 */
+ 133            U8X8_END_TRANSFER(),              /* disable chip */
+ 134            U8X8_END()                  /* end of sequence */
+ 135          };
+ 136          
+ 137          
+ 138          /* 
+ 139            UC1610 has two chip select inputs (CS0 and CS1).
+ 140            CS0 is low active, CS1 is high active. It will depend on the display
+ 141            module whether the display has a is low or high active chip select.
+ 142          */
+ 143          
+ 144          static const u8x8_display_info_t u8x8_uc1610_display_info =
+ 145          {
+ 146            /* chip_enable_level = */ 0,
+ 147            /* chip_disable_level = */ 1,
+ 148            
+ 149            /* post_chip_enable_wait_ns = */ 15,
+ 150            /* pre_chip_disable_wait_ns = */ 15,
+ 151            /* reset_pulse_width_ms = */ 1, 
+ 152            /* post_reset_wait_ms = */ 6, 
+ 153            /* sda_setup_time_ns = */ 30, 
+ 154            /* sck_pulse_width_ns = */ 63,  /* half of cycle time (125ns cycle time according to datasheet) --> 8MHz 
+             -clock */
+ 155            /* sck_clock_hz = */ 8000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 156            /* spi_mode = */ 0,   /* active high, rising edge */
+ 157            /* i2c_bus_clock_100kHz = */ 4,
+ 158            /* data_setup_time_ns = */ 30,
+ 159            /* write_pulse_width_ns = */ 40,
+ 160            /* tile_width = */ 20,    
+ 161            /* tile_hight = */ 13,    /* height of 13*8=104 pixel */
+ 162            /* default_x_offset = */ 0,
+ 163            /* flipmode_x_offset = */ 0,
+ 164            /* pixel_width = */ 160,
+ 165            /* pixel_height = */ 104
+ 166          };
+ 167          
+ 168          
+ 169          /*
+ 170            RAM Organization:
+ 171            D0  Pix0
+ 172            D1
+C51 COMPILER V9.01   U8X8_D_UC1610                                                         04/30/2021 10:55:33 PAGE 4   
+
+ 173            D2  Pix1
+ 174            D3
+ 175            D4  Pix2
+ 176            D5
+ 177            D6  Pix3
+ 178            D7    
+ 179            D0  Pix4
+ 180            D1
+ 181            D2  Pix5
+ 182            D3
+ 183            D4  Pix6
+ 184            D5
+ 185            D6  Pix7
+ 186            D7    
+ 187          
+ 188          
+ 189          */
+ 190          static uint8_t *u8x8_convert_tile_for_uc1610(uint8_t *t)
+ 191          {
+ 192   1        uint8_t i;
+ 193   1        uint16_t r;
+ 194   1        static uint8_t buf[16];
+ 195   1        uint8_t *pbuf = buf;
+ 196   1      
+ 197   1        for( i = 0; i < 8; i++ )
+ 198   1        {
+ 199   2          r = u8x8_upscale_byte(*t++);
+ 200   2          *pbuf++ = r & 255;
+ 201   2          r >>= 8;
+ 202   2          *pbuf++ = r;
+ 203   2        }
+ 204   1        return buf;
+ 205   1      }
+ 206          
+ 207          uint8_t u8x8_d_uc1610_ea_dogxl160(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 208          {
+ 209   1        uint8_t x, c, page;
+ 210   1        uint8_t *ptr;
+ 211   1        switch(msg)
+ 212   1        {
+ 213   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 214   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_uc1610_display_info);
+ 215   2            break;
+ 216   2          case U8X8_MSG_DISPLAY_INIT:
+ 217   2            u8x8_d_helper_display_init(u8x8);
+ 218   2            u8x8_cad_SendSequence(u8x8, u8x8_d_uc1610_dogxl160_init_seq);
+*** ERROR C208 IN LINE 218 OF ..\U8G2\CSRC\U8X8_D_UC1610.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 219   2            break;
+ 220   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 221   2            if ( arg_int == 0 )
+ 222   2        u8x8_cad_SendSequence(u8x8, u8x8_d_uc1610_dogxl160_powersave0_seq);
+*** ERROR C208 IN LINE 222 OF ..\U8G2\CSRC\U8X8_D_UC1610.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 223   2            else
+ 224   2        u8x8_cad_SendSequence(u8x8, u8x8_d_uc1610_dogxl160_powersave1_seq);
+*** ERROR C208 IN LINE 224 OF ..\U8G2\CSRC\U8X8_D_UC1610.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 225   2            break;
+ 226   2          case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 227   2            if ( arg_int == 0 )
+ 228   2            {
+ 229   3        u8x8_cad_SendSequence(u8x8, u8x8_d_uc1610_dogxl160_flip0_seq);
+*** ERROR C208 IN LINE 229 OF ..\U8G2\CSRC\U8X8_D_UC1610.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 230   3        u8x8->x_offset = u8x8->display_info->default_x_offset;
+C51 COMPILER V9.01   U8X8_D_UC1610                                                         04/30/2021 10:55:33 PAGE 5   
+
+ 231   3            }
+ 232   2            else
+ 233   2            {
+ 234   3        u8x8_cad_SendSequence(u8x8, u8x8_d_uc1610_dogxl160_flip1_seq);
+*** ERROR C208 IN LINE 234 OF ..\U8G2\CSRC\U8X8_D_UC1610.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 235   3        u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 236   3            } 
+ 237   2            break;
+ 238   2      #ifdef U8X8_WITH_SET_CONTRAST
+ 239   2          case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 240   2            u8x8_cad_StartTransfer(u8x8);
+ 241   2            u8x8_cad_SendCmd(u8x8, 0x081 );
+ 242   2            u8x8_cad_SendArg(u8x8, arg_int  );  /* uc1610 has range from 0 to 255 */
+ 243   2            u8x8_cad_EndTransfer(u8x8);
+ 244   2            break;
+ 245   2      #endif
+ 246   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 247   2            u8x8_cad_StartTransfer(u8x8);
+ 248   2      
+ 249   2            x = ((u8x8_tile_t *)arg_ptr)->x_pos;
+ 250   2            x *= 8;
+ 251   2            x += u8x8->x_offset;
+ 252   2          
+ 253   2            page = (((u8x8_tile_t *)arg_ptr)->y_pos);
+ 254   2            page *= 2;
+ 255   2      
+ 256   2            u8x8_cad_SendCmd(u8x8, 0x0f8 ); /* window disable */
+ 257   2            
+ 258   2            //u8x8_cad_SendCmd(u8x8, 0x010 | (x>>4) );
+ 259   2            //u8x8_cad_SendCmd(u8x8, 0x000 | ((x&15)));
+ 260   2            //u8x8_cad_SendCmd(u8x8, 0x0b0 | page);
+ 261   2      
+ 262   2            u8x8_cad_SendCmd(u8x8, 0x0f4 ); /* window start column */
+ 263   2            u8x8_cad_SendArg(u8x8, x);
+ 264   2            u8x8_cad_SendCmd(u8x8, 0x0f5 ); /* window start page */
+ 265   2            u8x8_cad_SendArg(u8x8, page);
+ 266   2            u8x8_cad_SendCmd(u8x8, 0x0f6 ); /* window end column */
+ 267   2            u8x8_cad_SendArg(u8x8, 159);    /* end of display */
+ 268   2            u8x8_cad_SendCmd(u8x8, 0x0f7 ); /* window end page */
+ 269   2            u8x8_cad_SendArg(u8x8, page+1);
+ 270   2            u8x8_cad_SendCmd(u8x8, 0x0f9 ); /* window enable */
+ 271   2          
+ 272   2            do
+ 273   2            {
+ 274   3        c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 275   3        ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 276   3        
+ 277   3        
+ 278   3        do
+ 279   3        {
+ 280   4          
+ 281   4          
+ 282   4          
+ 283   4          u8x8_cad_SendData(u8x8, 16, u8x8_convert_tile_for_uc1610(ptr));
+*** ERROR C208 IN LINE 283 OF ..\U8G2\CSRC\U8X8_D_UC1610.C: '_u8x8_cad_SendData': too many actual parameters
+ 284   4      
+ 285   4          
+ 286   4          ptr += 8;
+ 287   4          x += 8;
+ 288   4          c--;
+ 289   4        } while( c > 0 );
+ 290   3        
+C51 COMPILER V9.01   U8X8_D_UC1610                                                         04/30/2021 10:55:33 PAGE 6   
+
+ 291   3        arg_int--;
+ 292   3            } while( arg_int > 0 );
+ 293   2            
+ 294   2            u8x8_cad_EndTransfer(u8x8);
+ 295   2      
+ 296   2          
+ 297   2            break;
+ 298   2          default:
+ 299   2            return 0;
+ 300   2        }
+ 301   1        return 1;
+ 302   1      }
+ 303          
+ 304          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  9 ERROR(S)

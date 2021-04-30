@@ -1,0 +1,270 @@
+C51 COMPILER V9.01   U8X8_D_ST7920                                                         04/30/2021 10:55:31 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_ST7920
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_st7920.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_st7920.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BRO
+                    -WSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PR
+                    -INT(.\Listings\u8x8_d_st7920.lst) TABS(2) OBJECT(.\Objects\u8x8_d_st7920.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_st7920.c
+   4            
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          
+  35            The ST7920 controller does not support hardware graphics flip.
+  36            Contrast adjustment is done by an external resistor --> no support for contrast adjustment
+  37            
+  38            
+  39          */
+  40          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  41          
+  42          
+  43          
+  44          static const uint8_t u8x8_d_st7920_init_seq[] = {
+  45              
+  46            U8X8_DLY(100),
+  47            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  48            U8X8_DLY(10),
+  49            
+  50            U8X8_C(0x038),                  /* 8 Bit interface (DL=1), basic instruction set (RE=0) */
+C51 COMPILER V9.01   U8X8_D_ST7920                                                         04/30/2021 10:55:31 PAGE 2   
+
+  51            U8X8_C(0x008),                    /* display on, cursor & blink off; 0x08: all off */
+  52            U8X8_C(0x006),                    /* Entry mode: Cursor move to right ,DDRAM address counter (AC) plus 1, 
+             -no shift  */  
+  53            U8X8_C(0x002),                    /* disable scroll, enable CGRAM adress  */
+  54            U8X8_C(0x001),                    /* clear RAM, needs 1.6 ms */
+  55            U8X8_DLY(4),          /* delay 2ms */
+  56          
+  57            
+  58            U8X8_END_TRANSFER(),              /* disable chip */
+  59            U8X8_END()                  /* end of sequence */
+  60          };
+  61          
+  62          static const uint8_t u8x8_d_st7920_powersave0_seq[] = {
+  63            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  64            U8X8_C(0x038),                  /* 8 Bit interface (DL=1), basic instruction set (RE=0) */
+  65            U8X8_C(0x00c),                    /* display on, cursor & blink off */
+  66            U8X8_END_TRANSFER(),              /* disable chip */
+  67            U8X8_END()                  /* end of sequence */
+  68          };
+  69          
+  70          static const uint8_t u8x8_d_st7920_powersave1_seq[] = {
+  71            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  72            U8X8_C(0x038),                  /* 8 Bit interface (DL=1), basic instruction set (RE=0) */
+  73            U8X8_C(0x008),                    /* display off */
+  74            U8X8_C(0x034), /* 8 Bit interface (DL=1), extended instruction set (RE=1) */
+  75            U8X8_C(0x001), /* Standby mode */
+  76              
+  77            U8X8_END_TRANSFER(),              /* disable chip */
+  78            U8X8_END()                  /* end of sequence */
+  79          };
+  80          
+  81          
+  82          uint8_t u8x8_d_st7920_common(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+  83          {
+  84   1        uint8_t x, y, c, i;
+  85   1        uint8_t *ptr;
+  86   1        switch(msg)
+  87   1        {
+  88   2          /* U8X8_MSG_DISPLAY_SETUP_MEMORY is handled by the calling function */
+  89   2          /*
+  90   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+  91   2            break;
+  92   2          */
+  93   2          case U8X8_MSG_DISPLAY_INIT:
+  94   2            u8x8_d_helper_display_init(u8x8);
+  95   2            u8x8_cad_SendSequence(u8x8, u8x8_d_st7920_init_seq);
+*** ERROR C208 IN LINE 95 OF ..\U8G2\CSRC\U8X8_D_ST7920.C: '_u8x8_cad_SendSequence': too many actual parameters
+  96   2            break;
+  97   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+  98   2            if ( arg_int == 0 )
+  99   2        u8x8_cad_SendSequence(u8x8, u8x8_d_st7920_powersave0_seq);
+*** ERROR C208 IN LINE 99 OF ..\U8G2\CSRC\U8X8_D_ST7920.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 100   2            else
+ 101   2        u8x8_cad_SendSequence(u8x8, u8x8_d_st7920_powersave1_seq);
+*** ERROR C208 IN LINE 101 OF ..\U8G2\CSRC\U8X8_D_ST7920.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 102   2            break;
+ 103   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 104   2            y = (((u8x8_tile_t *)arg_ptr)->y_pos);
+ 105   2            y*=8;
+ 106   2            x = ((u8x8_tile_t *)arg_ptr)->x_pos;
+ 107   2            x /= 2;   /* not sure whether this is a clever idea, problem is, the ST7920 can address only every se
+             -cond tile */
+C51 COMPILER V9.01   U8X8_D_ST7920                                                         04/30/2021 10:55:31 PAGE 3   
+
+ 108   2          
+ 109   2            if ( y >= 32 )  /* this is the adjustment for 128x64 displays */
+ 110   2            {
+ 111   3        y-=32;
+ 112   3        x+=8;
+ 113   3            }
+ 114   2          
+ 115   2            u8x8_cad_StartTransfer(u8x8);
+ 116   2              
+ 117   2      
+ 118   2            /* 
+ 119   2        Tile structure is reused here for the ST7920, however u8x8 is not supported 
+ 120   2        tile_ptr points to data which has cnt*8 bytes (same as SSD1306 tiles)
+ 121   2        Buffer is expected to have 8 lines of code fitting to the ST7920 internal memory
+ 122   2        "cnt" includes the number of horizontal bytes. width is equal to cnt*8
+ 123   2        Also important: Width must be a multiple of 16 (ST7920 requirement), so cnt must be even.
+ 124   2        
+ 125   2        TODO: Consider arg_int, however arg_int is not used by u8g2
+ 126   2            */
+ 127   2            c = ((u8x8_tile_t *)arg_ptr)->cnt;  /* number of tiles */
+ 128   2            ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr; /* data ptr to the tiles */
+ 129   2            /* The following byte is sent to allow the ST7920 to sync up with the data */
+ 130   2            /* it solves some issues with garbage data */
+ 131   2            u8x8_cad_SendCmd(u8x8, 0x03e ); /* enable extended mode */
+ 132   2            u8x8_cad_SendCmd(u8x8, 0x03e ); /* enable extended mode, issue 487 */
+ 133   2            for( i = 0; i < 8; i++ )
+ 134   2            {
+ 135   3        //u8x8_cad_SendCmd(u8x8, 0x03e ); /* enable extended mode */
+ 136   3        u8x8_cad_SendCmd(u8x8, 0x080 | (y+i) );      /* y pos  */
+ 137   3        u8x8_cad_SendCmd(u8x8, 0x080 | x );      /* set x pos */
+ 138   3        c = ((u8x8_tile_t *)arg_ptr)->cnt;  /* number of tiles */
+ 139   3      
+ 140   3        //u8x8->gpio_and_delay_cb(u8x8, U8X8_MSG_DELAY_NANO, 200, NULL);  /* extra dely required */
+ 141   3        u8x8_cad_SendData(u8x8, c, ptr);  /* note: SendData can not handle more than 255 bytes, send one line of d
+             -ata */
+*** ERROR C208 IN LINE 141 OF ..\U8G2\CSRC\U8X8_D_ST7920.C: '_u8x8_cad_SendData': too many actual parameters
+ 142   3        ptr += c;
+ 143   3        //u8x8->gpio_and_delay_cb(u8x8, U8X8_MSG_DELAY_NANO, 200, NULL);  /* extra dely required */
+ 144   3            }
+ 145   2      
+ 146   2            u8x8_cad_EndTransfer(u8x8);
+ 147   2      
+ 148   2            break;
+ 149   2          default:
+ 150   2            return 0;
+ 151   2        }
+ 152   1        return 1;
+ 153   1      }
+ 154          
+ 155          static const u8x8_display_info_t u8x8_st7920_192x32_display_info =
+ 156          {
+ 157            /* chip_enable_level = */ 1,
+ 158            /* chip_disable_level = */ 0,
+ 159            
+ 160            /* post_chip_enable_wait_ns = */ 5,
+ 161            /* pre_chip_disable_wait_ns = */ 5,
+ 162            /* reset_pulse_width_ms = */ 1, 
+ 163            /* post_reset_wait_ms = */ 6, 
+ 164            /* sda_setup_time_ns = */ 20,   
+ 165            /* sck_pulse_width_ns = */  140,  /* datasheet ST7920 */
+ 166            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+C51 COMPILER V9.01   U8X8_D_ST7920                                                         04/30/2021 10:55:31 PAGE 4   
+
+ 167            /* spi_mode = */ 3,   /* old: sck_takeover_edge, new: active high (bit 1), rising edge (bit 0), 18 Aug 16
+             -: changed from 1 to 3 which works for 101 */
+ 168            /* Arduino mode 3: aktive low clock, but use rising edge */
+ 169            /* i2c_bus_clock_100kHz = */ 4,
+ 170            /* data_setup_time_ns = */ 30,
+ 171            /* write_pulse_width_ns = */ 40,
+ 172            /* tile_width = */ 24,
+ 173            /* tile_hight = */ 4,
+ 174            /* default_x_offset = */ 0,
+ 175            /* flipmode_x_offset = */ 0,
+ 176            /* pixel_width = */ 192,
+ 177            /* pixel_height = */ 32
+ 178          };
+ 179          
+ 180          static const u8x8_display_info_t u8x8_st7920_128x64_display_info =
+ 181          {
+ 182            /* chip_enable_level = */ 1,
+ 183            /* chip_disable_level = */ 0,
+ 184            
+ 185            /* post_chip_enable_wait_ns = */ 5,
+ 186            /* pre_chip_disable_wait_ns = */ 5,
+ 187            /* reset_pulse_width_ms = */ 1, 
+ 188            /* post_reset_wait_ms = */ 6, 
+ 189            /* sda_setup_time_ns = */ 20,   
+ 190            /* sck_pulse_width_ns = */  140,  /* datasheet ST7920 */
+ 191            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 192            /* ST7920+Due work with 1MHz but not with 2MHz, ST7920+Uno works with 2MHz */
+ 193            /* spi_mode = */ 3,   /* active high, rising edge, 18 Aug 16: changed from 1 to 3 which works for 101  */
+ 194            /* in theory mode 3 should be correct  */
+ 195            /* i2c_bus_clock_100kHz = */ 4,
+ 196            /* data_setup_time_ns = */ 30,
+ 197            /* write_pulse_width_ns = */ 40,
+ 198            /* tile_width = */ 16,
+ 199            /* tile_hight = */ 8,
+ 200            /* default_x_offset = */ 0,
+ 201            /* flipmode_x_offset = */ 0,
+ 202            /* pixel_width = */ 128,
+ 203            /* pixel_height = */ 64
+ 204          };
+ 205          
+ 206          uint8_t u8x8_d_st7920_192x32(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 207          {
+ 208   1        switch(msg)
+ 209   1        {
+ 210   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 211   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7920_192x32_display_info);
+ 212   2            break;
+ 213   2          default:
+ 214   2            return u8x8_d_st7920_common(u8x8, msg, arg_int, arg_ptr);
+ 215   2        }
+ 216   1        return 1;
+ 217   1      }
+ 218          
+ 219          uint8_t u8x8_d_st7920_128x64(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 220          {
+ 221   1        switch(msg)
+ 222   1        {
+ 223   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 224   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7920_128x64_display_info);
+ 225   2            break;
+ 226   2          default:
+C51 COMPILER V9.01   U8X8_D_ST7920                                                         04/30/2021 10:55:31 PAGE 5   
+
+ 227   2            return u8x8_d_st7920_common(u8x8, msg, arg_int, arg_ptr);
+ 228   2        }
+ 229   1        return 1;
+ 230   1      }
+ 231          
+ 232          
+ 233          
+ 234            
+ 235          
+ 236            
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  7 ERROR(S)

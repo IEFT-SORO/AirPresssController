@@ -1,0 +1,605 @@
+C51 COMPILER V9.01   U8X8_D_IL3820_296X128                                                 04/30/2021 10:55:23 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_IL3820_296X128
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_il3820_296x128.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_il3820_296x128.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SP
+                    -EED) BROWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTE
+                    -XTEND PRINT(.\Listings\u8x8_d_il3820_296x128.lst) TABS(2) OBJECT(.\Objects\u8x8_d_il3820_296x128.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_il3820_296x128.c
+   4          
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2017, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33            
+  34            il3820: 200x300x1
+  35            
+  36            command 
+  37              0x22: assign actions
+  38              0x20: execute actions
+  39            
+  40            action for command 0x022 are (more or less guessed)
+  41              bit 7:  Enable Clock
+  42              bit 6:  Enable Charge Pump
+  43              bit 5:  Load Temparture Value (???)
+  44              bit 4:  Load LUT (???)
+  45              bit 3:  Initial Display (???)
+  46              bit 2:  Pattern Display --> Requires about 945ms with the LUT from below
+  47              bit 1:  Disable Charge Pump
+  48              bit 0:  Disable Clock
+  49              
+  50              Disable Charge Pump and Clock require about 10ms
+  51              Enable Charge Pump and Clock require about 100 to 300ms
+  52          
+  53            Notes:
+C51 COMPILER V9.01   U8X8_D_IL3820_296X128                                                 04/30/2021 10:55:23 PAGE 2   
+
+  54              - Introduced a refresh display message, which copies RAM to display
+  55              - Charge pump is always enabled. Charge pump can be enabled/disabled via power save message
+  56              - U8x8 will not really work because of the two buffers in the SSD1606, however U8g2 should be ok.
+  57          
+  58            LUT for the 296x128 device (IL3820)
+  59            LUT (cmd: 0x032 has 30 bytes)
+  60            section 6.8 of the datasheet mentions 256 bits = 32 bytes for the LUT
+  61            chapter 7 tells 30 bytes
+  62          
+  63            according to section 6.8:
+  64            20 bytes waveform
+  65            10 bytes timing
+  66            1 byte named as VSH/VSL
+  67            1 empty byte
+  68            according to the command table, the lut has 240 bits (=30 bytes * 8 bits)
+  69          
+  70          
+  71            LUT / Refresh time
+  72              total_refresh_time = (refresh_lines + dummy_lines*2)*TGate*TS_Sum/f_OSC
+  73          
+  74              f_OSC=1MHz (according to the datasheets)
+  75              refreh_lines = 296 (for the waveshare display, 0x045 cmd)
+  76              dummy_lines = 22 (for the upcoming u8g2 code, 0x03a cmd)
+  77              TGate = 62 (POR default, 0x03b cmd)
+  78              TS_Sum: Sum of all TS entries of the second part of the LUT
+  79              f_OSC: 1MHz according to the datasheet.
+  80          
+  81              so we have
+  82          
+  83              total_refresh_time = 21080*TS_Sum/1000000 = 21ms * TS_Sum
+  84          
+  85          
+  86            This file includes two devices:
+  87              u8x8_d_il3820_296x128   --> includes LUT which is probably from the WaveShare 2.9 Vendor
+  88              u8x8_d_il3820_v2_296x128    --> includes LUT which was optimized for faster speed and lesser flicker
+  89          
+  90          */
+  91            
+  92          /* Waveform part of the LUT (20 bytes) */
+  93          /* bit 7/6: 1 - 1 transition */
+  94          /* bit 5/4: 1 - 0 transition */
+  95          /* bit 3/2: 0 - 1 transition */
+  96          /* bit 1/0: 0 - 0 transition */
+  97          /*  00 – VSS */
+  98          /*  01 – VSH */
+  99          /*  10 – VSL */
+ 100          /*  11 – NA */
+ 101            
+ 102          
+ 103          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+ 104          
+ 105          /*=================================================*/
+ 106          /* common code for all devices */
+ 107          
+ 108          
+ 109          static const uint8_t u8x8_d_il3820_296x128_powersave0_seq[] = {
+ 110            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 111            U8X8_CA(0x22, 0xc0),      /* enable clock and charge pump */
+ 112            U8X8_C(0x20),       /* execute sequence */  
+C51 COMPILER V9.01   U8X8_D_IL3820_296X128                                                 04/30/2021 10:55:23 PAGE 3   
+
+ 113            U8X8_DLY(200),        /* according to my measures it may take up to 150ms */
+ 114            U8X8_DLY(100),        /* but it might take longer */
+ 115            U8X8_END_TRANSFER(),              /* disable chip */
+ 116            U8X8_END()                  /* end of sequence */
+ 117          };
+ 118          
+ 119          static const uint8_t u8x8_d_il3820_296x128_powersave1_seq[] = {
+ 120            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */  
+ 121            /* disable clock and charge pump only, deep sleep is not entered, because we will loose RAM content */
+ 122            U8X8_CA(0x22, 0x02),      /* only disable charge pump, HW reset seems to be required if the clock is disabl
+             -ed */
+ 123            U8X8_C(0x20),       /* execute sequence */  
+ 124            U8X8_DLY(20),
+ 125            U8X8_END_TRANSFER(),              /* disable chip */
+ 126            U8X8_END()                  /* end of sequence */
+ 127          };
+ 128          
+ 129          // static const uint8_t u8x8_d_il3820_296x128_flip0_seq[] = {
+ 130          //   U8X8_START_TRANSFER(),               /* enable chip, delay is part of the transfer start */
+ 131          //   U8X8_END_TRANSFER(),               /* disable chip */
+ 132          //   U8X8_END()                   /* end of sequence */
+ 133          // };
+ 134          
+ 135          // static const uint8_t u8x8_d_il3820_296x128_flip1_seq[] = {
+ 136          //   U8X8_START_TRANSFER(),               /* enable chip, delay is part of the transfer start */
+ 137          //   U8X8_END_TRANSFER(),               /* disable chip */
+ 138          //   U8X8_END()                   /* end of sequence */
+ 139          // };
+ 140          
+ 141          
+ 142          static const u8x8_display_info_t u8x8_il3820_296x128_display_info =
+ 143          {
+ 144            /* chip_enable_level = */ 0,
+ 145            /* chip_disable_level = */ 1,
+ 146            
+ 147            /* post_chip_enable_wait_ns = */ 120,
+ 148            /* pre_chip_disable_wait_ns = */ 60,
+ 149            /* reset_pulse_width_ms = */ 100,   
+ 150            /* post_reset_wait_ms = */ 100, 
+ 151            /* sda_setup_time_ns = */ 50,   /* IL3820 */
+ 152            /* sck_pulse_width_ns = */ 125, /* IL3820: 125ns, clock cycle = 250ns */
+ 153            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 154            /* spi_mode = */ 0,   /* active high, rising edge */
+ 155            /* i2c_bus_clock_100kHz = */ 4,
+ 156            /* data_setup_time_ns = */ 40,
+ 157            /* write_pulse_width_ns = */ 150, 
+ 158            /* tile_width = */ 37,    /* 37*8 = 296 */
+ 159            /* tile_hight = */ 16,    /* 16*8 = 128 */  
+ 160            /* default_x_offset = */ 0,
+ 161            /* flipmode_x_offset = */ 0,
+ 162            /* pixel_width = */ 296,
+ 163            /* pixel_height = */ 128
+ 164          };
+ 165          
+ 166          
+ 167          static uint8_t *u8x8_convert_tile_for_il3820(uint8_t *t)
+ 168          {
+ 169   1        uint8_t i;
+ 170   1        static uint8_t buf[8];
+ 171   1        uint8_t *pbuf = buf;
+ 172   1      
+C51 COMPILER V9.01   U8X8_D_IL3820_296X128                                                 04/30/2021 10:55:23 PAGE 4   
+
+ 173   1        for( i = 0; i < 8; i++ )
+ 174   1        {
+ 175   2          *pbuf++ = ~(*t++);
+ 176   2        }
+ 177   1        return buf;
+ 178   1      }
+ 179          
+ 180          static void u8x8_d_il3820_draw_tile(u8x8_t *u8x8, uint8_t arg_int, void *arg_ptr) U8X8_NOINLINE;
+ 181          static void u8x8_d_il3820_draw_tile(u8x8_t *u8x8, uint8_t arg_int, void *arg_ptr)
+ 182          {
+ 183   1        uint16_t x;
+ 184   1        uint8_t c, page;
+ 185   1        uint8_t *ptr;
+ 186   1        u8x8_cad_StartTransfer(u8x8);
+ 187   1      
+ 188   1        page = u8x8->display_info->tile_height;
+ 189   1        page --;
+ 190   1        page -= (((u8x8_tile_t *)arg_ptr)->y_pos);
+ 191   1        
+ 192   1        x = ((u8x8_tile_t *)arg_ptr)->x_pos;
+ 193   1        x *= 8;
+ 194   1        x += u8x8->x_offset;
+ 195   1      
+ 196   1        //u8x8_cad_SendCmd(u8x8, 0x011 ); /* cursor increment mode */
+ 197   1        //u8x8_cad_SendArg(u8x8, 7);
+ 198   1      
+ 199   1        u8x8_cad_SendCmd(u8x8, 0x04f ); /* set cursor column */
+ 200   1        u8x8_cad_SendArg(u8x8, x&255);
+ 201   1        u8x8_cad_SendArg(u8x8, x>>8);
+ 202   1      
+ 203   1        u8x8_cad_SendCmd(u8x8, 0x04e ); /* set cursor row */
+ 204   1        u8x8_cad_SendArg(u8x8, page);
+ 205   1      
+ 206   1        u8x8_cad_SendCmd(u8x8, 0x024 );
+ 207   1        
+ 208   1        do
+ 209   1        {
+ 210   2          c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 211   2          ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 212   2          do
+ 213   2          {
+ 214   3            u8x8_cad_SendData(u8x8, 8, u8x8_convert_tile_for_il3820(ptr));
+*** ERROR C208 IN LINE 214 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendData': too many actual parameters
+ 215   3            ptr += 8;
+ 216   3            x += 8;
+ 217   3            c--;
+ 218   3          } while( c > 0 );
+ 219   2          
+ 220   2          arg_int--;
+ 221   2        } while( arg_int > 0 );
+ 222   1        
+ 223   1        u8x8_cad_EndTransfer(u8x8);
+ 224   1      }
+ 225          
+ 226          
+ 227          
+ 228          static const uint8_t u8x8_d_il3820_exec_1000dly_seq[] = {
+ 229            // assumes, that the start transfer has happend
+ 230            U8X8_CA(0x22, 0x04),  /* display update seq. option: pattern display */
+ 231            U8X8_C(0x20), /* execute sequence */
+ 232            U8X8_DLY(250),
+ 233            U8X8_DLY(250),
+C51 COMPILER V9.01   U8X8_D_IL3820_296X128                                                 04/30/2021 10:55:23 PAGE 5   
+
+ 234            U8X8_DLY(250),
+ 235            U8X8_DLY(250),
+ 236            U8X8_END_TRANSFER(),              /* disable chip */
+ 237            U8X8_END()                  /* end of sequence */
+ 238          };
+ 239          
+ 240          static void u8x8_d_il3820_first_init(u8x8_t *u8x8)
+ 241          {
+ 242   1            u8x8_ClearDisplay(u8x8);
+ 243   1        
+ 244   1            u8x8_cad_StartTransfer(u8x8);
+ 245   1            u8x8_cad_SendCmd(u8x8, 0x032);    // program update sequence
+ 246   1            u8x8_cad_SendMultipleArg(u8x8, 8, 0x055);   // all black
+ 247   1            u8x8_cad_SendMultipleArg(u8x8, 12, 0x0aa);    // all white
+ 248   1            u8x8_cad_SendMultipleArg(u8x8, 10, 0x022);    // 830ms
+ 249   1            u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_exec_1000dly_seq);
+*** ERROR C208 IN LINE 249 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 250   1        
+ 251   1      }
+ 252          
+ 253          #ifdef OBSOLETE
+              static void u8x8_d_il3820_second_init(u8x8_t *u8x8)
+              {
+                    u8x8_ClearDisplay(u8x8);
+                
+                    u8x8_cad_StartTransfer(u8x8);
+                    u8x8_cad_SendCmd(u8x8, 0x032);    // program update sequence
+                    u8x8_cad_SendMultipleArg(u8x8, 20, 0x000);    // do nothing
+                    u8x8_cad_SendMultipleArg(u8x8, 10, 0x011);    // 414ms dly
+                    /* reuse sequence from above, ok some time is wasted here, */
+                    /* delay could be lesser */
+                    u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_exec_1000dly_seq);  
+              }
+              #endif
+ 267          
+ 268          
+ 269          /*=================================================*/
+ 270          /* first version, LUT from WaveShare */
+ 271          
+ 272          
+ 273          /* http://www.waveshare.com/wiki/File:2.9inch_e-Paper_Module_code.7z */
+ 274          static const uint8_t u8x8_d_il3820_296x128_init_seq[] = {
+ 275              
+ 276            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 277          
+ 278            U8X8_CA(0x10, 0x00),  /* Deep Sleep mode Control: Disable */
+ 279            U8X8_C(0x01),
+ 280            U8X8_A(295 % 256), U8X8_A(295/256), U8X8_A(0),
+ 281            
+ 282            
+ 283            U8X8_CA(0x03, 0x00),  /* Gate Driving voltage: 15V (lowest value)*/
+ 284            U8X8_CA(0x04, 0x0a),  /* Source Driving voltage: 15V (mid value and POR)*/
+ 285            
+ 286            //U8X8_CA(0x22, 0xc0),  /* display update seq. option: enable clk, enable CP, .... todo: this is never ac
+             -tivated */
+ 287          
+ 288            //U8X8_CA(0x0b, 7), /* Set Delay of gate and source non overlap period, POR = 7 */
+ 289            U8X8_CA(0x2c, 0xa8),  /* write vcom value*/
+ 290            U8X8_CA(0x3a, 0x16),  /* dummy lines POR=22 (0x016) */
+ 291            U8X8_CA(0x3b, 0x08),  /* gate time POR=0x08*/
+ 292            U8X8_CA(0x3c, 0x33),  /* select boarder waveform */
+ 293            //U8X8_CA(0x22, 0xc4),  /* display update seq. option: clk -> CP -> LUT -> initial display -> pattern dis
+C51 COMPILER V9.01   U8X8_D_IL3820_296X128                                                 04/30/2021 10:55:23 PAGE 6   
+
+             -play */
+ 294          
+ 295          
+ 296            U8X8_CA(0x11, 0x07),  /* Define data entry mode, x&y inc, x first*/
+ 297          
+ 298            U8X8_CAA(0x44, 0, 29),  /* RAM x start & end, issue 920: end should be (128/8)-1=15. */
+ 299            U8X8_CAAAA(0x45, 0, 0, 295&255, 295>>8),  /* RAM y start & end */
+ 300            
+ 301            //U8X8_CA(0x4e, 0), /* set x pos, 0..29? */
+ 302            //U8X8_CAA(0x4f, 0, 0), /* set y pos, 0...320??? */
+ 303          
+ 304          
+ 305            U8X8_END_TRANSFER(),              /* disable chip */
+ 306            U8X8_END()                  /* end of sequence */
+ 307          };
+ 308          
+ 309          
+ 310          static const uint8_t u8x8_d_il3820_to_display_seq[] = {
+ 311            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 312          /*
+ 313          0x50, 0xAA, 0x55, 0xAA, 0x11,   0x00, 0x00, 0x00, 0x00, 0x00, 
+ 314          0x00, 0x00, 0x00, 0x00, 0x00,   0x00, 0x00, 0x00, 0x00, 0x00, 
+ 315          0xFF, 0xFF, 0x1F, 0x00, 0x00,     0x00, 0x00, 0x00, 0x00, 0x00
+ 316          measured 1582 ms
+ 317          */
+ 318            U8X8_C(0x32), /* write LUT register*/
+ 319            /* original values */
+ 320            U8X8_A(0x50),
+ 321            U8X8_A(0xaa),
+ 322            U8X8_A(0x55),
+ 323            U8X8_A(0xaa),  
+ 324            U8X8_A(0x11),
+ 325            
+ 326            U8X8_A(0x11),
+ 327            U8X8_A(0x00),
+ 328            U8X8_A(0x00),
+ 329            U8X8_A(0x00),  
+ 330            U8X8_A(0x00),
+ 331            
+ 332            U8X8_A(0x00),
+ 333            U8X8_A(0x00),
+ 334            U8X8_A(0x00),
+ 335            U8X8_A(0x00),
+ 336            U8X8_A(0x00),
+ 337            
+ 338            U8X8_A(0x00),
+ 339            U8X8_A(0x00),
+ 340            U8X8_A(0x00),
+ 341            U8X8_A(0x00),
+ 342            U8X8_A(0x00),
+ 343            
+ 344            /* Timing part of the LUT, 20 Phases with 4 bit each: 10 bytes */
+ 345            U8X8_A(0xff),
+ 346            U8X8_A(0xff),
+ 347            U8X8_A(0x3f),
+ 348            U8X8_A(0x00),
+ 349            U8X8_A(0x00),
+ 350            U8X8_A(0x00),
+ 351            U8X8_A(0x00),
+ 352            U8X8_A(0x00),
+ 353            U8X8_A(0x00),
+ 354            U8X8_A(0x00),
+C51 COMPILER V9.01   U8X8_D_IL3820_296X128                                                 04/30/2021 10:55:23 PAGE 7   
+
+ 355          
+ 356            U8X8_CA(0x22, 0x04),  /* display update seq. option: pattern display, assumes clk and charge pump are ena
+             -bled  */
+ 357            U8X8_C(0x20), /* execute sequence */
+ 358            
+ 359            U8X8_DLY(250),  /* delay for 1620ms. The current sequence takes 1582ms */
+ 360            U8X8_DLY(250),
+ 361            U8X8_DLY(250),
+ 362            U8X8_DLY(250),
+ 363            
+ 364            U8X8_DLY(250),
+ 365            U8X8_DLY(250),
+ 366            U8X8_DLY(120),
+ 367             
+ 368            U8X8_END_TRANSFER(),              /* disable chip */
+ 369            U8X8_END()                  /* end of sequence */
+ 370          };
+ 371          
+ 372          
+ 373          uint8_t u8x8_d_il3820_296x128(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 374          {
+ 375   1        switch(msg)
+ 376   1        {
+ 377   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 378   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_il3820_296x128_display_info);
+ 379   2            break;
+ 380   2          case U8X8_MSG_DISPLAY_INIT:
+ 381   2      
+ 382   2            u8x8_d_helper_display_init(u8x8);
+ 383   2            u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_296x128_init_seq);    
+*** ERROR C208 IN LINE 383 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 384   2      
+ 385   2            u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_296x128_powersave0_seq);
+*** ERROR C208 IN LINE 385 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 386   2            u8x8_d_il3820_first_init(u8x8);
+ 387   2      
+ 388   2            /* usually the DISPLAY_INIT message leaves the display in power save state */
+ 389   2            /* however this is not done for e-paper devices, see: */
+ 390   2            /* https://github.com/olikraus/u8g2/wiki/internal#powersave-mode */
+ 391   2          
+ 392   2            break;
+ 393   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 394   2            if ( arg_int == 0 )
+ 395   2        u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_296x128_powersave0_seq);
+*** ERROR C208 IN LINE 395 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 396   2            else
+ 397   2        u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_296x128_powersave1_seq);
+*** ERROR C208 IN LINE 397 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 398   2            break;
+ 399   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 400   2            u8x8_d_il3820_draw_tile(u8x8, arg_int, arg_ptr);
+ 401   2            break;
+ 402   2          case U8X8_MSG_DISPLAY_REFRESH:
+ 403   2            u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_to_display_seq);
+*** ERROR C208 IN LINE 403 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 404   2            break;
+ 405   2          default:
+ 406   2            return 0;
+ 407   2        }
+ 408   1        return 1;
+ 409   1      }
+ 410          
+C51 COMPILER V9.01   U8X8_D_IL3820_296X128                                                 04/30/2021 10:55:23 PAGE 8   
+
+ 411          /*=================================================*/
+ 412          /* second version for the IL3820 display */
+ 413          
+ 414          
+ 415          /* http://www.waveshare.com/wiki/File:2.9inch_e-Paper_Module_code.7z */
+ 416          static const uint8_t u8x8_d_il3820_v2_296x128_init_seq[] = {
+ 417              
+ 418            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 419          
+ 420            // U8X8_CA(0x10, 0x00), /* Deep Sleep mode Control: POR: Normal mode */
+ 421            U8X8_C(0x01),
+ 422            U8X8_A(295 % 256), U8X8_A(295/256), U8X8_A(0),
+ 423            
+ 424            /* the driving voltagesmust not be that high, in order to aviod level change after */
+ 425            /* some seconds (which happens with 0xea */
+ 426            U8X8_CA(0x03, 0x75),  /* Gate Driving voltage: +/-15V =0x00 POR (+22/-20V) = 0x0ea*/
+ 427            U8X8_CA(0x04, 0x0a),  /* Source Driving voltage:  (POR=0x0a=15V), max=0x0e*/
+ 428            
+ 429            U8X8_CA(0x0b, 7), /* Set Delay of gate and source non overlap period, POR = 7 */
+ 430            U8X8_CA(0x2c, 0xa8),  /* write vcom value*/
+ 431            U8X8_CA(0x3a, 0x16),  /* dummy lines POR=22 (0x016) */
+ 432            U8X8_CA(0x3b, 0x08),  /* gate time POR=0x08*/
+ 433            U8X8_CA(0x3c, 0x33),  /* select boarder waveform */
+ 434          
+ 435            U8X8_CA(0x11, 0x07),  /* Define data entry mode, x&y inc, x first*/
+ 436            U8X8_CAA(0x44, 0, 29),  /* RAM x start & end, 32*4=128 */
+ 437            U8X8_CAAAA(0x45, 0, 0, 295&255, 295>>8),  /* RAM y start & end, 0..295 */
+ 438            
+ 439            U8X8_END_TRANSFER(),              /* disable chip */
+ 440            U8X8_END()                  /* end of sequence */
+ 441          };
+ 442          
+ 443          
+ 444          static const uint8_t u8x8_d_il3820_v2_to_display_seq[] = {
+ 445            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 446          
+ 447          /*
+ 448          0xaa, 0x09, 0x09, 0x19, 0x19, 
+ 449          0x11, 0x11, 0x11, 0x11, 0x00, 
+ 450          0x00, 0x00, 0x00, 0x00, 0x00, 
+ 451          0x00, 0x00, 0x00, 0x00, 0x00, 
+ 452          
+ 453          0x75, 0x77, 0x77, 0x77, 0x07, 
+ 454          0x00, 0x00, 0x00, 0x00, 0x00
+ 455          measured 1240 ms
+ 456          */
+ 457            U8X8_C(0x32), /* write LUT register*/
+ 458            /* https://github.com/olikraus/u8g2/issues/347 */
+ 459            U8X8_A(0xaa),
+ 460            U8X8_A(0x09),
+ 461            U8X8_A(0x09),
+ 462            U8X8_A(0x19),  
+ 463            U8X8_A(0x19),
+ 464            
+ 465            U8X8_A(0x11),
+ 466            U8X8_A(0x11),
+ 467            U8X8_A(0x11),
+ 468            U8X8_A(0x11),  
+ 469            U8X8_A(0x00),
+ 470            
+ 471            U8X8_A(0x00),
+ 472            U8X8_A(0x00),
+C51 COMPILER V9.01   U8X8_D_IL3820_296X128                                                 04/30/2021 10:55:23 PAGE 9   
+
+ 473            U8X8_A(0x00),
+ 474            U8X8_A(0x00),
+ 475            U8X8_A(0x00),
+ 476            
+ 477            U8X8_A(0x00),
+ 478            U8X8_A(0x00),
+ 479            U8X8_A(0x00),
+ 480            U8X8_A(0x00),
+ 481            U8X8_A(0x00),
+ 482            
+ 483            /* Timing part of the LUT, 20 Phases with 4 bit each: 10 bytes */
+ 484            U8X8_A(0x75),
+ 485            U8X8_A(0x77),
+ 486            U8X8_A(0x77),
+ 487            U8X8_A(0x77),
+ 488            U8X8_A(0x07),
+ 489            
+ 490            U8X8_A(0x00),
+ 491            U8X8_A(0x00),
+ 492            U8X8_A(0x00),
+ 493            U8X8_A(0x00),
+ 494            U8X8_A(0x00),
+ 495            
+ 496            U8X8_CA(0x22, 0x04),  /* display update seq. option: pattern display */
+ 497            U8X8_C(0x20), /* execute sequence */
+ 498            
+ 499            U8X8_DLY(250),  /* delay for 1400ms. The current sequence takes 1240ms, it was reported, that longer dela
+             -ys are better */
+ 500            U8X8_DLY(250),
+ 501            U8X8_DLY(250),
+ 502            U8X8_DLY(250),
+ 503            
+ 504            U8X8_DLY(250),
+ 505            U8X8_DLY(150),  /* extended, #318 */
+ 506           
+ 507            U8X8_END_TRANSFER(),              /* disable chip */
+ 508            U8X8_END()                  /* end of sequence */
+ 509          };
+ 510          
+ 511          uint8_t u8x8_d_il3820_v2_296x128(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 512          {
+ 513   1        switch(msg)
+ 514   1        {
+ 515   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 516   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_il3820_296x128_display_info);
+ 517   2            break;    
+ 518   2          case U8X8_MSG_DISPLAY_INIT:
+ 519   2      
+ 520   2            u8x8_d_helper_display_init(u8x8);
+ 521   2          
+ 522   2            u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_v2_296x128_init_seq);    
+*** ERROR C208 IN LINE 522 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 523   2      
+ 524   2            u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_296x128_powersave0_seq);
+*** ERROR C208 IN LINE 524 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 525   2            u8x8_d_il3820_first_init(u8x8);
+ 526   2            /* u8x8_d_il3820_second_init(u8x8); */  /* not required, u8g2.begin() will also clear the display on
+             -ce more */
+ 527   2                
+ 528   2            /* usually the DISPLAY_INIT message leaves the display in power save state */
+ 529   2            /* however this is not done for e-paper devices, see: */
+ 530   2            /* https://github.com/olikraus/u8g2/wiki/internal#powersave-mode */
+C51 COMPILER V9.01   U8X8_D_IL3820_296X128                                                 04/30/2021 10:55:23 PAGE 10  
+
+ 531   2          
+ 532   2            break;
+ 533   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 534   2            if ( arg_int == 0 )
+ 535   2        u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_296x128_powersave0_seq);
+*** ERROR C208 IN LINE 535 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 536   2            else
+ 537   2        u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_296x128_powersave1_seq);
+*** ERROR C208 IN LINE 537 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 538   2            break;
+ 539   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 540   2            u8x8_d_il3820_draw_tile(u8x8, arg_int, arg_ptr);
+ 541   2            break;
+ 542   2          case U8X8_MSG_DISPLAY_REFRESH:
+ 543   2            u8x8_cad_SendSequence(u8x8, u8x8_d_il3820_v2_to_display_seq);
+*** ERROR C208 IN LINE 543 OF ..\U8G2\CSRC\U8X8_D_IL3820_296X128.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 544   2            break;
+ 545   2          default:
+ 546   2            return 0;
+ 547   2        }
+ 548   1        return 1;
+ 549   1      }
+ 550          
+ 551          
+ 552          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  15 ERROR(S)

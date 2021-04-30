@@ -1,0 +1,404 @@
+C51 COMPILER V9.01   U8G2_LL_HVLINE                                                        04/30/2021 10:55:20 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8G2_LL_HVLINE
+OBJECT MODULE PLACED IN .\Objects\u8g2_ll_hvline.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8g2_ll_hvline.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BR
+                    -OWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND P
+                    -RINT(.\Listings\u8g2_ll_hvline.lst) TABS(2) OBJECT(.\Objects\u8g2_ll_hvline.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8g2_ll_hvline.c
+   4            
+   5            low level hvline
+   6          
+   7            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   8          
+   9            Copyright (c) 2016, olikraus@gmail.com
+  10            All rights reserved.
+  11          
+  12            Redistribution and use in source and binary forms, with or without modification, 
+  13            are permitted provided that the following conditions are met:
+  14          
+  15            * Redistributions of source code must retain the above copyright notice, this list 
+  16              of conditions and the following disclaimer.
+  17              
+  18            * Redistributions in binary form must reproduce the above copyright notice, this 
+  19              list of conditions and the following disclaimer in the documentation and/or other 
+  20              materials provided with the distribution.
+  21          
+  22            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  23            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  24            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  25            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  26            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  27            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  28            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  29            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  30            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  31            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  32            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  33            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  34            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  35          
+  36          
+  37            *ptr |= or_mask
+  38            *ptr ^= xor_mask
+  39            
+  40            color = 0:   or_mask = 1, xor_mask = 1
+  41            color = 1:   or_mask = 1, xor_mask = 0
+  42            color = 2:   or_mask = 0, xor_mask = 1
+  43          
+  44            if ( color <= 1 )
+  45              or_mask  = mask;
+  46            if ( color != 1 )
+  47              xor_mask = mask;
+  48              
+  49          */
+  50          
+  51          #include "u8g2.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+C51 COMPILER V9.01   U8G2_LL_HVLINE                                                        04/30/2021 10:55:20 PAGE 2   
+
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  52          #include <assert.h>
+  53          
+  54          /*=================================================*/
+  55          /*
+  56            u8g2_ll_hvline_vertical_top_lsb
+  57              SSD13xx
+  58              UC1701    
+  59          */
+  60          
+  61          
+  62          #ifdef U8G2_WITH_HVLINE_SPEED_OPTIMIZATION
+  63          
+  64          /*
+  65            x,y   Upper left position of the line within the local buffer (not the display!)
+  66            len   length of the line in pixel, len must not be 0
+  67            dir   0: horizontal line (left to right)
+  68              1: vertical line (top to bottom)
+  69            asumption: 
+  70              all clipping done
+  71          */
+  72          void u8g2_ll_hvline_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t len, uint8_t 
+             -dir)
+  73          {
+  74   1        uint16_t offset;
+  75   1        uint8_t *ptr;
+  76   1        uint8_t bit_pos, mask;
+  77   1        uint8_t or_mask, xor_mask;
+  78   1      #ifdef __unix
+                uint8_t *max_ptr = u8g2->tile_buf_ptr + u8g2_GetU8x8(u8g2)->display_info->tile_width*u8g2->tile_buf_heig
+             -ht*8;
+              #endif
+  81   1      
+  82   1        //assert(x >= u8g2->buf_x0);
+  83   1        //assert(x < u8g2_GetU8x8(u8g2)->display_info->tile_width*8);
+  84   1        //assert(y >= u8g2->buf_y0);
+  85   1        //assert(y < u8g2_GetU8x8(u8g2)->display_info->tile_height*8);
+  86   1        
+  87   1        /* bytes are vertical, lsb on top (y=0), msb at bottom (y=7) */
+  88   1        bit_pos = y;    /* overflow truncate is ok here... */
+  89   1        bit_pos &= 7;   /* ... because only the lowest 3 bits are needed */
+  90   1        mask = 1;
+  91   1        mask <<= bit_pos;
+  92   1      
+  93   1        or_mask = 0;
+  94   1        xor_mask = 0;
+  95   1        if ( u8g2->draw_color <= 1 )
+  96   1          or_mask  = mask;
+  97   1        if ( u8g2->draw_color != 1 )
+  98   1          xor_mask = mask;
+  99   1      
+ 100   1      
+ 101   1        offset = y;   /* y might be 8 or 16 bit, but we need 16 bit, so use a 16 bit variable */
+ 102   1        offset &= ~7;
+ 103   1        offset *= u8g2_GetU8x8(u8g2)->display_info->tile_width;
+ 104   1        ptr = u8g2->tile_buf_ptr;
+ 105   1        ptr += offset;
+ 106   1        ptr += x;
+ 107   1        
+ 108   1        if ( dir == 0 )
+ 109   1        {
+ 110   2            do
+C51 COMPILER V9.01   U8G2_LL_HVLINE                                                        04/30/2021 10:55:20 PAGE 3   
+
+ 111   2            {
+ 112   3      #ifdef __unix
+                assert(ptr < max_ptr);
+              #endif
+ 115   3        *ptr |= or_mask;
+ 116   3        *ptr ^= xor_mask;
+ 117   3        ptr++;
+ 118   3        len--;
+ 119   3            } while( len != 0 );
+ 120   2        }
+ 121   1        else
+ 122   1        {    
+ 123   2          do
+ 124   2          {
+ 125   3      #ifdef __unix
+                    assert(ptr < max_ptr);
+              #endif
+ 128   3            *ptr |= or_mask;
+ 129   3            *ptr ^= xor_mask;
+ 130   3            
+ 131   3            bit_pos++;
+ 132   3            bit_pos &= 7;
+ 133   3      
+ 134   3            len--;
+ 135   3      
+ 136   3            if ( bit_pos == 0 )
+ 137   3            {
+ 138   4        ptr+=u8g2->pixel_buf_width; /* 6 Jan 17: Changed u8g2->width to u8g2->pixel_buf_width, issue #148 */
+ 139   4          
+ 140   4        if ( u8g2->draw_color <= 1 )
+ 141   4          or_mask  = 1;
+ 142   4        if ( u8g2->draw_color != 1 )
+ 143   4          xor_mask = 1;
+ 144   4            }
+ 145   3            else
+ 146   3            {
+ 147   4        or_mask <<= 1;
+ 148   4        xor_mask <<= 1;
+ 149   4            }
+ 150   3          } while( len != 0 );
+ 151   2        }
+ 152   1      }
+ 153          
+ 154          
+ 155          
+ 156          #else /* U8G2_WITH_HVLINE_SPEED_OPTIMIZATION */
+              
+              /*
+                x,y position within the buffer
+              */
+              static void u8g2_draw_pixel_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y)
+              {
+                uint16_t offset;
+                uint8_t *ptr;
+                uint8_t bit_pos, mask;
+                
+                //assert(x >= u8g2->buf_x0);
+                //assert(x < u8g2_GetU8x8(u8g2)->display_info->tile_width*8);
+                //assert(y >= u8g2->buf_y0);
+                //assert(y < u8g2_GetU8x8(u8g2)->display_info->tile_height*8);
+                
+                /* bytes are vertical, lsb on top (y=0), msb at bottom (y=7) */
+C51 COMPILER V9.01   U8G2_LL_HVLINE                                                        04/30/2021 10:55:20 PAGE 4   
+
+                bit_pos = y;    /* overflow truncate is ok here... */
+                bit_pos &= 7;   /* ... because only the lowest 3 bits are needed */
+                mask = 1;
+                mask <<= bit_pos;
+              
+                offset = y;   /* y might be 8 or 16 bit, but we need 16 bit, so use a 16 bit variable */
+                offset &= ~7;
+                offset *= u8g2_GetU8x8(u8g2)->display_info->tile_width;
+                ptr = u8g2->tile_buf_ptr;
+                ptr += offset;
+                ptr += x;
+              
+              
+                if ( u8g2->draw_color <= 1 )
+                  *ptr |= mask;
+                if ( u8g2->draw_color != 1 )
+                  *ptr ^= mask;
+              
+              }
+              
+              /*
+                x,y   Upper left position of the line within the local buffer (not the display!)
+                len   length of the line in pixel, len must not be 0
+                dir   0: horizontal line (left to right)
+                  1: vertical line (top to bottom)
+                asumption: 
+                  all clipping done
+              */
+              void u8g2_ll_hvline_vertical_top_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t len, uint8_t 
+             -dir)
+              {
+                if ( dir == 0 )
+                {
+                  do
+                  {
+                    u8g2_draw_pixel_vertical_top_lsb(u8g2, x, y);
+                    x++;
+                    len--;
+                  } while( len != 0 );
+                }
+                else
+                {
+                  do
+                  {
+                    u8g2_draw_pixel_vertical_top_lsb(u8g2, x, y);
+                    y++;
+                    len--;
+                  } while( len != 0 );
+                }
+              }
+              
+              
+              #endif /* U8G2_WITH_HVLINE_SPEED_OPTIMIZATION */
+ 225          
+ 226          /*=================================================*/
+ 227          /*
+ 228            u8g2_ll_hvline_horizontal_right_lsb
+ 229              ST7920
+ 230          */
+ 231          
+ 232          #ifdef U8G2_WITH_HVLINE_SPEED_OPTIMIZATION
+ 233          
+C51 COMPILER V9.01   U8G2_LL_HVLINE                                                        04/30/2021 10:55:20 PAGE 5   
+
+ 234          /*
+ 235            x,y   Upper left position of the line within the local buffer (not the display!)
+ 236            len   length of the line in pixel, len must not be 0
+ 237            dir   0: horizontal line (left to right)
+ 238              1: vertical line (top to bottom)
+ 239            asumption: 
+ 240              all clipping done
+ 241          */
+ 242          
+ 243          /* SH1122, LD7032, ST7920, ST7986, LC7981, T6963, SED1330, RA8835, MAX7219, LS0 */ 
+ 244          void u8g2_ll_hvline_horizontal_right_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t len, uint
+             -8_t dir)
+ 245          {
+ 246   1        uint16_t offset;
+ 247   1        uint8_t *ptr;
+ 248   1        uint8_t bit_pos;
+ 249   1        uint8_t mask;
+ 250   1        uint8_t tile_width = u8g2_GetU8x8(u8g2)->display_info->tile_width;
+ 251   1      
+ 252   1        bit_pos = x;    /* overflow truncate is ok here... */
+ 253   1        bit_pos &= 7;   /* ... because only the lowest 3 bits are needed */
+ 254   1        mask = 128;
+ 255   1        mask >>= bit_pos;
+ 256   1      
+ 257   1        offset = y;   /* y might be 8 or 16 bit, but we need 16 bit, so use a 16 bit variable */
+ 258   1        offset *= tile_width;
+ 259   1        offset += x>>3;
+ 260   1        ptr = u8g2->tile_buf_ptr;
+ 261   1        ptr += offset;
+ 262   1        
+ 263   1        if ( dir == 0 )
+ 264   1        {
+ 265   2            
+ 266   2          do
+ 267   2          {
+ 268   3      
+ 269   3            if ( u8g2->draw_color <= 1 )
+ 270   3        *ptr |= mask;
+ 271   3            if ( u8g2->draw_color != 1 )
+ 272   3        *ptr ^= mask;
+ 273   3            
+ 274   3            mask >>= 1;
+ 275   3            if ( mask == 0 )
+ 276   3            {
+ 277   4        mask = 128;
+ 278   4              ptr++;
+ 279   4            }
+ 280   3            
+ 281   3            //x++;
+ 282   3            len--;
+ 283   3          } while( len != 0 );
+ 284   2        }
+ 285   1        else
+ 286   1        {
+ 287   2          do
+ 288   2          {
+ 289   3            if ( u8g2->draw_color <= 1 )
+ 290   3        *ptr |= mask;
+ 291   3            if ( u8g2->draw_color != 1 )
+ 292   3        *ptr ^= mask;
+ 293   3            
+ 294   3            ptr += tile_width;
+C51 COMPILER V9.01   U8G2_LL_HVLINE                                                        04/30/2021 10:55:20 PAGE 6   
+
+ 295   3            //y++;
+ 296   3            len--;
+ 297   3          } while( len != 0 );
+ 298   2        }
+ 299   1      }
+ 300          
+ 301          #else /* U8G2_WITH_HVLINE_SPEED_OPTIMIZATION */
+              
+              
+              /*
+                x,y position within the buffer
+              */
+              /* SH1122, LD7032, ST7920, ST7986, LC7981, T6963, SED1330, RA8835, MAX7219, LS0 */ 
+              static void u8g2_draw_pixel_horizontal_right_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y)
+              {
+                uint16_t offset;
+                uint8_t *ptr;
+                uint8_t bit_pos, mask;
+              
+                //assert(x >= u8g2->buf_x0);
+                //assert(x < u8g2_GetU8x8(u8g2)->display_info->tile_width*8);
+                //assert(y >= u8g2->buf_y0);
+                //assert(y < u8g2_GetU8x8(u8g2)->display_info->tile_height*8);
+                
+                /* bytes are vertical, lsb on top (y=0), msb at bottom (y=7) */
+                bit_pos = x;    /* overflow truncate is ok here... */
+                bit_pos &= 7;   /* ... because only the lowest 3 bits are needed */
+                mask = 128;
+                mask >>= bit_pos;
+                x >>= 3;
+              
+                offset = y;   /* y might be 8 or 16 bit, but we need 16 bit, so use a 16 bit variable */
+                offset *= u8g2_GetU8x8(u8g2)->display_info->tile_width;
+                offset += x;
+                ptr = u8g2->tile_buf_ptr;
+                ptr += offset;
+                
+              
+                if ( u8g2->draw_color <= 1 )
+                  *ptr |= mask;
+                if ( u8g2->draw_color != 1 )
+                  *ptr ^= mask;
+                
+              }
+              
+              /*
+                x,y   Upper left position of the line within the local buffer (not the display!)
+                len   length of the line in pixel, len must not be 0
+                dir   0: horizontal line (left to right)
+                  1: vertical line (top to bottom)
+                asumption: 
+                  all clipping done
+              */
+              /* SH1122, LD7032, ST7920, ST7986, LC7981, T6963, SED1330, RA8835, MAX7219, LS0 */ 
+              void u8g2_ll_hvline_horizontal_right_lsb(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t len, uint
+             -8_t dir)
+              {
+                if ( dir == 0 )
+                {
+                  do
+                  {
+                    u8g2_draw_pixel_horizontal_right_lsb(u8g2, x, y);
+C51 COMPILER V9.01   U8G2_LL_HVLINE                                                        04/30/2021 10:55:20 PAGE 7   
+
+                    x++;
+                    len--;
+                  } while( len != 0 );
+                }
+                else
+                {
+                  do
+                  {
+                    u8g2_draw_pixel_horizontal_right_lsb(u8g2, x, y);
+                    y++;
+                    len--;
+                  } while( len != 0 );
+                }
+              }
+              
+              #endif /* U8G2_WITH_HVLINE_SPEED_OPTIMIZATION */
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

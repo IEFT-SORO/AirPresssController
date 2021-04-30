@@ -1,0 +1,116 @@
+C51 COMPILER V9.01   U8LOG_U8G2                                                            04/30/2021 10:55:21 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8LOG_U8G2
+OBJECT MODULE PLACED IN .\Objects\u8log_u8g2.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8log_u8g2.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROWSE
+                    - INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRINT
+                    -(.\Listings\u8log_u8g2.lst) TABS(2) OBJECT(.\Objects\u8log_u8g2.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8log_u8g2.c
+   4            
+   5          
+   6            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   7          
+   8            Copyright (c) 2018, olikraus@gmail.com
+   9            All rights reserved.
+  10          
+  11            Redistribution and use in source and binary forms, with or without modification, 
+  12            are permitted provided that the following conditions are met:
+  13          
+  14            * Redistributions of source code must retain the above copyright notice, this list 
+  15              of conditions and the following disclaimer.
+  16              
+  17            * Redistributions in binary form must reproduce the above copyright notice, this 
+  18              list of conditions and the following disclaimer in the documentation and/or other 
+  19              materials provided with the distribution.
+  20          
+  21            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  22            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  23            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  24            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  25            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  26            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  27            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  28            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  29            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  30            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  31            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  32            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  33            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  34          
+  35          */
+  36          
+  37          #include "u8g2.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  38          /*
+  39            Draw the u8log text at the specified x/y position.
+  40            x/y position is the reference position of the first char of the first line.
+  41            the line height is 
+  42              u8g2_GetAscent(u8g2) - u8g2_GetDescent(u8g2) + line_height_offset;
+  43            line_height_offset can be set with u8log_SetLineHeightOffset()
+  44            Use
+  45              u8g2_SetFontRefHeightText(u8g2_t *u8g2);
+  46              u8g2_SetFontRefHeightExtendedText(u8g2_t *u8g2);
+  47              u8g2_SetFontRefHeightAll(u8g2_t *u8g2);
+  48            to change the return values for u8g2_GetAscent and u8g2_GetDescent
+  49          
+  50          */
+C51 COMPILER V9.01   U8LOG_U8G2                                                            04/30/2021 10:55:21 PAGE 2   
+
+  51          void u8g2_DrawLog(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8log_t *u8log)
+  52          {
+  53   1        u8g2_uint_t disp_x, disp_y;
+  54   1        uint8_t buf_x, buf_y;
+  55   1        uint8_t c;
+  56   1        
+  57   1        disp_y = y;  
+  58   1        u8g2_SetFontDirection(u8g2, 0);
+  59   1        for( buf_y = 0; buf_y < u8log->height; buf_y++ )
+  60   1        {
+  61   2          disp_x = x;
+  62   2          for( buf_x = 0; buf_x < u8log->width; buf_x++ )
+  63   2          {
+  64   3            c = u8log->screen_buffer[buf_y * u8log->width + buf_x];
+  65   3            disp_x += u8g2_DrawGlyph(u8g2, disp_x, disp_y, c);
+  66   3          }
+  67   2          disp_y += u8g2_GetAscent(u8g2) - u8g2_GetDescent(u8g2);
+  68   2          disp_y += u8log->line_height_offset;
+  69   2        }
+  70   1      }
+  71          
+  72          /*
+  73            u8lib callback for u8g2
+  74            
+  75            Only font direction 0 is supported: u8g2_SetFontDirection(u8g2, 0)
+  76            Use
+  77              u8g2_SetFontRefHeightText(u8g2_t *u8g2);
+  78              u8g2_SetFontRefHeightExtendedText(u8g2_t *u8g2);
+  79              u8g2_SetFontRefHeightAll(u8g2_t *u8g2);
+  80            to change the top offset and the line height and
+  81              u8log_SetLineHeightOffset(u8log_t *u8log, int8_t line_height_offset)
+  82            to change the line height.
+  83            
+  84          */
+  85          void u8log_u8g2_cb(u8log_t * u8log)
+  86          {
+  87   1        u8g2_t *u8g2 = (u8g2_t *)(u8log->aux_data);
+  88   1        if ( u8log->is_redraw_line || u8log->is_redraw_all )
+  89   1        {
+  90   2          u8g2_FirstPage(u8g2);
+  91   2          do
+  92   2          {
+  93   3            u8g2_DrawLog( u8g2, 0, u8g2_GetAscent(u8g2), u8log);
+  94   3          }
+  95   2          while( u8g2_NextPage(u8g2) );
+  96   2        }
+  97   1      }
+  98          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

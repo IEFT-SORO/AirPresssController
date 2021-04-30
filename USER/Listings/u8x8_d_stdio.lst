@@ -1,0 +1,120 @@
+C51 COMPILER V9.01   U8X8_D_STDIO                                                          04/30/2021 10:55:32 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_STDIO
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_stdio.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_stdio.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROW
+                    -SE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRI
+                    -NT(.\Listings\u8x8_d_stdio.lst) TABS(2) OBJECT(.\Objects\u8x8_d_stdio.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_stdio.c
+   4          
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          */
+  35          
+  36          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  37          
+  38          #include <stdio.h>
+  39          
+  40          #define W 8
+  41          #define H 2
+  42          
+  43          uint8_t bitmap[W*H*8];
+  44          
+  45          void bitmap_place_tile(uint8_t x, uint8_t y, uint8_t *tile)
+  46          {
+  47   1        uint8_t i;
+  48   1        for(i = 0; i < 8; i++ )
+  49   1          bitmap[x*8+y*W*8+i] = tile[i];
+  50   1      }
+C51 COMPILER V9.01   U8X8_D_STDIO                                                          04/30/2021 10:55:32 PAGE 2   
+
+  51          
+  52          void bitmap_show(void)
+  53          {
+  54   1        int x, y;
+  55   1        for( y = 0; y < H*8; y++ )
+  56   1        {
+  57   2          for( x = 0; x < W*8; x++ )
+  58   2          {
+  59   3            if ( (bitmap[x+(y/8)*W*8] & (1<<((y&7)))) != 0 )
+  60   3            {
+  61   4        printf("*");
+  62   4            }
+  63   3            else
+  64   3            {
+  65   4        printf(".");
+  66   4            }
+  67   3          }
+  68   2          printf("\n");
+  69   2        }
+  70   1      }
+  71          
+  72          
+  73          uint8_t u8x8_d_stdio(U8X8_UNUSED u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+  74          {
+  75   1        switch(msg)
+  76   1        {
+  77   2          case U8X8_MSG_DISPLAY_INIT:
+  78   2            break;
+  79   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+  80   2            if ( arg_int == 0 )
+  81   2        bitmap_show();
+  82   2            break;
+  83   2          case U8X8_MSG_DISPLAY_SET_CONTRAST:
+  84   2            break;
+  85   2          case U8X8_MSG_DISPLAY_DRAW_TILE:      
+  86   2            bitmap_place_tile(((u8x8_tile_t *)arg_ptr)->x_pos, ((u8x8_tile_t *)arg_ptr)->y_pos, ((u8x8_tile_t *)
+             -arg_ptr)->tile_ptr);
+  87   2            break;
+  88   2          default:
+  89   2            break;
+  90   2        }
+  91   1        return 1;
+  92   1      }
+  93          
+  94          
+  95          
+  96          void u8x8_SetupStdio(u8x8_t *u8x8)
+  97          {
+  98   1        u8x8_SetupDefaults(u8x8);
+  99   1        u8x8->display_cb = u8x8_d_stdio;
+ 100   1      }
+ 101          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

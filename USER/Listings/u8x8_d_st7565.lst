@@ -1,0 +1,1344 @@
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_ST7565
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_st7565.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_st7565.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BRO
+                    -WSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PR
+                    -INT(.\Listings\u8x8_d_st7565.lst) TABS(2) OBJECT(.\Objects\u8x8_d_st7565.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_st7565.c
+   4            also includes support for nt7534 
+   5            
+   6            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   7          
+   8            Copyright (c) 2016, olikraus@gmail.com
+   9            All rights reserved.
+  10          
+  11            Redistribution and use in source and binary forms, with or without modification, 
+  12            are permitted provided that the following conditions are met:
+  13          
+  14            * Redistributions of source code must retain the above copyright notice, this list 
+  15              of conditions and the following disclaimer.
+  16              
+  17            * Redistributions in binary form must reproduce the above copyright notice, this 
+  18              list of conditions and the following disclaimer in the documentation and/or other 
+  19              materials provided with the distribution.
+  20          
+  21            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  22            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  23            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  24            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  25            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  26            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  27            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  28            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  29            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  30            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  31            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  32            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  33            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  34          
+  35            
+  36          */
+  37          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  38          
+  39          
+  40          
+  41          
+  42          
+  43          static const uint8_t u8x8_d_st7565_powersave0_seq[] = {
+  44            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  45            U8X8_C(0x0a4),                    /* all pixel off, issue 142 */
+  46            U8X8_C(0x0af),                    /* display on */
+  47            U8X8_END_TRANSFER(),              /* disable chip */
+  48            U8X8_END()                  /* end of sequence */
+  49          };
+  50          
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 2   
+
+  51          static const uint8_t u8x8_d_st7565_powersave1_seq[] = {
+  52            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  53            U8X8_C(0x0ae),                    /* display off */
+  54            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+  55            U8X8_END_TRANSFER(),              /* disable chip */
+  56            U8X8_END()                  /* end of sequence */
+  57          };
+  58          
+  59          static const uint8_t u8x8_d_st7565_flip0_seq[] = {
+  60            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  61            U8X8_C(0x0a1),        /* segment remap a0/a1*/
+  62            U8X8_C(0x0c0),        /* c0: scan dir normal, c8: reverse */
+  63            U8X8_END_TRANSFER(),              /* disable chip */
+  64            U8X8_END()                  /* end of sequence */
+  65          };
+  66          
+  67          static const uint8_t u8x8_d_st7565_flip1_seq[] = {
+  68            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  69            U8X8_C(0x0a0),        /* segment remap a0/a1*/
+  70            U8X8_C(0x0c8),        /* c0: scan dir normal, c8: reverse */
+  71            U8X8_END_TRANSFER(),              /* disable chip */
+  72            U8X8_END()                  /* end of sequence */
+  73          };
+  74          
+  75          static const uint8_t u8x8_d_st7565_zflip0_seq[] = {
+  76            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  77            U8X8_C(0x0a1),        /* segment remap a0/a1*/
+  78            U8X8_C(0x0c8),        /* c0: scan dir normal, c8: reverse */
+  79            U8X8_END_TRANSFER(),              /* disable chip */
+  80            U8X8_END()                  /* end of sequence */
+  81          };
+  82          
+  83          static const uint8_t u8x8_d_st7565_zflip1_seq[] = {
+  84            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  85            U8X8_C(0x0a0),        /* segment remap a0/a1*/
+  86            U8X8_C(0x0c0),        /* c0: scan dir normal, c8: reverse */
+  87            U8X8_END_TRANSFER(),              /* disable chip */
+  88            U8X8_END()                  /* end of sequence */
+  89          };
+  90          
+  91          static const u8x8_display_info_t u8x8_st7565_128x64_display_info =
+  92          {
+  93            /* chip_enable_level = */ 0,
+  94            /* chip_disable_level = */ 1,
+  95            
+  96            /* post_chip_enable_wait_ns = */ 150, /* st7565 datasheet, table 26, tcsh */
+  97            /* pre_chip_disable_wait_ns = */ 50,  /* st7565 datasheet, table 26, tcss */
+  98            /* reset_pulse_width_ms = */ 1, 
+  99            /* post_reset_wait_ms = */ 1, 
+ 100            /* sda_setup_time_ns = */ 50,   /* st7565 datasheet, table 26, tsds */
+ 101            /* sck_pulse_width_ns = */ 120, /* half of cycle time (100ns according to datasheet), AVR: below 70: 8 M
+             -Hz, >= 70 --> 4MHz clock */
+ 102            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 103            /* spi_mode = */ 0,   /* active high, rising edge */
+ 104            /* i2c_bus_clock_100kHz = */ 4,
+ 105            /* data_setup_time_ns = */ 40,  /* st7565 datasheet, table 24, tds8 */
+ 106            /* write_pulse_width_ns = */ 80,  /* st7565 datasheet, table 24, tcclw */
+ 107            /* tile_width = */ 16,    /* width of 16*8=128 pixel */
+ 108            /* tile_hight = */ 8,
+ 109            /* default_x_offset = */ 0,
+ 110            /* flipmode_x_offset = */ 4,
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 3   
+
+ 111            /* pixel_width = */ 128,
+ 112            /* pixel_height = */ 64
+ 113          };
+ 114          
+ 115          uint8_t u8x8_d_st7565_common(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 116          {
+ 117   1        uint8_t x, c;
+ 118   1        uint8_t *ptr;
+ 119   1        switch(msg)
+ 120   1        {
+ 121   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 122   2            u8x8_cad_StartTransfer(u8x8);
+ 123   2          
+ 124   2            x = ((u8x8_tile_t *)arg_ptr)->x_pos;
+ 125   2            x *= 8;
+ 126   2            x += u8x8->x_offset;
+ 127   2            u8x8_cad_SendCmd(u8x8, 0x010 | (x>>4) );
+ 128   2            u8x8_cad_SendCmd(u8x8, 0x000 | ((x&15)));
+ 129   2            u8x8_cad_SendCmd(u8x8, 0x0b0 | (((u8x8_tile_t *)arg_ptr)->y_pos));
+ 130   2          
+ 131   2            c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 132   2            c *= 8;
+ 133   2            ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 134   2            /* 
+ 135   2        The following if condition checks the hardware limits of the st7565 
+ 136   2        controller: It is not allowed to write beyond the display limits.
+ 137   2        This is in fact an issue within flip mode.
+ 138   2            */
+ 139   2            if ( c + x > 132u )
+ 140   2            {
+ 141   3        c = 132u;
+ 142   3        c -= x;
+ 143   3            }
+ 144   2            do
+ 145   2            {
+ 146   3        u8x8_cad_SendData(u8x8, c, ptr);  /* note: SendData can not handle more than 255 bytes */
+*** ERROR C208 IN LINE 146 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendData': too many actual parameters
+ 147   3        arg_int--;
+ 148   3            } while( arg_int > 0 );
+ 149   2            
+ 150   2            u8x8_cad_EndTransfer(u8x8);
+ 151   2            break;
+ 152   2          /*  handled in the calling procedure 
+ 153   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 154   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_128x64_display_info);
+ 155   2            break;
+ 156   2          case U8X8_MSG_DISPLAY_INIT:
+ 157   2            u8x8_d_helper_display_init(u8x8);
+ 158   2            u8x8_cad_SendSequence(u8x8, u8x8_d_uc1701_dogs102_init_seq);
+ 159   2            break;
+ 160   2          */
+ 161   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 162   2            if ( arg_int == 0 )
+ 163   2        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_powersave0_seq);
+*** ERROR C208 IN LINE 163 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 164   2            else
+ 165   2        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_powersave1_seq);
+*** ERROR C208 IN LINE 165 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 166   2            break;
+ 167   2      #ifdef U8X8_WITH_SET_CONTRAST
+ 168   2          case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 169   2            u8x8_cad_StartTransfer(u8x8);
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 4   
+
+ 170   2            u8x8_cad_SendCmd(u8x8, 0x081 );
+ 171   2            u8x8_cad_SendArg(u8x8, arg_int >> 2 );  /* st7565 has range from 0 to 63 */
+ 172   2            u8x8_cad_EndTransfer(u8x8);
+ 173   2            break;
+ 174   2      #endif
+ 175   2          default:
+ 176   2            return 0;
+ 177   2        }
+ 178   1        return 1;
+ 179   1      }
+ 180          
+ 181          /*================================================*/
+ 182          /* DOGM128 */
+ 183          
+ 184          static const uint8_t u8x8_d_st7565_dogm128_init_seq[] = {
+ 185              
+ 186            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 187            
+ 188            U8X8_C(0x0e2),                  /* soft reset */
+ 189            U8X8_C(0x0ae),                    /* display off */
+ 190            U8X8_C(0x040),                    /* set display start line to 0 */
+ 191            
+ 192            U8X8_C(0x0a1),                    /* ADC set to reverse */
+ 193            U8X8_C(0x0c0),                    /* common output mode */
+ 194            // Flipmode
+ 195            // U8X8_C(0x0a0),                   /* ADC set to reverse */
+ 196            // U8X8_C(0x0c8),                   /* common output mode */
+ 197            
+ 198            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+ 199            U8X8_C(0x0a2),                    /* LCD bias 1/9 */
+ 200            U8X8_C(0x02f),                    /* all power  control circuits on (regulator, booster and follower) */
+ 201            U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x */
+ 202            U8X8_C(0x027),                    /* set V0 voltage resistor ratio to max  */
+ 203            U8X8_CA(0x081, 0x018),    /* set contrast, contrast value, EA default: 0x016 */
+ 204            
+ 205            U8X8_C(0x0ae),                    /* display off */
+ 206            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+ 207            
+ 208            U8X8_END_TRANSFER(),              /* disable chip */
+ 209            U8X8_END()                  /* end of sequence */
+ 210          };
+ 211          
+ 212          uint8_t u8x8_d_st7565_ea_dogm128(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 213          {
+ 214   1        /* call common procedure first and handle messages there */
+ 215   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+ 216   1        {
+ 217   2          /* msg not handled, then try here */
+ 218   2          switch(msg)
+ 219   2          {
+ 220   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 221   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_128x64_display_info);
+ 222   3        break;
+ 223   3            case U8X8_MSG_DISPLAY_INIT:
+ 224   3        u8x8_d_helper_display_init(u8x8);
+ 225   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_dogm128_init_seq);
+*** ERROR C208 IN LINE 225 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 226   3        break;
+ 227   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 228   3        if ( arg_int == 0 )
+ 229   3        {
+ 230   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip0_seq);
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 5   
+
+*** ERROR C208 IN LINE 230 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 231   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 232   4        }
+ 233   3        else
+ 234   3        {
+ 235   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip1_seq);
+*** ERROR C208 IN LINE 235 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 236   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 237   4        } 
+ 238   3        break;
+ 239   3            default:
+ 240   3        return 0;   /* msg unknown */
+ 241   3          }
+ 242   2        }
+ 243   1        return 1;
+ 244   1      }
+ 245          
+ 246          
+ 247          
+ 248          /*================================================*/
+ 249          /* LM6063 https://github.com/olikraus/u8g2/issues/893 */
+ 250          
+ 251          static const uint8_t u8x8_d_st7565_lm6063_init_seq[] = {
+ 252              
+ 253            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 254            
+ 255            U8X8_C(0x0e2),                  /* soft reset */
+ 256            U8X8_C(0x0ae),                    /* display off */
+ 257            U8X8_C(0x040),                    /* set display start line to 0 */
+ 258            
+ 259            U8X8_C(0x0a1),                    /* ADC set to reverse */
+ 260            U8X8_C(0x0c0),                    /* common output mode */
+ 261            // Flipmode
+ 262            // U8X8_C(0x0a0),                   /* ADC set to reverse */
+ 263            // U8X8_C(0x0c8),                   /* common output mode */
+ 264            
+ 265            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+ 266            U8X8_C(0x0a2),                    /* LCD bias 1/9 */
+ 267            U8X8_C(0x02f),                    /* all power  control circuits on (regulator, booster and follower) */
+ 268            U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x */
+ 269            U8X8_C(0x027),                    /* set V0 voltage resistor ratio to max  */
+ 270            U8X8_CA(0x081, 50/4),   /* set contrast, contrast value, 40..60 seems to be good */
+ 271            
+ 272            U8X8_C(0x0ae),                    /* display off */
+ 273            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+ 274            
+ 275            U8X8_END_TRANSFER(),              /* disable chip */
+ 276            U8X8_END()                  /* end of sequence */
+ 277          };
+ 278          
+ 279          uint8_t u8x8_d_st7565_lm6063(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 280          {
+ 281   1        /* call common procedure first and handle messages there */
+ 282   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+ 283   1        {
+ 284   2          /* msg not handled, then try here */
+ 285   2          switch(msg)
+ 286   2          {
+ 287   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 288   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_128x64_display_info);
+ 289   3        break;
+ 290   3            case U8X8_MSG_DISPLAY_INIT:
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 6   
+
+ 291   3        u8x8_d_helper_display_init(u8x8);
+ 292   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_lm6063_init_seq);
+*** ERROR C208 IN LINE 292 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 293   3        break;
+ 294   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 295   3        if ( arg_int == 0 )
+ 296   3        {
+ 297   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip0_seq);
+*** ERROR C208 IN LINE 297 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 298   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 299   4        }
+ 300   3        else
+ 301   3        {
+ 302   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip1_seq);
+*** ERROR C208 IN LINE 302 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 303   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 304   4        } 
+ 305   3        break;
+ 306   3            default:
+ 307   3        return 0;   /* msg unknown */
+ 308   3          }
+ 309   2        }
+ 310   1        return 1;
+ 311   1      }
+ 312          
+ 313          
+ 314          /*================================================*/
+ 315          /* Displaytech 64128n */
+ 316          
+ 317          static const uint8_t u8x8_d_st7565_64128n_init_seq[] = {
+ 318              
+ 319            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 320          
+ 321            #ifdef NOT_WORKING
+                
+                U8X8_C(0x0e2),                  /* soft reset */
+                U8X8_C(0x0ae),                    /* display off */
+                U8X8_C(0x040),                    /* set display start line to 0 */
+                
+                U8X8_C(0x0a1),                    /* ADC set to reverse */
+                U8X8_C(0x0c0),                    /* common output mode */
+                // Flipmode
+                // U8X8_C(0x0a0),                   /* ADC set to reverse */
+                // U8X8_C(0x0c8),                   /* common output mode */
+                
+                U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+                U8X8_C(0x0a2),                    /* LCD bias 1/9 */
+                U8X8_C(0x02f),                    /* all power  control circuits on */
+                //U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x */
+                //U8X8_C(0x027),                    /* set V0 voltage resistor ratio to max  */
+              
+                U8X8_C(0x010),                      /* Set V0 voltage resistor ratio. Setting for controlling brightness 
+             -of Displaytech 64128N */
+                
+                
+                U8X8_CA(0x081, 0x01e),    /* set contrast, contrast value */
+                
+                U8X8_C(0x0ae),                    /* display off */
+                U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+              #else
+ 347          
+ 348          
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 7   
+
+ 349            U8X8_C(0x0e2),                 /* soft reset */
+ 350            U8X8_C(0x0A2),             /* 0x0a2: LCD bias 1/9 (according to Displaytech 64128N datasheet) */
+ 351            
+ 352            U8X8_C(0x0a1),                    /* ADC set to reverse */
+ 353            U8X8_C(0x0c0),                    /* common output mode */
+ 354            //U8X8_C(0x0A0),             /* Normal ADC Select (according to Displaytech 64128N datasheet) */
+ 355            //U8X8_C(0x0c8),                   /* common output mode: set scan direction normal operation/SHL Select
+             -, 0x0c0 --> SHL = 0, normal, 0x0c8 --> SHL = 1 */
+ 356            
+ 357            U8X8_C(0x040),               /* Display start line for Displaytech 64128N */
+ 358            U8X8_C(0x028 | 0x04),            /* power control: turn on voltage converter */
+ 359            U8X8_C(0x028 | 0x06),            /* power control: turn on voltage regulator */
+ 360            U8X8_C(0x028 | 0x07),            /* power control: turn on voltage follower */
+ 361            U8X8_C(0x010),                   /* Set V0 voltage resistor ratio. Setting for controlling brightness of
+             - Displaytech 64128N */
+ 362                          /* 19 Jul 17: Not sure if this is true, cmd 0x1? is used to set the column */
+ 363            U8X8_C(0x0a6),                   /* display normal, bit val 0: LCD pixel off. */
+ 364            U8X8_C(0x081),                   /* set contrast */
+ 365            U8X8_C(0x01e),                 /* Contrast value. Setting for controlling brightness of Displaytech 64128
+             -N */
+ 366            //U8X8_C(0x0af),               /* display on */
+ 367            //U8X8_C(0x0a5),               /* display all points, ST7565 */
+ 368            //U8X8_C(0x0a4),               /* normal display */
+ 369          
+ 370            U8X8_C(0x0ae),                    /* display off */
+ 371          
+ 372          
+ 373          #endif
+ 374          
+ 375            U8X8_END_TRANSFER(),              /* disable chip */
+ 376            U8X8_END()                  /* end of sequence */
+ 377          };
+ 378          
+ 379          static const u8x8_display_info_t u8x8_st7565_64128n_display_info =
+ 380          {
+ 381            /* chip_enable_level = */ 0,
+ 382            /* chip_disable_level = */ 1,
+ 383            
+ 384            /* post_chip_enable_wait_ns = */ 150, /* st7565 datasheet, table 26, tcsh */
+ 385            /* pre_chip_disable_wait_ns = */ 50,  /* st7565 datasheet, table 26, tcss */
+ 386            /* reset_pulse_width_ms = */ 1, 
+ 387            /* post_reset_wait_ms = */ 1, 
+ 388            /* sda_setup_time_ns = */ 50,   /* st7565 datasheet, table 26, tsds */
+ 389            /* sck_pulse_width_ns = */ 120, /* half of cycle time (100ns according to datasheet), AVR: below 70: 8 M
+             -Hz, >= 70 --> 4MHz clock */
+ 390            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 391            /* spi_mode = */ 0,   /* active high, rising edge */
+ 392            /* i2c_bus_clock_100kHz = */ 4,
+ 393            /* data_setup_time_ns = */ 40,  /* st7565 datasheet, table 24, tds8 */
+ 394            /* write_pulse_width_ns = */ 80,  /* st7565 datasheet, table 24, tcclw */
+ 395            /* tile_width = */ 16,    /* width of 16*8=128 pixel */
+ 396            /* tile_hight = */ 8,
+ 397            /* default_x_offset = */ 4,
+ 398            /* flipmode_x_offset = */ 0,
+ 399            /* pixel_width = */ 128,
+ 400            /* pixel_height = */ 64
+ 401          };
+ 402          
+ 403          uint8_t u8x8_d_st7565_64128n(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 404          {
+ 405   1        /* call common procedure first and handle messages there */
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 8   
+
+ 406   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+ 407   1        {
+ 408   2          /* msg not handled, then try here */
+ 409   2          switch(msg)
+ 410   2          {
+ 411   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 412   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_64128n_display_info);
+ 413   3        break;
+ 414   3            case U8X8_MSG_DISPLAY_INIT:
+ 415   3        u8x8_d_helper_display_init(u8x8);
+ 416   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_64128n_init_seq);
+*** ERROR C208 IN LINE 416 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 417   3        break;
+ 418   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 419   3        if ( arg_int == 0 )
+ 420   3        {
+ 421   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip0_seq);
+*** ERROR C208 IN LINE 421 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 422   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 423   4        }
+ 424   3        else
+ 425   3        {
+ 426   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip1_seq);
+*** ERROR C208 IN LINE 426 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 427   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 428   4        } 
+ 429   3        break;
+ 430   3            default:
+ 431   3        return 0;   /* msg unknown */
+ 432   3          }
+ 433   2        }
+ 434   1        return 1;
+ 435   1      }
+ 436          
+ 437          /*================================================*/
+ 438          /* ZOLEN 128x64  */
+ 439          
+ 440          static const uint8_t u8x8_d_st7565_zolen_128x64_init_seq[] = {
+ 441              
+ 442            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 443            
+ 444            U8X8_C(0x0e2),                  /* soft reset */
+ 445            U8X8_C(0x0ae),                    /* display off */
+ 446            U8X8_C(0x040),                    /* set display start line to 0 */
+ 447            
+ 448            U8X8_C(0x0a1),                    /* ADC set to reverse */
+ 449            U8X8_C(0x0c8),                    /* common output mode */
+ 450            // Flipmode
+ 451            // U8X8_C(0x0a0),                   /* ADC set to reverse */
+ 452            // U8X8_C(0x0c0),                   /* common output mode */
+ 453            
+ 454            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+ 455            U8X8_C(0x0a2),                    /* LCD bias 1/9 */
+ 456            U8X8_C(0x02f),                    /* all power  control circuits on (regulator, booster and follower) */
+ 457            U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x */
+ 458            U8X8_C(0x027),                    /* set V0 voltage resistor ratio to max  */
+ 459            U8X8_CA(0x081, 0x007),    /* set contrast, contrast value, EA default: 0x016 */
+ 460            
+ 461            U8X8_C(0x0ae),                    /* display off */
+ 462            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+ 463            
+ 464            U8X8_END_TRANSFER(),              /* disable chip */
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 9   
+
+ 465            U8X8_END()                  /* end of sequence */
+ 466          };
+ 467          
+ 468          uint8_t u8x8_d_st7565_zolen_128x64(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 469          {
+ 470   1        /* call common procedure first and handle messages there */
+ 471   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+ 472   1        {
+ 473   2          /* msg not handled, then try here */
+ 474   2          switch(msg)
+ 475   2          {
+ 476   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 477   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_128x64_display_info);
+ 478   3        break;
+ 479   3            case U8X8_MSG_DISPLAY_INIT:
+ 480   3        u8x8_d_helper_display_init(u8x8);
+ 481   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_zolen_128x64_init_seq);
+*** ERROR C208 IN LINE 481 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 482   3        break;
+ 483   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 484   3        if ( arg_int == 0 )
+ 485   3        {
+ 486   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_zflip0_seq);
+*** ERROR C208 IN LINE 486 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 487   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 488   4        }
+ 489   3        else
+ 490   3        {
+ 491   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_zflip1_seq);
+*** ERROR C208 IN LINE 491 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 492   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 493   4        } 
+ 494   3        break;
+ 495   3            default:
+ 496   3        return 0;   /* msg unknown */
+ 497   3          }
+ 498   2        }
+ 499   1        return 1;
+ 500   1      }
+ 501          
+ 502          
+ 503          
+ 504          /*================================================*/
+ 505          /* NHD-C12832 */
+ 506          
+ 507          static const u8x8_display_info_t u8x8_st7565_128x32_display_info =
+ 508          {
+ 509            /* chip_enable_level = */ 0,
+ 510            /* chip_disable_level = */ 1,
+ 511            
+ 512            /* post_chip_enable_wait_ns = */ 150, /* st7565 datasheet, table 26, tcsh */
+ 513            /* pre_chip_disable_wait_ns = */ 50,  /* st7565 datasheet, table 26, tcss */
+ 514            /* reset_pulse_width_ms = */ 1, 
+ 515            /* post_reset_wait_ms = */ 1, 
+ 516            /* sda_setup_time_ns = */ 50,   /* st7565 datasheet, table 26, tsds */
+ 517            /* sck_pulse_width_ns = */ 120, /* half of cycle time (100ns according to datasheet), AVR: below 70: 8 M
+             -Hz, >= 70 --> 4MHz clock */
+ 518            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 519            /* spi_mode = */ 0,   /* active high, rising edge */
+ 520            /* i2c_bus_clock_100kHz = */ 4,
+ 521            /* data_setup_time_ns = */ 40,  /* st7565 datasheet, table 24, tds8 */
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 10  
+
+ 522            /* write_pulse_width_ns = */ 80,  /* st7565 datasheet, table 24, tcclw */
+ 523            /* tile_width = */ 16,    /* width of 16*8=128 pixel */
+ 524            /* tile_hight = */ 4,
+ 525            /* default_x_offset = */ 4,
+ 526            /* flipmode_x_offset = */ 0,
+ 527            /* pixel_width = */ 128,
+ 528            /* pixel_height = */ 32
+ 529          };
+ 530          
+ 531          
+ 532          static const uint8_t u8x8_d_st7565_nhd_c12832_init_seq[] = {
+ 533              
+ 534            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 535            
+ 536            U8X8_C(0x0e2),                  /* soft reset */
+ 537            U8X8_C(0x0ae),                    /* display off */
+ 538            U8X8_C(0x040),                    /* set display start line to 0 */
+ 539            
+ 540            U8X8_C(0x0a1),                    /* ADC set to reverse */
+ 541            U8X8_C(0x0c0),                    /* common output mode */
+ 542            // Flipmode
+ 543            //U8X8_C(0x0a0),                    /* ADC set to reverse */
+ 544            //U8X8_C(0x0c8),                    /* common output mode */
+ 545            
+ 546            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+ 547            U8X8_C(0x0a2),                    /* LCD bias 1/9 */
+ 548            U8X8_C(0x02f),                    /* all power  control circuits on */
+ 549            U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x */
+ 550            U8X8_C(0x023),                    /* set V0 voltage resistor ratio to large*/
+ 551            U8X8_CA(0x081, 0x00a),    /* set contrast, contrast value NHD C12832 */
+ 552            
+ 553            U8X8_C(0x0ae),                    /* display off */
+ 554            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+ 555            
+ 556            U8X8_END_TRANSFER(),              /* disable chip */
+ 557            U8X8_END()                  /* end of sequence */
+ 558          };
+ 559          
+ 560          uint8_t u8x8_d_st7565_nhd_c12832(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 561          {
+ 562   1        /* call common procedure first and handle messages there */
+ 563   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+ 564   1        {
+ 565   2          /* msg not handled, then try here */
+ 566   2          switch(msg)
+ 567   2          {
+ 568   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 569   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_128x32_display_info);
+ 570   3        break;
+ 571   3            case U8X8_MSG_DISPLAY_INIT:
+ 572   3        u8x8_d_helper_display_init(u8x8);
+ 573   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_nhd_c12832_init_seq);
+*** ERROR C208 IN LINE 573 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 574   3        break;
+ 575   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 576   3        if ( arg_int == 0 )
+ 577   3        {
+ 578   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip0_seq);
+*** ERROR C208 IN LINE 578 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 579   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 580   4        }
+ 581   3        else
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 11  
+
+ 582   3        {
+ 583   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip1_seq);
+*** ERROR C208 IN LINE 583 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 584   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 585   4        } 
+ 586   3        break;
+ 587   3            default:
+ 588   3        return 0;   /* msg unknown */
+ 589   3          }
+ 590   2        }
+ 591   1        return 1;
+ 592   1      }
+ 593          
+ 594          /*================================================*/
+ 595          /* NHD-C12864 */
+ 596          
+ 597          static const u8x8_display_info_t u8x8_st7565_nhd_c12864_display_info =
+ 598          {
+ 599            /* chip_enable_level = */ 0,
+ 600            /* chip_disable_level = */ 1,
+ 601            
+ 602            /* post_chip_enable_wait_ns = */ 150, /* st7565 datasheet, table 26, tcsh */
+ 603            /* pre_chip_disable_wait_ns = */ 50,  /* st7565 datasheet, table 26, tcss */
+ 604            /* reset_pulse_width_ms = */ 1, 
+ 605            /* post_reset_wait_ms = */ 1, 
+ 606            /* sda_setup_time_ns = */ 50,   /* st7565 datasheet, table 26, tsds */
+ 607            /* sck_pulse_width_ns = */ 120, /* half of cycle time (100ns according to datasheet), AVR: below 70: 8 M
+             -Hz, >= 70 --> 4MHz clock */
+ 608            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 609            /* spi_mode = */ 0,   /* active high, rising edge */
+ 610            /* i2c_bus_clock_100kHz = */ 4,
+ 611            /* data_setup_time_ns = */ 40,  /* st7565 datasheet, table 24, tds8 */
+ 612            /* write_pulse_width_ns = */ 80,  /* st7565 datasheet, table 24, tcclw */
+ 613            /* tile_width = */ 16,    /* width of 16*8=128 pixel */
+ 614            /* tile_hight = */ 8,
+ 615            /* default_x_offset = */ 4,
+ 616            /* flipmode_x_offset = */ 0,
+ 617            /* pixel_width = */ 128,
+ 618            /* pixel_height = */ 64
+ 619          };
+ 620          
+ 621          
+ 622          static const uint8_t u8x8_d_st7565_nhd_c12864_init_seq[] = {
+ 623              
+ 624            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 625            
+ 626            U8X8_C(0x0e2),                  /* soft reset */
+ 627            U8X8_C(0x0ae),                    /* display off */
+ 628            U8X8_C(0x040),                    /* set display start line to 0 */
+ 629            
+ 630            U8X8_C(0x0a1),                    /* ADC set to reverse */
+ 631            U8X8_C(0x0c0),                    /* common output mode */
+ 632            // Flipmode
+ 633            //U8X8_C(0x0a0),                    /* ADC set to reverse */
+ 634            //U8X8_C(0x0c8),                    /* common output mode */
+ 635            
+ 636            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+ 637            U8X8_C(0x0a2),                    /* LCD bias 1/9 */
+ 638            U8X8_C(0x02f),                    /* all power  control circuits on */
+ 639            U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x */
+ 640            U8X8_C(0x023),                    /* set V0 voltage resistor ratio to large*/
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 12  
+
+ 641            U8X8_CA(0x081, 180),      /* set contrast, contrast value NHD C12864, see issue 186, increased contrast to 
+             -180 (issue 219) */
+ 642            
+ 643            U8X8_C(0x0ae),                    /* display off */
+ 644            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+ 645            
+ 646            U8X8_END_TRANSFER(),              /* disable chip */
+ 647            U8X8_END()                  /* end of sequence */
+ 648          };
+ 649          
+ 650          uint8_t u8x8_d_st7565_nhd_c12864(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 651          {
+ 652   1        /* call common procedure first and handle messages there */
+ 653   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+ 654   1        {
+ 655   2          /* msg not handled, then try here */
+ 656   2          switch(msg)
+ 657   2          {
+ 658   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 659   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_nhd_c12864_display_info);
+ 660   3        break;
+ 661   3            case U8X8_MSG_DISPLAY_INIT:
+ 662   3        u8x8_d_helper_display_init(u8x8);
+ 663   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_nhd_c12864_init_seq);
+*** ERROR C208 IN LINE 663 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 664   3        break;
+ 665   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 666   3        if ( arg_int == 0 )
+ 667   3        {
+ 668   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip0_seq);
+*** ERROR C208 IN LINE 668 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 669   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 670   4        }
+ 671   3        else
+ 672   3        {
+ 673   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip1_seq);
+*** ERROR C208 IN LINE 673 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 674   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 675   4        } 
+ 676   3        break;
+ 677   3            default:
+ 678   3        return 0;   /* msg unknown */
+ 679   3          }
+ 680   2        }
+ 681   1        return 1;
+ 682   1      }
+ 683          /*================================================*/
+ 684          /* JLX12864 */
+ 685          
+ 686          uint8_t u8x8_d_st7565_jlx12864(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 687          {
+ 688   1        return u8x8_d_st7565_nhd_c12864(u8x8, msg, arg_int, arg_ptr);
+ 689   1      }
+ 690          
+ 691          
+ 692          /*================================================*/
+ 693          /* LM6059 (Adafruit)... probably this is a ST7567 display */
+ 694          
+ 695          static const uint8_t u8x8_d_st7565_lm6059_init_seq[] = {
+ 696              
+ 697            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 698            
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 13  
+
+ 699            U8X8_C(0x0e2),                  /* soft reset */
+ 700            U8X8_C(0x0ae),                    /* display off */
+ 701            U8X8_C(0x060),                    /* set display start line to ... */
+ 702            
+ 703            U8X8_C(0x0a0),                    /* ADC set to reverse */
+ 704            U8X8_C(0x0c8),                    /* common output mode */
+ 705            //U8X8_C(0x0a1),                    /* ADC set to reverse */
+ 706            //U8X8_C(0x0c0),                    /* common output mode */
+ 707            // Flipmode
+ 708            // U8X8_C(0x0a0),                   /* ADC set to reverse */
+ 709            // U8X8_C(0x0c8),                   /* common output mode */
+ 710            
+ 711            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+ 712            U8X8_C(0x0a3),                    /* LCD bias 1/9 */
+ 713            U8X8_C(0x02f),                    /* all power  control circuits on (regulator, booster and follower) */
+ 714            U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x (ST7567 feature) */
+ 715            U8X8_C(0x027),                    /* set V0 voltage resistor ratio to max  */
+ 716            U8X8_CA(0x081, 0x018),    /* set contrast, contrast value, EA default: 0x016 */
+ 717            
+ 718            U8X8_C(0x0ae),                    /* display off */
+ 719            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+ 720            
+ 721            U8X8_END_TRANSFER(),              /* disable chip */
+ 722            U8X8_END()                  /* end of sequence */
+ 723          };
+ 724          
+ 725          static const u8x8_display_info_t u8x8_st7565_lm6059_display_info =
+ 726          {
+ 727            /* chip_enable_level = */ 0,
+ 728            /* chip_disable_level = */ 1,
+ 729            
+ 730            /* post_chip_enable_wait_ns = */ 150, /* st7565 datasheet, table 26, tcsh */
+ 731            /* pre_chip_disable_wait_ns = */ 50,  /* st7565 datasheet, table 26, tcss */
+ 732            /* reset_pulse_width_ms = */ 1, 
+ 733            /* post_reset_wait_ms = */ 1, 
+ 734            /* sda_setup_time_ns = */ 50,   /* st7565 datasheet, table 26, tsds */
+ 735            /* sck_pulse_width_ns = */ 120, /* half of cycle time (100ns according to datasheet), AVR: below 70: 8 M
+             -Hz, >= 70 --> 4MHz clock */
+ 736            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 737            /* spi_mode = */ 0,   /* active high, rising edge */
+ 738            /* i2c_bus_clock_100kHz = */ 4,
+ 739            /* data_setup_time_ns = */ 40,  /* st7565 datasheet, table 24, tds8 */
+ 740            /* write_pulse_width_ns = */ 80,  /* st7565 datasheet, table 24, tcclw */
+ 741            /* tile_width = */ 16,    /* width of 16*8=128 pixel */
+ 742            /* tile_hight = */ 8,
+ 743            /* default_x_offset = */ 1, /* not sure... */
+ 744            /* flipmode_x_offset = */ 3,
+ 745            /* pixel_width = */ 128,
+ 746            /* pixel_height = */ 64
+ 747          };
+ 748          
+ 749          uint8_t u8x8_d_st7565_lm6059(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 750          {
+ 751   1        /* call common procedure first and handle messages there */
+ 752   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+ 753   1        {
+ 754   2          /* msg not handled, then try here */
+ 755   2          switch(msg)
+ 756   2          {
+ 757   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 758   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_lm6059_display_info);
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 14  
+
+ 759   3        break;
+ 760   3            case U8X8_MSG_DISPLAY_INIT:
+ 761   3        u8x8_d_helper_display_init(u8x8);
+ 762   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_lm6059_init_seq);
+*** ERROR C208 IN LINE 762 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 763   3        break;
+ 764   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 765   3        if ( arg_int == 0 )
+ 766   3        {
+ 767   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip1_seq);
+*** ERROR C208 IN LINE 767 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 768   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 769   4        }
+ 770   3        else
+ 771   3        {
+ 772   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip0_seq);
+*** ERROR C208 IN LINE 772 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 773   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 774   4        } 
+ 775   3        break;
+ 776   3            default:
+ 777   3        return 0;   /* msg unknown */
+ 778   3          }
+ 779   2        }
+ 780   1        return 1;
+ 781   1      }
+ 782          
+ 783          /*================================================*/
+ 784          /* LX12864 issue 576 */
+ 785          
+ 786          static const uint8_t u8x8_d_st7565_lx12864_init_seq[] = {
+ 787              
+ 788            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 789            
+ 790            U8X8_C(0x0e2),                  /* soft reset */
+ 791            U8X8_C(0x0ae),                    /* display off */
+ 792            U8X8_C(0x060),                    /* set display start line to ... */
+ 793            
+ 794            U8X8_C(0x0a0),                    /* ADC set to reverse */
+ 795            U8X8_C(0x0c8),                    /* common output mode */
+ 796            //U8X8_C(0x0a1),                    /* ADC set to reverse */
+ 797            //U8X8_C(0x0c0),                    /* common output mode */
+ 798            // Flipmode
+ 799            // U8X8_C(0x0a0),                   /* ADC set to reverse */
+ 800            // U8X8_C(0x0c8),                   /* common output mode */
+ 801            
+ 802            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+ 803            U8X8_C(0x0a2),                    /* LCD bias 1/9 */
+ 804            U8X8_C(0x02f),                    /* all power  control circuits on (regulator, booster and follower) */
+ 805            U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x (ST7567 feature) */
+ 806            U8X8_C(0x027),                    /* set V0 voltage resistor ratio to max  */
+ 807            U8X8_CA(0x081, 0x008),    /* set contrast, contrast value */
+ 808            
+ 809            U8X8_C(0x0ae),                    /* display off */
+ 810            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+ 811            
+ 812            U8X8_END_TRANSFER(),              /* disable chip */
+ 813            U8X8_END()                  /* end of sequence */
+ 814          };
+ 815          
+ 816          static const u8x8_display_info_t u8x8_st7565_lx12864_display_info =
+ 817          {
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 15  
+
+ 818            /* chip_enable_level = */ 0,
+ 819            /* chip_disable_level = */ 1,
+ 820            
+ 821            /* post_chip_enable_wait_ns = */ 150, /* st7565 datasheet, table 26, tcsh */
+ 822            /* pre_chip_disable_wait_ns = */ 50,  /* st7565 datasheet, table 26, tcss */
+ 823            /* reset_pulse_width_ms = */ 1, 
+ 824            /* post_reset_wait_ms = */ 1, 
+ 825            /* sda_setup_time_ns = */ 50,   /* st7565 datasheet, table 26, tsds */
+ 826            /* sck_pulse_width_ns = */ 120, /* half of cycle time (100ns according to datasheet), AVR: below 70: 8 M
+             -Hz, >= 70 --> 4MHz clock */
+ 827            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 828            /* spi_mode = */ 0,   /* active high, rising edge */
+ 829            /* i2c_bus_clock_100kHz = */ 4,
+ 830            /* data_setup_time_ns = */ 40,  /* st7565 datasheet, table 24, tds8 */
+ 831            /* write_pulse_width_ns = */ 80,  /* st7565 datasheet, table 24, tcclw */
+ 832            /* tile_width = */ 16,    /* width of 16*8=128 pixel */
+ 833            /* tile_hight = */ 8,
+ 834            /* default_x_offset = */ 1, /* not sure... */
+ 835            /* flipmode_x_offset = */ 3,
+ 836            /* pixel_width = */ 128,
+ 837            /* pixel_height = */ 64
+ 838          };
+ 839          
+ 840          uint8_t u8x8_d_st7565_lx12864(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 841          {
+ 842   1        /* call common procedure first and handle messages there */
+ 843   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+ 844   1        {
+ 845   2          /* msg not handled, then try here */
+ 846   2          switch(msg)
+ 847   2          {
+ 848   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 849   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_lx12864_display_info);
+ 850   3        break;
+ 851   3            case U8X8_MSG_DISPLAY_INIT:
+ 852   3        u8x8_d_helper_display_init(u8x8);
+ 853   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_lx12864_init_seq);
+*** ERROR C208 IN LINE 853 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 854   3        break;
+ 855   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 856   3        if ( arg_int == 0 )
+ 857   3        {
+ 858   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip1_seq);
+*** ERROR C208 IN LINE 858 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 859   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 860   4        }
+ 861   3        else
+ 862   3        {
+ 863   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip0_seq);
+*** ERROR C208 IN LINE 863 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 864   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 865   4        } 
+ 866   3        break;
+ 867   3            default:
+ 868   3        return 0;   /* msg unknown */
+ 869   3          }
+ 870   2        }
+ 871   1        return 1;
+ 872   1      }
+ 873          
+ 874          
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 16  
+
+ 875          /*================================================*/
+ 876          /* ERC12864-1 (buydisplay.com) */
+ 877          
+ 878          static const uint8_t u8x8_d_st7565_erc12864_init_seq[] = {
+ 879              
+ 880            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 881            
+ 882            U8X8_C(0x0e2),                  /* soft reset */
+ 883            U8X8_C(0x0ae),                    /* display off */
+ 884            U8X8_C(0x040),                    /* set display start line to ... */
+ 885            
+ 886            U8X8_C(0x0a0),                    /* ADC set to reverse */
+ 887            U8X8_C(0x0c8),                    /* common output mode */
+ 888            //U8X8_C(0x0a1),                    /* ADC set to reverse */
+ 889            //U8X8_C(0x0c0),                    /* common output mode */
+ 890            // Flipmode
+ 891            // U8X8_C(0x0a0),                   /* ADC set to reverse */
+ 892            // U8X8_C(0x0c8),                   /* common output mode */
+ 893            
+ 894            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+ 895            U8X8_C(0x0a3),                    /* LCD bias 1/9 */
+ 896            U8X8_C(0x02f),                    /* all power  control circuits on (regulator, booster and follower) */
+ 897            U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x (ST7567 feature)*/
+ 898            U8X8_C(0x027),                    /* set V0 voltage resistor ratio to max  */
+ 899            U8X8_CA(0x081, 0x018),    /* set contrast, contrast value, EA default: 0x016 */
+ 900            
+ 901            U8X8_C(0x0ae),                    /* display off */
+ 902            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+ 903            
+ 904            U8X8_END_TRANSFER(),              /* disable chip */
+ 905            U8X8_END()                  /* end of sequence */
+ 906          };
+ 907          
+ 908          static const u8x8_display_info_t u8x8_st7565_erc12864_display_info =
+ 909          {
+ 910            /* chip_enable_level = */ 0,
+ 911            /* chip_disable_level = */ 1,
+ 912            
+ 913            /* post_chip_enable_wait_ns = */ 150, /* st7565 datasheet, table 26, tcsh */
+ 914            /* pre_chip_disable_wait_ns = */ 50,  /* st7565 datasheet, table 26, tcss */
+ 915            /* reset_pulse_width_ms = */ 1, 
+ 916            /* post_reset_wait_ms = */ 1, 
+ 917            /* sda_setup_time_ns = */ 50,   /* st7565 datasheet, table 26, tsds */
+ 918            /* sck_pulse_width_ns = */ 120, /* half of cycle time (100ns according to datasheet), AVR: below 70: 8 M
+             -Hz, >= 70 --> 4MHz clock */
+ 919            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 920            /* spi_mode = */ 0,   /* active high, rising edge */
+ 921            /* i2c_bus_clock_100kHz = */ 4,
+ 922            /* data_setup_time_ns = */ 40,  /* st7565 datasheet, table 24, tds8 */
+ 923            /* write_pulse_width_ns = */ 80,  /* st7565 datasheet, table 24, tcclw */
+ 924            /* tile_width = */ 16,    /* width of 16*8=128 pixel */
+ 925            /* tile_hight = */ 8,
+ 926            /* default_x_offset = */ 0,
+ 927            /* flipmode_x_offset = */ 4,
+ 928            /* pixel_width = */ 128,
+ 929            /* pixel_height = */ 64
+ 930          };
+ 931          
+ 932          uint8_t u8x8_d_st7565_erc12864(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 933          {
+ 934   1        /* call common procedure first and handle messages there */
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 17  
+
+ 935   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+ 936   1        {
+ 937   2          /* msg not handled, then try here */
+ 938   2          switch(msg)
+ 939   2          {
+ 940   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 941   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_erc12864_display_info);
+ 942   3        break;
+ 943   3            case U8X8_MSG_DISPLAY_INIT:
+ 944   3        u8x8_d_helper_display_init(u8x8);
+ 945   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_erc12864_init_seq);
+*** ERROR C208 IN LINE 945 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 946   3        break;
+ 947   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 948   3        if ( arg_int == 0 )
+ 949   3        {
+ 950   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip1_seq);
+*** ERROR C208 IN LINE 950 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 951   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 952   4        }
+ 953   3        else
+ 954   3        {
+ 955   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip0_seq);
+*** ERROR C208 IN LINE 955 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 956   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 957   4        } 
+ 958   3        break;
+ 959   3            default:
+ 960   3        return 0;   /* msg unknown */
+ 961   3          }
+ 962   2        }
+ 963   1        return 1;
+ 964   1      }
+ 965          
+ 966          
+ 967          
+ 968          
+ 969          /*================================================*/
+ 970          /* ERC12864-1 alternative version, suggested in issue 790 */
+ 971          
+ 972          static const uint8_t u8x8_d_st7565_erc12864_alt_init_seq[] = {
+ 973          
+ 974          
+ 975            // original sequence 
+ 976            
+ 977            // U8X8_START_TRANSFER(),               /* enable chip, delay is part of the transfer start */
+ 978            
+ 979            // U8X8_C(0x0e2),                 /* soft reset */
+ 980            // U8X8_C(0x0ae),                   /* display off */
+ 981            // U8X8_C(0x040),                   /* set display start line to ... */
+ 982            
+ 983            // U8X8_C(0x0a0),                   /* ADC set to reverse */
+ 984            // U8X8_C(0x0c8),                   /* common output mode */
+ 985            
+ 986            // U8X8_C(0x0a6),                   /* display normal, bit val 0: LCD pixel off. */
+ 987            // U8X8_C(0x0a3),                   /* LCD bias 1/9 */
+ 988            // U8X8_C(0x02f),                   /* all power  control circuits on (regulator, booster and follower) *
+             -/
+ 989            // U8X8_CA(0x0f8, 0x000),   /* set booster ratio to 4x (ST7567 feature)*/
+ 990            // U8X8_C(0x027),                   /* set V0 voltage resistor ratio to max  */
+ 991            // U8X8_CA(0x081, 0x018),   /* set contrast, contrast value, EA default: 0x016 */
+ 992            
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 18  
+
+ 993            // U8X8_C(0x0ae),                   /* display off */
+ 994            // U8X8_C(0x0a5),                   /* enter powersafe: all pixel on, issue 142 */
+ 995            
+ 996            // U8X8_END_TRANSFER(),               /* disable chip */
+ 997            // U8X8_END()                   /* end of sequence */
+ 998            
+ 999          
+1000          
+1001            // suggested in https://github.com/olikraus/u8g2/issues/790
+1002            
+1003            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+1004            
+1005            U8X8_C(0x0e2),                  /* soft reset */
+1006            U8X8_C(0x0ae),                    /* display off */
+1007            U8X8_C(0x040),                    /* set display start line to ... */
+1008            
+1009            U8X8_C(0x0a0),                    /* ADC set to reverse */
+1010            U8X8_C(0x0c8),                    /* common output mode */
+1011            
+1012            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+1013            U8X8_C(0x0a2),                    /* LCD bias 1/9 - *** Changed by Ismail - was 0xa3 - 1/7 bias we were ge
+             -tting dark pixel off */
+1014            U8X8_C(0x02f),                    /* all power  control circuits on (regulator, booster and follower) */
+1015            U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x (ST7567 feature)*/
+1016            U8X8_C(0x027),                    /* set V0 voltage resistor ratio to max  */
+1017            U8X8_CA(0x081, 0x05),          /* set contrast, contrast value, EA default: 0x016 - *** Changed by Ismail
+             - to 0x05 */ 
+1018            
+1019            U8X8_C(0x0ae),                    /* display off */
+1020            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+1021            
+1022            U8X8_END_TRANSFER(),              /* disable chip */
+1023            U8X8_END()                  /* end of sequence */
+1024            
+1025          };
+1026          
+1027          
+1028          uint8_t u8x8_d_st7565_erc12864_alt(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+1029          {
+1030   1        /* call common procedure first and handle messages there */
+1031   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+1032   1        {
+1033   2          /* msg not handled, then try here */
+1034   2          switch(msg)
+1035   2          {
+1036   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+1037   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_erc12864_display_info);
+1038   3        break;
+1039   3            case U8X8_MSG_DISPLAY_INIT:
+1040   3        u8x8_d_helper_display_init(u8x8);
+1041   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_erc12864_alt_init_seq);
+*** ERROR C208 IN LINE 1041 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+1042   3        break;
+1043   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+1044   3        if ( arg_int == 0 )
+1045   3        {
+1046   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip1_seq);
+*** ERROR C208 IN LINE 1046 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+1047   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+1048   4        }
+1049   3        else
+1050   3        {
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 19  
+
+1051   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip0_seq);
+*** ERROR C208 IN LINE 1051 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+1052   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+1053   4        } 
+1054   3        break;
+1055   3            default:
+1056   3        return 0;   /* msg unknown */
+1057   3          }
+1058   2        }
+1059   1        return 1;
+1060   1      }
+1061          
+1062          
+1063          
+1064          
+1065          /*================================================*/
+1066          /* NT7534, TG12864R */
+1067          /* The NT7534 has an extended command set for the ST7565, however this is not used. */
+1068          /* The TG12864R display is also shifted in lines, like the LM6059/Adafruit display */
+1069          /* However contrast seems to be different */
+1070          
+1071          static const uint8_t u8x8_d_nt7534_tg12864r_init_seq[] = {
+1072              
+1073            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+1074            
+1075            U8X8_C(0x0e2),                  /* soft reset */
+1076            U8X8_C(0x0ae),                    /* display off */
+1077            U8X8_C(0x060),                    /* set display start line to ... */
+1078            
+1079            U8X8_C(0x0a0),                    /* ADC set to reverse */
+1080            U8X8_C(0x0c8),                    /* common output mode */
+1081            // Flipmode
+1082            //U8X8_C(0x0a1),                    /* ADC set to reverse */
+1083            //U8X8_C(0x0c0),                    /* common output mode */
+1084            
+1085            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+1086            U8X8_C(0x0a3),                    /* LCD bias 1/9 */
+1087            U8X8_C(0x02f),                    /* all power  control circuits on (regulator, booster and follower) */
+1088            //U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x (ST7567 feature)*/
+1089            U8X8_C(0x027),                    /* set V0 voltage resistor ratio to max  */
+1090            U8X8_CA(0x081, 0x009),    /* set contrast, contrast value, EA default: 0x016 */
+1091            
+1092            U8X8_C(0x0ae),                    /* display off */
+1093            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+1094            
+1095            U8X8_END_TRANSFER(),              /* disable chip */
+1096            U8X8_END()                  /* end of sequence */
+1097          };
+1098          
+1099          uint8_t u8x8_d_nt7534_tg12864r(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+1100          {
+1101   1        /* call common procedure first and handle messages there */
+1102   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+1103   1        {
+1104   2          /* msg not handled, then try here */
+1105   2          switch(msg)
+1106   2          {
+1107   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+1108   3        /* reuse the LM6059 data structure... this display seems to have similar shifts and offsets */
+1109   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_lm6059_display_info);
+1110   3        break;
+1111   3            case U8X8_MSG_DISPLAY_INIT:
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 20  
+
+1112   3        u8x8_d_helper_display_init(u8x8);
+1113   3            
+1114   3        //u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_lm6059_init_seq);
+1115   3        u8x8_cad_SendSequence(u8x8, u8x8_d_nt7534_tg12864r_init_seq);
+*** ERROR C208 IN LINE 1115 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+1116   3        break;
+1117   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+1118   3        if ( arg_int == 0 )
+1119   3        {
+1120   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip1_seq);
+*** ERROR C208 IN LINE 1120 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+1121   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+1122   4        }
+1123   3        else
+1124   3        {
+1125   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip0_seq);
+*** ERROR C208 IN LINE 1125 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+1126   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+1127   4        } 
+1128   3        break;
+1129   3            default:
+1130   3        return 0;   /* msg unknown */
+1131   3          }
+1132   2        }
+1133   1        return 1;
+1134   1      }
+1135          
+1136          
+1137          /*================================================*/
+1138          /* EA DOGM132 */
+1139          
+1140          static const u8x8_display_info_t u8x8_st7565_dogm132_display_info =
+1141          {
+1142            /* chip_enable_level = */ 0,
+1143            /* chip_disable_level = */ 1,
+1144            
+1145            /* post_chip_enable_wait_ns = */ 150, /* st7565 datasheet, table 26, tcsh */
+1146            /* pre_chip_disable_wait_ns = */ 50,  /* st7565 datasheet, table 26, tcss */
+1147            /* reset_pulse_width_ms = */ 1, 
+1148            /* post_reset_wait_ms = */ 1, 
+1149            /* sda_setup_time_ns = */ 50,   /* st7565 datasheet, table 26, tsds */
+1150            /* sck_pulse_width_ns = */ 120, /* half of cycle time (100ns according to datasheet), AVR: below 70: 8 M
+             -Hz, >= 70 --> 4MHz clock */
+1151            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+1152            /* spi_mode = */ 0,   /* active high, rising edge */
+1153            /* i2c_bus_clock_100kHz = */ 4,
+1154            /* data_setup_time_ns = */ 40,  /* st7565 datasheet, table 24, tds8 */
+1155            /* write_pulse_width_ns = */ 80,  /* st7565 datasheet, table 24, tcclw */
+1156            /* tile_width = */ 17,    /* width of 16*8=136 pixel */
+1157            /* tile_hight = */ 4,
+1158            /* default_x_offset = */ 0,
+1159            /* flipmode_x_offset = */ 0,
+1160            /* pixel_width = */ 132,
+1161            /* pixel_height = */ 32
+1162          };
+1163          
+1164          
+1165          static const uint8_t u8x8_d_st7565_dogm132_init_seq[] = {
+1166              
+1167            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+1168            
+C51 COMPILER V9.01   U8X8_D_ST7565                                                         04/30/2021 10:55:30 PAGE 21  
+
+1169            U8X8_C(0x0e2),                  /* soft reset */
+1170            U8X8_C(0x0ae),                    /* display off */
+1171            U8X8_C(0x040),                    /* set display start line to 0 */
+1172            
+1173            U8X8_C(0x0a1),                    /* ADC set to reverse */
+1174            U8X8_C(0x0c0),                    /* common output mode */
+1175            // Flipmode
+1176            //U8X8_C(0x0a0),                    /* ADC set to reverse */
+1177            //U8X8_C(0x0c8),                    /* common output mode */
+1178            
+1179            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+1180            U8X8_C(0x0a2),                    /* LCD bias 1/9 */
+1181            U8X8_C(0x02f),                    /* all power  control circuits on */
+1182            U8X8_CA(0x0f8, 0x000),    /* set booster ratio to 4x */
+1183            U8X8_C(0x023),                    /* set V0 voltage resistor ratio to large*/
+1184            U8X8_CA(0x081, 0x01f),    /* set contrast, contrast value EA DOGM132 */
+1185            
+1186            U8X8_C(0x0ae),                    /* display off */
+1187            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+1188            
+1189            U8X8_END_TRANSFER(),              /* disable chip */
+1190            U8X8_END()                  /* end of sequence */
+1191          };
+1192          
+1193          uint8_t u8x8_d_st7565_ea_dogm132(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+1194          {
+1195   1        /* call common procedure first and handle messages there */
+1196   1        if ( u8x8_d_st7565_common(u8x8, msg, arg_int, arg_ptr) == 0 )
+1197   1        {
+1198   2          /* msg not handled, then try here */
+1199   2          switch(msg)
+1200   2          {
+1201   3            case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+1202   3        u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7565_dogm132_display_info);
+1203   3        break;
+1204   3            case U8X8_MSG_DISPLAY_INIT:
+1205   3        u8x8_d_helper_display_init(u8x8);
+1206   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_dogm132_init_seq);
+*** ERROR C208 IN LINE 1206 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+1207   3        break;
+1208   3            case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+1209   3        if ( arg_int == 0 )
+1210   3        {
+1211   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip0_seq);
+*** ERROR C208 IN LINE 1211 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+1212   4          u8x8->x_offset = u8x8->display_info->default_x_offset;
+1213   4        }
+1214   3        else
+1215   3        {
+1216   4          u8x8_cad_SendSequence(u8x8, u8x8_d_st7565_flip1_seq);
+*** ERROR C208 IN LINE 1216 OF ..\U8G2\CSRC\U8X8_D_ST7565.C: '_u8x8_cad_SendSequence': too many actual parameters
+1217   4          u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+1218   4        } 
+1219   3        break;
+1220   3            default:
+1221   3        return 0;   /* msg unknown */
+1222   3          }
+1223   2        }
+1224   1        return 1;
+1225   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  42 ERROR(S)

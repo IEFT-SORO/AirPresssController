@@ -1,0 +1,228 @@
+C51 COMPILER V9.01   U8X8_D_IST3020                                                        04/30/2021 10:55:23 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_IST3020
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_ist3020.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_ist3020.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BR
+                    -OWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND P
+                    -RINT(.\Listings\u8x8_d_ist3020.lst) TABS(2) OBJECT(.\Objects\u8x8_d_ist3020.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_ist3020.c
+   4            
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2017, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34            
+  35          */
+  36          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  37          
+  38          
+  39          
+  40          
+  41          static const uint8_t u8x8_d_ist3020_erc19264_powersave0_seq[] = {
+  42            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  43            U8X8_C(0x0a4),                    /* all pixel off, issue 142 */
+  44            U8X8_C(0x0af),                    /* display on */
+  45            U8X8_END_TRANSFER(),              /* disable chip */
+  46            U8X8_END()                  /* end of sequence */
+  47          };
+  48          
+  49          static const uint8_t u8x8_d_ist3020_erc19264_powersave1_seq[] = {
+  50            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+C51 COMPILER V9.01   U8X8_D_IST3020                                                        04/30/2021 10:55:23 PAGE 2   
+
+  51            U8X8_C(0x0ae),                    /* display off */
+  52            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+  53            U8X8_END_TRANSFER(),              /* disable chip */
+  54            U8X8_END()                  /* end of sequence */
+  55          };
+  56          
+  57          static const uint8_t u8x8_d_ist3020_erc19264_flip0_seq[] = {
+  58            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  59            U8X8_C(0x0a0),        /* segment remap a0/a1*/
+  60            U8X8_C(0x0c8),        /* c0: scan dir normal, c8: reverse */
+  61            U8X8_END_TRANSFER(),              /* disable chip */
+  62            U8X8_END()                  /* end of sequence */
+  63          };
+  64          
+  65          static const uint8_t u8x8_d_ist3020_erc19264_flip1_seq[] = {
+  66            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  67            U8X8_C(0x0a1),        /* segment remap a0/a1*/
+  68            U8X8_C(0x0c0),        /* c0: scan dir normal, c8: reverse */
+  69            U8X8_END_TRANSFER(),              /* disable chip */
+  70            U8X8_END()                  /* end of sequence */
+  71          };
+  72          
+  73          
+  74          static const u8x8_display_info_t u8x8_ist3020_erc19264_display_info =
+  75          {
+  76            /* chip_enable_level = */ 0,
+  77            /* chip_disable_level = */ 1,
+  78            
+  79            /* post_chip_enable_wait_ns = */ 150, /* IST3020 datasheet, page 56 */
+  80            /* pre_chip_disable_wait_ns = */ 150, /* IST3020 datasheet, page 56 */
+  81            /* reset_pulse_width_ms = */ 1, 
+  82            /* post_reset_wait_ms = */ 1, 
+  83            /* sda_setup_time_ns = */ 100,    /* IST3020 datasheet, page 56 */
+  84            /* sck_pulse_width_ns = */ 100, /* IST3020 datasheet, page 56 */
+  85            /* sck_clock_hz = */ 4000000UL, /* */
+  86            /* spi_mode = */ 0,   /* active high, rising edge */
+  87            /* i2c_bus_clock_100kHz = */ 4,
+  88            /* data_setup_time_ns = */ 40,  /* IST3020 datasheet, page 54 */
+  89            /* write_pulse_width_ns = */ 60,  /* IST3020 datasheet, page 54 */
+  90            /* tile_width = */ 24,    /* width of 24*8=192 pixel */
+  91            /* tile_hight = */ 8,
+  92            /* default_x_offset = */ 0,
+  93            /* flipmode_x_offset = */ 64,
+  94            /* pixel_width = */ 192,
+  95            /* pixel_height = */ 64
+  96          };
+  97          
+  98          static const uint8_t u8x8_d_ist3020_erc19264_init_seq[] = {
+  99              
+ 100            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 101            
+ 102            U8X8_C(0x0e2),                  /* soft reset */
+ 103            U8X8_C(0x0ab),                  /* build in osc on, used in ER code, but not mentioned in data sheet */
+ 104            U8X8_C(0x0ae),                    /* display off */
+ 105            
+ 106            U8X8_C(0x040),                    /* set display start line to 0 */
+ 107            
+ 108            U8X8_C(0x0a0),                    /* ADC set to reverse */
+ 109            U8X8_C(0x0c8),                    /* common output mode */
+ 110            // Flipmode
+ 111            //U8X8_C(0x0a0),                    /* ADC set to reverse */
+ 112            //U8X8_C(0x0c8),                    /* common output mode */
+C51 COMPILER V9.01   U8X8_D_IST3020                                                        04/30/2021 10:55:23 PAGE 3   
+
+ 113            
+ 114            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+ 115            U8X8_C(0x0a3),                    /* FIX: LCD bias 1/7, old value was 1/9 (0x0a2) */
+ 116            
+ 117            U8X8_C(0x028|4),                    /* all power  control circuits on */
+ 118            U8X8_DLY(50),
+ 119            U8X8_C(0x028|6),                    /* all power  control circuits on */
+ 120            U8X8_DLY(50),
+ 121            U8X8_C(0x028|7),                    /* all power  control circuits on */
+ 122            U8X8_DLY(50),
+ 123            
+ 124            U8X8_C(0x020),                    /* v0 voltage resistor ratio */
+ 125            U8X8_CA(0x081, 0x019),    /* set contrast, contrast value (from ER code: 45) */
+ 126            
+ 127            U8X8_C(0x0ae),                    /* display off */
+ 128            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+ 129             
+ 130            U8X8_END_TRANSFER(),              /* disable chip */
+ 131            U8X8_END()                  /* end of sequence */
+ 132          };
+ 133          
+ 134          uint8_t u8x8_d_ist3020_erc19264(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 135          {
+ 136   1        uint8_t x, c;
+ 137   1        uint8_t *ptr;
+ 138   1        switch(msg)
+ 139   1        {
+ 140   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 141   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_ist3020_erc19264_display_info);
+ 142   2            break;
+ 143   2          case U8X8_MSG_DISPLAY_INIT:
+ 144   2            u8x8_d_helper_display_init(u8x8);
+ 145   2            u8x8_cad_SendSequence(u8x8, u8x8_d_ist3020_erc19264_init_seq);
+*** ERROR C208 IN LINE 145 OF ..\U8G2\CSRC\U8X8_D_IST3020.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 146   2            break;
+ 147   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 148   2            if ( arg_int == 0 )
+ 149   2        u8x8_cad_SendSequence(u8x8, u8x8_d_ist3020_erc19264_powersave0_seq);
+*** ERROR C208 IN LINE 149 OF ..\U8G2\CSRC\U8X8_D_IST3020.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 150   2            else
+ 151   2        u8x8_cad_SendSequence(u8x8, u8x8_d_ist3020_erc19264_powersave1_seq);
+*** ERROR C208 IN LINE 151 OF ..\U8G2\CSRC\U8X8_D_IST3020.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 152   2            break;
+ 153   2          case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 154   2            if ( arg_int == 0 )
+ 155   2            {
+ 156   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ist3020_erc19264_flip0_seq);
+*** ERROR C208 IN LINE 156 OF ..\U8G2\CSRC\U8X8_D_IST3020.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 157   3        u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 158   3            }
+ 159   2            else
+ 160   2            {
+ 161   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ist3020_erc19264_flip1_seq);
+*** ERROR C208 IN LINE 161 OF ..\U8G2\CSRC\U8X8_D_IST3020.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 162   3        u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 163   3            } 
+ 164   2            break;
+ 165   2      #ifdef U8X8_WITH_SET_CONTRAST
+ 166   2          case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 167   2            u8x8_cad_StartTransfer(u8x8);
+ 168   2            u8x8_cad_SendCmd(u8x8, 0x081 );
+ 169   2            u8x8_cad_SendArg(u8x8, arg_int >> 2 );  /* st7567 has range from 0 to 63 */
+C51 COMPILER V9.01   U8X8_D_IST3020                                                        04/30/2021 10:55:23 PAGE 4   
+
+ 170   2            u8x8_cad_EndTransfer(u8x8);
+ 171   2            break;
+ 172   2      #endif
+ 173   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 174   2            u8x8_cad_StartTransfer(u8x8);
+ 175   2          
+ 176   2            x = ((u8x8_tile_t *)arg_ptr)->x_pos;
+ 177   2            x *= 8;
+ 178   2            x += u8x8->x_offset;
+ 179   2            u8x8_cad_SendCmd(u8x8, 0x010 | (x>>4) );
+ 180   2            u8x8_cad_SendCmd(u8x8, 0x000 | ((x&15)));
+ 181   2            u8x8_cad_SendCmd(u8x8, 0x0b0 | (((u8x8_tile_t *)arg_ptr)->y_pos));
+ 182   2          
+ 183   2            c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 184   2            c *= 8;
+ 185   2            ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 186   2            do
+ 187   2            {
+ 188   3        u8x8_cad_SendData(u8x8, c, ptr);  /* note: SendData can not handle more than 255 bytes */
+*** ERROR C208 IN LINE 188 OF ..\U8G2\CSRC\U8X8_D_IST3020.C: '_u8x8_cad_SendData': too many actual parameters
+ 189   3        arg_int--;
+ 190   3            } while( arg_int > 0 );
+ 191   2            
+ 192   2            u8x8_cad_EndTransfer(u8x8);
+ 193   2            break;
+ 194   2          default:
+ 195   2            return 0;
+ 196   2        }
+ 197   1        return 1;
+ 198   1      }
+ 199          
+ 200          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  9 ERROR(S)

@@ -1,0 +1,120 @@
+C51 COMPILER V9.01   KEY                                                                   04/30/2021 15:09:25 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE KEY
+OBJECT MODULE PLACED IN .\Objects\KEY.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\BSP\BSP_KEY\KEY.C LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROWSE INCD
+                    -IR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP;..\BSP\BSP_IO) DEBUG OBJECTEXT
+                    -END PRINT(.\Listings\KEY.lst) TABS(2) OBJECT(.\Objects\KEY.obj)
+
+line level    source
+
+   1          
+   2          #include "CH551.H"                                                          
+   3          #include "Debug.H"
+   4          #include "KEY.H"
+   5          
+   6          #pragma  NOAREGS
+   7          
+   8          sbit key1=P1^1;
+   9          sbit key2=P1^4;
+  10          sbit key3=P1^5;
+  11          
+  12          UINT8 KeyState[3] = {1,1,1}; 
+  13          UINT8 BackState[3] = {1,1,1}; 
+  14          UINT8C key_code_map[6] = {0x31,0x32,0x33};       
+  15          unsigned long  TimeThr[3] = {1000, 1000, 1000};
+  16          unsigned long  KeyDownTime[3]= {0, 0, 0};
+  17          
+  18          void KeyInit()
+  19          {
+  20   1        Port1Cfg(1,1);//key1
+  21   1        Port1Cfg(1,4);//key2
+  22   1        Port1Cfg(1,5);//key3
+  23   1        key1 = 1;
+  24   1        key2 = 1;
+  25   1        key3 = 1;
+  26   1      }
+  27          
+  28          UINT8 GetKeyStation(UINT8 i)
+  29          {
+  30   1      return  KeyState[i];
+  31   1      }
+  32          unsigned long GetKeyDOWNTim(UINT8 i)
+  33          {
+  34   1      return KeyDownTime[i];
+  35   1      }
+  36          
+  37          
+  38          UINT8 T0RH = 0; 
+  39          UINT8 T0RL = 0; 
+  40          
+  41          void ConfigT0(UINT8 ms)
+  42          {
+  43   1          unsigned long tmp = 0;
+  44   1      
+  45   1        tmp = 12000000/12;
+  46   1        tmp = (tmp * ms)/1000;
+  47   1        tmp = 65536 - tmp;
+  48   1        tmp = tmp + 1;
+  49   1          T0RH = (UINT8)(tmp >> 8);
+  50   1        T0RL = (UINT8)tmp;
+  51   1      
+  52   1        TMOD = ( TMOD & ~( bT0_GATE | bT0_CT | bT0_M1 ) ) | bT0_M0;
+  53   1        TH0 = T0RH;
+C51 COMPILER V9.01   KEY                                                                   04/30/2021 15:09:25 PAGE 2   
+
+  54   1        TL0 = T0RL;
+  55   1        TF0 = 0;
+  56   1        ET0 = 1;
+  57   1        TR0 = 1;
+  58   1      }
+  59          
+  60          void KeyScan()
+  61          {
+  62   1        UINT8 i;
+  63   1        static UINT8 keybuffer[3] = {0xFF,0xFF,0xFF};
+  64   1      
+  65   1        keybuffer[0] = (keybuffer[0] <<1) | key1;
+  66   1        keybuffer[1] = (keybuffer[1] <<1) | key2;
+  67   1        keybuffer[2] = (keybuffer[2] <<1) | key3;
+  68   1      
+  69   1        for(i=0;i<3;i++)
+  70   1        {
+  71   2          if((keybuffer[i] & 0x0F) == 0x00)
+  72   2          {
+  73   3            KeyState[i] = 0;
+  74   3            if(i>=3)
+  75   3                break;
+  76   3            KeyDownTime[i] += 4;  
+  77   3          }
+  78   2          else if((keybuffer[i] & 0x0F) == 0x0F)
+  79   2          {
+  80   3            KeyState[i] = 1;
+  81   3            if(i>=3)
+  82   3                break;
+  83   3            KeyDownTime[i] = 0;  
+  84   3          }
+  85   2        } 
+  86   1      }
+  87          
+  88          void InterruptTimer0() interrupt INT_NO_TMR0 using 1 
+  89          {
+  90   1        TH0 = T0RH;
+  91   1        TL0 = T0RL;
+  92   1        KeyScan(); 
+  93   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    507    ----
+   CONSTANT SIZE    =      6    ----
+   XDATA SIZE       =     35       5
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

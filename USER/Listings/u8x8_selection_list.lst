@@ -1,0 +1,197 @@
+C51 COMPILER V9.01   U8X8_SELECTION_LIST                                                   04/30/2021 10:55:35 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_SELECTION_LIST
+OBJECT MODULE PLACED IN .\Objects\u8x8_selection_list.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_selection_list.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEE
+                    -D) BROWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXT
+                    -END PRINT(.\Listings\u8x8_selection_list.lst) TABS(2) OBJECT(.\Objects\u8x8_selection_list.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_selection_list.c
+   4            
+   5            selection list with scroll option
+   6            
+   7            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   8          
+   9            Copyright (c) 2016, olikraus@gmail.com
+  10            All rights reserved.
+  11          
+  12            Redistribution and use in source and binary forms, with or without modification, 
+  13            are permitted provided that the following conditions are met:
+  14          
+  15            * Redistributions of source code must retain the above copyright notice, this list 
+  16              of conditions and the following disclaimer.
+  17              
+  18            * Redistributions in binary form must reproduce the above copyright notice, this 
+  19              list of conditions and the following disclaimer in the documentation and/or other 
+  20              materials provided with the distribution.
+  21          
+  22            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  23            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  24            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  25            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  26            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  27            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  28            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  29            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  30            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  31            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  32            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  33            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  34            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  35            
+  36          */
+  37          
+  38          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  39          
+  40          /*
+  41            increase the cursor position
+  42          */
+  43          void u8sl_Next(u8sl_t *u8sl)
+  44          {
+  45   1        u8sl->current_pos++;
+  46   1        if ( u8sl->current_pos >= u8sl->total )
+  47   1        {
+  48   2          u8sl->current_pos = 0;
+  49   2          u8sl->first_pos = 0;
+  50   2        }
+C51 COMPILER V9.01   U8X8_SELECTION_LIST                                                   04/30/2021 10:55:35 PAGE 2   
+
+  51   1        else
+  52   1        {
+  53   2          if ( u8sl->first_pos + u8sl->visible <= u8sl->current_pos + 1 )
+  54   2          {
+  55   3            u8sl->first_pos = u8sl->current_pos - u8sl->visible + 1;
+  56   3          }
+  57   2        }
+  58   1      }
+  59          
+  60          void u8sl_Prev(u8sl_t *u8sl)
+  61          {
+  62   1        if ( u8sl->current_pos == 0 )
+  63   1        {
+  64   2          u8sl->current_pos = u8sl->total - 1;
+  65   2          u8sl->first_pos = 0;
+  66   2          if ( u8sl->total > u8sl->visible )
+  67   2            u8sl->first_pos = u8sl->total - u8sl->visible;
+  68   2        }
+  69   1        else
+  70   1        {
+  71   2          u8sl->current_pos--;
+  72   2          if ( u8sl->first_pos > u8sl->current_pos )
+  73   2            u8sl->first_pos = u8sl->current_pos;
+  74   2        }
+  75   1      }
+  76          
+  77          void u8x8_DrawSelectionList(u8x8_t *u8x8, u8sl_t *u8sl, u8x8_sl_cb sl_cb, const void *aux)
+  78          {
+  79   1        uint8_t i;
+  80   1        for( i = 0; i < u8sl->visible; i++ )
+  81   1        {
+  82   2          sl_cb(u8x8, u8sl, i+u8sl->first_pos, aux);
+*** ERROR C212 IN LINE 82 OF ..\U8G2\CSRC\U8X8_SELECTION_LIST.C: indirect call: parameters do not fit within registers
+  83   2        }
+  84   1      }
+  85          
+  86          /* selection list with string line */
+  87          void u8x8_sl_string_line_cb(u8x8_t *u8x8, u8sl_t *u8sl, uint8_t idx, const void *aux)
+  88          {
+  89   1        const char *s;
+  90   1        uint8_t row;
+  91   1        /* calculate offset from display upper border */
+  92   1        row = u8sl->y;
+  93   1        
+  94   1        /* calculate target pos */
+  95   1        row += idx;
+  96   1        row -= u8sl->first_pos;
+  97   1        
+  98   1        /* check whether this is the current cursor line */
+  99   1        if ( idx == u8sl->current_pos )
+ 100   1          u8x8_SetInverseFont(u8x8, 1);
+ 101   1        else
+ 102   1          u8x8_SetInverseFont(u8x8, 0);
+ 103   1        
+ 104   1        /* get the line from the array */
+ 105   1        s = u8x8_GetStringLineStart(idx, (const char *)aux);
+ 106   1        
+ 107   1        /* draw the line */
+ 108   1        if ( s == NULL )
+ 109   1          s = "";
+ 110   1        u8x8_DrawUTF8Line(u8x8, u8sl->x, row, u8x8_GetCols(u8x8), s);  
+ 111   1        u8x8_SetInverseFont(u8x8, 0);
+C51 COMPILER V9.01   U8X8_SELECTION_LIST                                                   04/30/2021 10:55:35 PAGE 3   
+
+ 112   1      }
+ 113          
+ 114          /*
+ 115            title:    NULL for no title, valid str for title line. Can contain mutliple lines, separated by '\n'
+ 116            start_pos:  default position for the cursor (starts with 1)
+ 117            sl:     string list (list of strings separated by \n)
+ 118            returns 0 if user has pressed the home key
+ 119            returns the selected line+1 if user has pressed the select key (e.g. 1 for the first line)
+ 120          */
+ 121          uint8_t u8x8_UserInterfaceSelectionList(u8x8_t *u8x8, const char *title, uint8_t start_pos, const char *sl
+             -)
+ 122          {
+ 123   1        u8sl_t u8sl;
+ 124   1        uint8_t event;
+ 125   1        uint8_t title_lines;
+ 126   1        
+ 127   1        if ( start_pos > 0 )
+ 128   1          start_pos--;
+ 129   1        
+ 130   1        u8sl.visible = u8x8_GetRows(u8x8);
+ 131   1        u8sl.total = u8x8_GetStringLineCnt(sl);
+ 132   1        u8sl.first_pos = 0;
+ 133   1        u8sl.current_pos = start_pos;
+ 134   1        u8sl.x = 0;
+ 135   1        u8sl.y = 0;
+ 136   1        
+ 137   1      
+ 138   1        //u8x8_ClearDisplay(u8x8);   /* not required because all is 100% filled */
+ 139   1        u8x8_SetInverseFont(u8x8, 0);
+ 140   1        
+ 141   1        if ( title != NULL )
+ 142   1        {
+ 143   2          title_lines = u8x8_DrawUTF8Lines(u8x8, u8sl.x, u8sl.y, u8x8_GetCols(u8x8), title);
+ 144   2          u8sl.y+=title_lines;
+ 145   2          u8sl.visible-=title_lines;
+ 146   2        }
+ 147   1        
+ 148   1        if ( u8sl.current_pos >= u8sl.total )
+ 149   1          u8sl.current_pos = u8sl.total-1;
+ 150   1      
+ 151   1        
+ 152   1        u8x8_DrawSelectionList(u8x8, &u8sl, u8x8_sl_string_line_cb, sl);
+ 153   1      
+ 154   1        for(;;)
+ 155   1        {
+ 156   2          event = u8x8_GetMenuEvent(u8x8);
+ 157   2          if ( event == U8X8_MSG_GPIO_MENU_SELECT )
+ 158   2            return u8sl.current_pos+1;
+ 159   2          else if ( event == U8X8_MSG_GPIO_MENU_HOME )
+ 160   2            return 0;
+ 161   2          else if ( event == U8X8_MSG_GPIO_MENU_NEXT || event == U8X8_MSG_GPIO_MENU_DOWN )
+ 162   2          {
+ 163   3            u8sl_Next(&u8sl);
+ 164   3            u8x8_DrawSelectionList(u8x8, &u8sl, u8x8_sl_string_line_cb, sl);      
+ 165   3          }
+ 166   2          else if ( event == U8X8_MSG_GPIO_MENU_PREV || event == U8X8_MSG_GPIO_MENU_UP  )
+ 167   2          {
+ 168   3            u8sl_Prev(&u8sl);
+ 169   3            u8x8_DrawSelectionList(u8x8, &u8sl, u8x8_sl_string_line_cb, sl);      
+ 170   3          }
+ 171   2        }
+ 172   1      }
+C51 COMPILER V9.01   U8X8_SELECTION_LIST                                                   04/30/2021 10:55:35 PAGE 4   
+
+ 173          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  4 ERROR(S)

@@ -1,0 +1,430 @@
+C51 COMPILER V9.01   U8X8_D_KS0108                                                         04/30/2021 10:55:23 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_KS0108
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_ks0108.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_ks0108.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BRO
+                    -WSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PR
+                    -INT(.\Listings\u8x8_d_ks0108.lst) TABS(2) OBJECT(.\Objects\u8x8_d_ks0108.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_ks0108.c 
+   4            
+   5            The classic 5V LCD
+   6            
+   7            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   8          
+   9            Copyright (c) 2016, olikraus@gmail.com
+  10            All rights reserved.
+  11          
+  12            Redistribution and use in source and binary forms, with or without modification, 
+  13            are permitted provided that the following conditions are met:
+  14          
+  15            * Redistributions of source code must retain the above copyright notice, this list 
+  16              of conditions and the following disclaimer.
+  17              
+  18            * Redistributions in binary form must reproduce the above copyright notice, this 
+  19              list of conditions and the following disclaimer in the documentation and/or other 
+  20              materials provided with the distribution.
+  21          
+  22            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  23            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  24            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  25            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  26            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  27            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  28            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  29            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  30            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  31            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  32            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  33            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  34            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  35          
+  36            
+  37          */
+  38          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  39          
+  40          
+  41          
+  42          
+  43          static const uint8_t u8x8_d_ks0108_init_seq[] = {
+  44            U8X8_C(0x0c0),                    /* satart at the top  */  
+  45            U8X8_END()                  /* end of sequence */
+  46          };
+  47          
+  48          static const uint8_t u8x8_d_ks0108_powersave0_seq[] = {
+  49            U8X8_C(0x03f),                    /* display on */
+  50            U8X8_END()                  /* end of sequence */
+C51 COMPILER V9.01   U8X8_D_KS0108                                                         04/30/2021 10:55:23 PAGE 2   
+
+  51          };
+  52          
+  53          static const uint8_t u8x8_d_ks0108_powersave1_seq[] = {
+  54            U8X8_C(0x03e),                    /* display off */
+  55            U8X8_END()                  /* end of sequence */
+  56          };
+  57          
+  58          
+  59          struct u8x8_ks0108_vars
+  60          {
+  61            uint8_t *ptr;
+  62            uint8_t x;
+  63            uint8_t c;
+  64            uint8_t arg_int;
+  65          };
+  66          
+  67          static void u8x8_ks0108_out(u8x8_t *u8x8, struct u8x8_ks0108_vars *v, void *arg_ptr)
+  68          {
+  69   1        uint8_t cnt;
+  70   1        u8x8_cad_SendCmd(u8x8, 0x040 | ((v->x << 3) & 63) );
+  71   1        u8x8_cad_SendCmd(u8x8, 0x0b8 | (((u8x8_tile_t *)arg_ptr)->y_pos));
+  72   1        
+  73   1        while( v->arg_int > 0 )
+  74   1        {
+  75   2            /* calculate tiles to next boundary (end or chip limit) */
+  76   2            cnt = v->x;
+  77   2            cnt += 8;
+  78   2            cnt &= 0x0f8;
+  79   2            cnt -= v->x;
+  80   2                  
+  81   2            if ( cnt > v->c )
+  82   2        cnt = v->c;
+  83   2          
+  84   2            /* of cours we still could use cnt=1 here... */
+  85   2            /* but setting cnt to 1 is not very efficient */
+  86   2            //cnt = 1;
+  87   2          
+  88   2            v->x +=cnt;
+  89   2            v->c-=cnt;
+  90   2            cnt<<=3;
+  91   2            u8x8_cad_SendData(u8x8, cnt, v->ptr); /* note: SendData can not handle more than 255 bytes */    
+*** ERROR C208 IN LINE 91 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendData': too many actual parameters
+  92   2            v->ptr += cnt;
+  93   2          
+  94   2            if ( v->c == 0 )
+  95   2            {
+  96   3        v->ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+  97   3        v->c = ((u8x8_tile_t *)arg_ptr)->cnt;
+  98   3        v->arg_int--;
+  99   3            }
+ 100   2            if ( ((v->x) & 7) == 0 )
+ 101   2        break;       
+ 102   2        } 
+ 103   1      }
+ 104          
+ 105          
+ 106          static const u8x8_display_info_t u8x8_ks0108_128x64_display_info =
+ 107          {
+ 108            /* chip_enable_level = */ 0,    /* KS0108: Not used */
+ 109            /* chip_disable_level = */ 1,   /* KS0108: Not used */
+ 110            
+ 111            /* post_chip_enable_wait_ns = */ 100,
+C51 COMPILER V9.01   U8X8_D_KS0108                                                         04/30/2021 10:55:23 PAGE 3   
+
+ 112            /* pre_chip_disable_wait_ns = */ 20,
+ 113            /* reset_pulse_width_ms = */ 1, 
+ 114            /* post_reset_wait_ms = */ 6,     /* could be faster for the KS0108 */
+ 115            /* sda_setup_time_ns = */ 12,   
+ 116            /* sck_pulse_width_ns = */ 75,  /* KS0108: Not used */
+ 117            /* sck_clock_hz = */ 4000000UL, /* KS0108: Not used */
+ 118            /* spi_mode = */ 0,       /* active high, rising edge */
+ 119            /* i2c_bus_clock_100kHz = */ 4, /* KS0108: Not used */
+ 120            /* data_setup_time_ns = */ 200,
+ 121            /* write_pulse_width_ns = */ 250, /* KS0108: actially 450 ns, but additional 200 ns are added by the byt
+             -e transfer function */
+ 122            /* tile_width = */ 16,    /* width of 16*8=128 pixel */
+ 123            /* tile_hight = */ 8,
+ 124            /* default_x_offset = */ 0,
+ 125            /* flipmode_x_offset = */ 0,
+ 126            /* pixel_width = */ 128,
+ 127            /* pixel_height = */ 64
+ 128          };
+ 129          
+ 130          uint8_t u8x8_d_ks0108_128x64(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 131          {
+ 132   1        struct u8x8_ks0108_vars v;
+ 133   1        switch(msg)
+ 134   1        {
+ 135   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 136   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_ks0108_128x64_display_info);
+ 137   2            break;
+ 138   2          case U8X8_MSG_DISPLAY_INIT:
+ 139   2            u8x8_d_helper_display_init(u8x8);
+ 140   2          
+ 141   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 1, NULL);
+*** ERROR C212 IN LINE 141 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 142   2            u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_init_seq);
+*** ERROR C208 IN LINE 142 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 143   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 143 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 144   2          
+ 145   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 2, NULL);
+*** ERROR C212 IN LINE 145 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 146   2            u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_init_seq);
+*** ERROR C208 IN LINE 146 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 147   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 147 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 148   2            break;
+ 149   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 150   2            
+ 151   2            if ( arg_int == 0 )
+ 152   2            {
+ 153   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 1, NULL);
+*** ERROR C212 IN LINE 153 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 154   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_powersave0_seq);
+*** ERROR C208 IN LINE 154 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 155   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 155 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 156   3      
+ 157   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 2, NULL);
+*** ERROR C212 IN LINE 157 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 158   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_powersave0_seq);
+*** ERROR C208 IN LINE 158 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 159   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 159 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 160   3        
+C51 COMPILER V9.01   U8X8_D_KS0108                                                         04/30/2021 10:55:23 PAGE 4   
+
+ 161   3            }
+ 162   2            else
+ 163   2            {
+ 164   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 1, NULL);
+*** ERROR C212 IN LINE 164 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 165   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_powersave1_seq);
+*** ERROR C208 IN LINE 165 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 166   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 166 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 167   3        
+ 168   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 2, NULL);
+*** ERROR C212 IN LINE 168 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 169   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_powersave1_seq);
+*** ERROR C208 IN LINE 169 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 170   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 170 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 171   3        
+ 172   3            }
+ 173   2            break;
+ 174   2      // The KS0108 can not mirror the cols and rows, use U8g2 for rotation
+ 175   2      //    case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 176   2      //      break;
+ 177   2      // The KS0108 has no internal contrast command
+ 178   2      //    case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 179   2      //      break;
+ 180   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 181   2      
+ 182   2            v.ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 183   2            v.x = ((u8x8_tile_t *)arg_ptr)->x_pos;
+ 184   2            v.c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 185   2            v.arg_int = arg_int;    
+ 186   2            
+ 187   2            
+ 188   2            if ( v.x < 8 )
+ 189   2            {
+ 190   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 1, NULL);
+*** ERROR C212 IN LINE 190 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 191   3        u8x8_ks0108_out(u8x8, &v, arg_ptr);
+ 192   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 192 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 193   3            }
+ 194   2            if ( v.x < 16 )
+ 195   2            {
+ 196   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 2, NULL);
+*** ERROR C212 IN LINE 196 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 197   3        u8x8_ks0108_out(u8x8, &v, arg_ptr);
+ 198   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 198 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 199   3            }
+ 200   2            //if ( v.x < 24 )
+ 201   2            //{
+ 202   2        //u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 4, NULL);
+ 203   2        //u8x8_ks0108_out(u8x8, &v, arg_ptr);
+ 204   2        //u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+ 205   2            //}    
+ 206   2            break;
+ 207   2          default:
+ 208   2            return 0;
+ 209   2        }
+ 210   1        return 1;
+ 211   1      }
+ 212          
+C51 COMPILER V9.01   U8X8_D_KS0108                                                         04/30/2021 10:55:23 PAGE 5   
+
+ 213          static const u8x8_display_info_t u8x8_ks0108_192x64_display_info =
+ 214          {
+ 215            /* chip_enable_level = */ 0,    /* KS0108: Not used */
+ 216            /* chip_disable_level = */ 1,   /* KS0108: Not used */
+ 217            
+ 218            /* post_chip_enable_wait_ns = */ 100,
+ 219            /* pre_chip_disable_wait_ns = */ 20,
+ 220            /* reset_pulse_width_ms = */ 1, 
+ 221            /* post_reset_wait_ms = */ 6,     /* could be faster for the KS0108 */
+ 222            /* sda_setup_time_ns = */ 12,   
+ 223            /* sck_pulse_width_ns = */ 75,  /* KS0108: Not used */
+ 224            /* sck_clock_hz = */ 4000000UL, /* KS0108: Not used */
+ 225            /* spi_mode = */ 0,       /* active high, rising edge */
+ 226            /* i2c_bus_clock_100kHz = */ 4, /* KS0108: Not used */
+ 227            /* data_setup_time_ns = */ 200,
+ 228            /* write_pulse_width_ns = */ 250, /* KS0108: actially 450 ns, but additional 200 ns are added by the byt
+             -e transfer function */
+ 229            /* tile_width = */ 24,    /* width of 24*8=192 pixel */
+ 230            /* tile_hight = */ 8,
+ 231            /* default_x_offset = */ 0,
+ 232            /* flipmode_x_offset = */ 0,
+ 233            /* pixel_width = */ 192,
+ 234            /* pixel_height = */ 64
+ 235          };
+ 236          
+ 237          
+ 238          /* east rising (buydisplay.com) ERM19264 */
+ 239          /* left: 011, middle: 101, right: 110, no chip select: 111 */
+ 240          uint8_t u8x8_d_ks0108_erm19264(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 241          {
+ 242   1        struct u8x8_ks0108_vars v;
+ 243   1        switch(msg)
+ 244   1        {
+ 245   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 246   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_ks0108_192x64_display_info);
+ 247   2            break;
+ 248   2          case U8X8_MSG_DISPLAY_INIT:
+ 249   2            u8x8_d_helper_display_init(u8x8);
+ 250   2          
+ 251   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 3, NULL);
+*** ERROR C212 IN LINE 251 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 252   2            u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_init_seq);
+*** ERROR C208 IN LINE 252 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 253   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 253 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 254   2          
+ 255   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 5, NULL);
+*** ERROR C212 IN LINE 255 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 256   2            u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_init_seq);
+*** ERROR C208 IN LINE 256 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 257   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 257 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 258   2          
+ 259   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 6, NULL);
+*** ERROR C212 IN LINE 259 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 260   2            u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_init_seq);
+*** ERROR C208 IN LINE 260 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 261   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 261 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 262   2            break;
+ 263   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 264   2            
+C51 COMPILER V9.01   U8X8_D_KS0108                                                         04/30/2021 10:55:23 PAGE 6   
+
+ 265   2            if ( arg_int == 0 )
+ 266   2            {
+ 267   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 3, NULL);
+*** ERROR C212 IN LINE 267 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 268   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_powersave0_seq);
+*** ERROR C208 IN LINE 268 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 269   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 269 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 270   3      
+ 271   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 5, NULL);
+*** ERROR C212 IN LINE 271 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 272   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_powersave0_seq);
+*** ERROR C208 IN LINE 272 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 273   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 273 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 274   3      
+ 275   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 6, NULL);
+*** ERROR C212 IN LINE 275 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 276   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_powersave0_seq);
+*** ERROR C208 IN LINE 276 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 277   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 277 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 278   3        
+ 279   3            }
+ 280   2            else
+ 281   2            {
+ 282   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 3, NULL);
+*** ERROR C212 IN LINE 282 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 283   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_powersave1_seq);
+*** ERROR C208 IN LINE 283 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 284   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 284 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 285   3      
+ 286   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 5, NULL);
+*** ERROR C212 IN LINE 286 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 287   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_powersave1_seq);
+*** ERROR C208 IN LINE 287 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 288   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 288 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 289   3      
+ 290   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 6, NULL);
+*** ERROR C212 IN LINE 290 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 291   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ks0108_powersave1_seq);
+*** ERROR C208 IN LINE 291 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 292   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 292 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 293   3        
+ 294   3            }
+ 295   2            break;
+ 296   2      // The KS0108 can not mirror the cols and rows, use U8g2 for rotation
+ 297   2      //    case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 298   2      //      break;
+ 299   2      // The KS0108 has no internal contrast command
+ 300   2      //    case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 301   2      //      break;
+ 302   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 303   2      
+ 304   2            v.ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 305   2            v.x = ((u8x8_tile_t *)arg_ptr)->x_pos;
+ 306   2            v.c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 307   2            v.arg_int = arg_int;    
+ 308   2            
+C51 COMPILER V9.01   U8X8_D_KS0108                                                         04/30/2021 10:55:23 PAGE 7   
+
+ 309   2      /*
+ 310   2          3-bit CS value:
+ 311   2          In u8x8_byte_set_ks0108_cs(u8x8_t *u8x8, uint8_t arg) the lowest
+ 312   2          bit is assigned to CS and highest bit if the 3-bit value to CS2
+ 313   2          
+ 314   2          CS: left part of the display  --> 6
+ 315   2          CS1: middle part --> 5
+ 316   2          CS2: right part of the display --> 3
+ 317   2      
+ 318   2          Reference: https://github.com/olikraus/u8g2/issues/631
+ 319   2      */
+ 320   2            if ( v.x < 8 )
+ 321   2            {
+ 322   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 6, NULL);  // 3-->6, issue 631
+*** ERROR C212 IN LINE 322 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 323   3        u8x8_ks0108_out(u8x8, &v, arg_ptr);
+ 324   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 324 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 325   3            }
+ 326   2            if ( v.x < 16 )
+ 327   2            {
+ 328   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 5, NULL);
+*** ERROR C212 IN LINE 328 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 329   3        u8x8_ks0108_out(u8x8, &v, arg_ptr);
+ 330   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 330 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 331   3            }
+ 332   2            if ( v.x < 24 )
+ 333   2            {
+ 334   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 3, NULL); // 6-->3, // issue 631
+*** ERROR C212 IN LINE 334 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 335   3        u8x8_ks0108_out(u8x8, &v, arg_ptr);
+ 336   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 7, NULL);
+*** ERROR C212 IN LINE 336 OF ..\U8G2\CSRC\U8X8_D_KS0108.C: indirect call: parameters do not fit within registers
+ 337   3            }    
+ 338   2            break;
+ 339   2          default:
+ 340   2            return 0;
+ 341   2        }
+ 342   1        return 1;
+ 343   1      }
+ 344          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  59 ERROR(S)

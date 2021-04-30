@@ -1,0 +1,614 @@
+C51 COMPILER V9.01   U8X8_D_T6963                                                          04/30/2021 10:55:32 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_T6963
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_t6963.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_t6963.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROW
+                    -SE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRI
+                    -NT(.\Listings\u8x8_d_t6963.lst) TABS(2) OBJECT(.\Objects\u8x8_d_t6963.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_t6963.c
+   4            
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          
+  35            The t6963 controller does not support hardware graphics flip.
+  36            Contrast adjustment is done by an external resistor --> no support for contrast adjustment
+  37            
+  38            
+  39          */
+  40          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  41          
+  42          
+  43          
+  44          static const uint8_t u8x8_d_t6963_powersave0_seq[] = {
+  45            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  46            U8X8_C(0x098),                            /* mode register: Display Mode, Graphics on, Text off, Cursor 
+             -off */
+  47            U8X8_END_TRANSFER(),              /* disable chip */
+  48            U8X8_END()                  /* end of sequence */
+  49          };
+C51 COMPILER V9.01   U8X8_D_T6963                                                          04/30/2021 10:55:32 PAGE 2   
+
+  50          
+  51          static const uint8_t u8x8_d_t6963_powersave1_seq[] = {
+  52            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  53            U8X8_C(0x090),                             /* All Off */
+  54            U8X8_END_TRANSFER(),              /* disable chip */
+  55            U8X8_END()                  /* end of sequence */
+  56          };
+  57          
+  58          
+  59          uint8_t u8x8_d_t6963_common(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+  60          {
+  61   1        uint8_t c, i;
+  62   1        uint16_t y;
+  63   1        uint8_t *ptr;
+  64   1        switch(msg)
+  65   1        {
+  66   2          /* U8X8_MSG_DISPLAY_SETUP_MEMORY is handled by the calling function */
+  67   2          /*
+  68   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+  69   2            break;
+  70   2          case U8X8_MSG_DISPLAY_INIT:
+  71   2            break;
+  72   2          */
+  73   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+  74   2            if ( arg_int == 0 )
+  75   2        u8x8_cad_SendSequence(u8x8, u8x8_d_t6963_powersave0_seq);
+*** ERROR C208 IN LINE 75 OF ..\U8G2\CSRC\U8X8_D_T6963.C: '_u8x8_cad_SendSequence': too many actual parameters
+  76   2            else
+  77   2        u8x8_cad_SendSequence(u8x8, u8x8_d_t6963_powersave1_seq);
+*** ERROR C208 IN LINE 77 OF ..\U8G2\CSRC\U8X8_D_T6963.C: '_u8x8_cad_SendSequence': too many actual parameters
+  78   2            break;
+  79   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+  80   2            y = (((u8x8_tile_t *)arg_ptr)->y_pos);
+  81   2            y*=8;
+  82   2            y*= u8x8->display_info->tile_width;
+  83   2            /* x = ((u8x8_tile_t *)arg_ptr)->x_pos; x is ignored... no u8x8 support */
+  84   2            //u8x8->gpio_and_delay_cb(u8x8, U8X8_MSG_DELAY_NANO, 200, NULL);  /* extra dely required */
+  85   2            u8x8_cad_StartTransfer(u8x8);
+  86   2            //u8x8->gpio_and_delay_cb(u8x8, U8X8_MSG_DELAY_NANO, 200, NULL);  /* extra dely required */
+  87   2            /* 
+  88   2        Tile structure is reused here for the t6963, however u8x8 is not supported 
+  89   2        tile_ptr points to data which has cnt*8 bytes (same as SSD1306 tiles)
+  90   2        Buffer is expected to have 8 lines of code fitting to the t6963 internal memory
+  91   2        "cnt" includes the number of horizontal bytes. width is equal to cnt*8
+  92   2        
+  93   2        TODO: Consider arg_int, however arg_int is not used by u8g2
+  94   2            */
+  95   2            c = ((u8x8_tile_t *)arg_ptr)->cnt;  /* number of tiles */
+  96   2            ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr; /* data ptr to the tiles */
+  97   2            for( i = 0; i < 8; i++ )
+  98   2            {
+  99   3        u8x8_cad_SendArg(u8x8, y&255);
+ 100   3        u8x8_cad_SendArg(u8x8, y>>8);
+ 101   3        u8x8_cad_SendCmd(u8x8, 0x024 ); /* set adr */
+ 102   3        u8x8_cad_SendCmd(u8x8, 0x0b0 ); /* auto write start */
+ 103   3        
+ 104   3        
+ 105   3        //c = ((u8x8_tile_t *)arg_ptr)->cnt;  /* number of tiles */
+ 106   3        u8x8_cad_SendData(u8x8, c, ptr);  /* note: SendData can not handle more than 255 bytes, send one line of d
+             -ata */
+*** ERROR C208 IN LINE 106 OF ..\U8G2\CSRC\U8X8_D_T6963.C: '_u8x8_cad_SendData': too many actual parameters
+ 107   3        
+C51 COMPILER V9.01   U8X8_D_T6963                                                          04/30/2021 10:55:32 PAGE 3   
+
+ 108   3        u8x8_cad_SendCmd(u8x8, 0x0b2 ); /* auto write reset */
+ 109   3        ptr += u8x8->display_info->tile_width;
+ 110   3        y += u8x8->display_info->tile_width;
+ 111   3            }
+ 112   2      
+ 113   2            u8x8_cad_EndTransfer(u8x8);
+ 114   2            //u8x8->gpio_and_delay_cb(u8x8, U8X8_MSG_DELAY_NANO, 200, NULL);  /* extra dely required */
+ 115   2      
+ 116   2            break;
+ 117   2          default:
+ 118   2            return 0;
+ 119   2        }
+ 120   1        return 1;
+ 121   1      }
+ 122          
+ 123          /*=============================================*/
+ 124          
+ 125          
+ 126          static const u8x8_display_info_t u8x8_t6963_240x128_display_info =
+ 127          {
+ 128            /* chip_enable_level = */ 0,
+ 129            /* chip_disable_level = */ 1,
+ 130            
+ 131            /* post_chip_enable_wait_ns = */ 110, /* T6963 Datasheet p30 */
+ 132            /* pre_chip_disable_wait_ns = */ 100, /* T6963 Datasheet p30 */
+ 133            /* reset_pulse_width_ms = */ 1, 
+ 134            /* post_reset_wait_ms = */ 6, 
+ 135            /* sda_setup_time_ns = */ 20,   
+ 136            /* sck_pulse_width_ns = */  140,  
+ 137            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 138            /* spi_mode = */ 0,   
+ 139            /* i2c_bus_clock_100kHz = */ 4,
+ 140            /* data_setup_time_ns = */ 80,
+ 141            /* write_pulse_width_ns = */ 80,
+ 142            /* tile_width = */ 30,
+ 143            /* tile_hight = */ 16,
+ 144            /* default_x_offset = */ 0,
+ 145            /* flipmode_x_offset = */ 0,
+ 146            /* pixel_width = */ 240,
+ 147            /* pixel_height = */ 128
+ 148          };
+ 149          
+ 150          /* 240x128 */
+ 151          static const uint8_t u8x8_d_t6963_240x128_init_seq[] = {
+ 152            U8X8_DLY(100),
+ 153            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 154            U8X8_DLY(100),
+ 155            
+ 156            U8X8_AAC(0x00,0x00,0x021),  /* low, high, set cursor pos */
+ 157            U8X8_AAC(0x00,0x00,0x022),  /* low, high, set offset */
+ 158            U8X8_AAC(0x00,0x00,0x040),  /* low, high, set text home */
+ 159            U8X8_AAC(240/8,0x00,0x041), /* low, high, set text columns */
+ 160            U8X8_AAC(0x00,0x00,0x042),  /* low, high, graphics home */  
+ 161            U8X8_AAC(240/8,0x00,0x043), /* low, high, graphics columns */
+ 162            U8X8_DLY(2),          /* delay 2ms */
+ 163            // mode set
+ 164            // 0x080: Internal CG, OR Mode
+ 165            // 0x081: Internal CG, EXOR Mode
+ 166            // 0x083: Internal CG, AND Mode
+ 167            // 0x088: External CG, OR Mode
+ 168            // 0x089: External CG, EXOR Mode
+C51 COMPILER V9.01   U8X8_D_T6963                                                          04/30/2021 10:55:32 PAGE 4   
+
+ 169            // 0x08B: External CG, AND Mode
+ 170            U8X8_C(0x080),                  /* mode register: OR Mode, Internal Character Mode */
+ 171            // display mode
+ 172            // 0x090: Display off
+ 173            // 0x094: Graphic off, text on, cursor off, blink off
+ 174            // 0x096: Graphic off, text on, cursor on, blink off
+ 175            // 0x097: Graphic off, text on, cursor on, blink on
+ 176            // 0x098: Graphic on, text off, cursor off, blink off
+ 177            // 0x09a: Graphic on, text off, cursor on, blink off
+ 178            // ...
+ 179            // 0x09c: Graphic on, text on, cursor off, blink off
+ 180            // 0x09f: Graphic on, text on, cursor on, blink on
+ 181            U8X8_C(0x090),                             /* All Off */
+ 182            U8X8_AAC(0x00,0x00,0x024),  /* low, high, set adr pointer */
+ 183            
+ 184            U8X8_DLY(100),
+ 185            U8X8_END_TRANSFER(),              /* disable chip */
+ 186            U8X8_DLY(100),
+ 187          };
+ 188          
+ 189          uint8_t u8x8_d_t6963_240x128(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 190          {
+ 191   1        switch(msg)
+ 192   1        {
+ 193   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 194   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_t6963_240x128_display_info);
+ 195   2            break;
+ 196   2          case U8X8_MSG_DISPLAY_INIT:
+ 197   2            u8x8_d_helper_display_init(u8x8);
+ 198   2            u8x8_cad_SendSequence(u8x8, u8x8_d_t6963_240x128_init_seq);
+*** ERROR C208 IN LINE 198 OF ..\U8G2\CSRC\U8X8_D_T6963.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 199   2            break;
+ 200   2          default:
+ 201   2            return u8x8_d_t6963_common(u8x8, msg, arg_int, arg_ptr);
+ 202   2        }
+ 203   1        return 1;
+ 204   1      }
+ 205          
+ 206          
+ 207          
+ 208          /*=============================================*/
+ 209          
+ 210          static const u8x8_display_info_t u8x8_t6963_240x64_display_info =
+ 211          {
+ 212            /* chip_enable_level = */ 0,
+ 213            /* chip_disable_level = */ 1,
+ 214            
+ 215            /* post_chip_enable_wait_ns = */ 110, /* T6963 Datasheet p30 */
+ 216            /* pre_chip_disable_wait_ns = */ 100, /* T6963 Datasheet p30 */
+ 217            /* reset_pulse_width_ms = */ 1, 
+ 218            /* post_reset_wait_ms = */ 6, 
+ 219            /* sda_setup_time_ns = */ 20,   
+ 220            /* sck_pulse_width_ns = */  140,  
+ 221            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 222            /* spi_mode = */ 0,   
+ 223            /* i2c_bus_clock_100kHz = */ 4,
+ 224            /* data_setup_time_ns = */ 80,
+ 225            /* write_pulse_width_ns = */ 80,
+ 226            /* tile_width = */ 30,
+ 227            /* tile_hight = */ 8,
+ 228            /* default_x_offset = */ 0,
+C51 COMPILER V9.01   U8X8_D_T6963                                                          04/30/2021 10:55:32 PAGE 5   
+
+ 229            /* flipmode_x_offset = */ 0,
+ 230            /* pixel_width = */ 240,
+ 231            /* pixel_height = */ 64
+ 232          };
+ 233          
+ 234          
+ 235          /* 240x64 */
+ 236          static const uint8_t u8x8_d_t6963_240x64_init_seq[] = {
+ 237            U8X8_DLY(100),
+ 238            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 239            U8X8_DLY(100),
+ 240            
+ 241            U8X8_AAC(0x00,0x00,0x021),  /* low, high, set cursor pos */
+ 242            U8X8_AAC(0x00,0x00,0x022),  /* low, high, set offset */
+ 243            U8X8_AAC(0x00,0x00,0x040),  /* low, high, set text home */
+ 244            U8X8_AAC(240/8,0x00,0x041), /* low, high, set text columns */
+ 245            U8X8_AAC(0x00,0x00,0x042),  /* low, high, graphics home */  
+ 246            U8X8_AAC(240/8,0x00,0x043), /* low, high, graphics columns */
+ 247            U8X8_DLY(2),          /* delay 2ms */
+ 248            // mode set
+ 249            // 0x080: Internal CG, OR Mode
+ 250            // 0x081: Internal CG, EXOR Mode
+ 251            // 0x083: Internal CG, AND Mode
+ 252            // 0x088: External CG, OR Mode
+ 253            // 0x089: External CG, EXOR Mode
+ 254            // 0x08B: External CG, AND Mode
+ 255            U8X8_C(0x080),                  /* mode register: OR Mode, Internal Character Mode */
+ 256            // display mode
+ 257            // 0x090: Display off
+ 258            // 0x094: Graphic off, text on, cursor off, blink off
+ 259            // 0x096: Graphic off, text on, cursor on, blink off
+ 260            // 0x097: Graphic off, text on, cursor on, blink on
+ 261            // 0x098: Graphic on, text off, cursor off, blink off
+ 262            // 0x09a: Graphic on, text off, cursor on, blink off
+ 263            // ...
+ 264            // 0x09c: Graphic on, text on, cursor off, blink off
+ 265            // 0x09f: Graphic on, text on, cursor on, blink on
+ 266            U8X8_C(0x090),                             /* All Off */
+ 267            U8X8_AAC(0x00,0x00,0x024),  /* low, high, set adr pointer */
+ 268            
+ 269            U8X8_DLY(100),
+ 270            U8X8_END_TRANSFER(),              /* disable chip */
+ 271            U8X8_DLY(100),
+ 272          };
+ 273          
+ 274          uint8_t u8x8_d_t6963_240x64(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 275          {
+ 276   1        switch(msg)
+ 277   1        {
+ 278   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 279   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_t6963_240x64_display_info);
+ 280   2            break;
+ 281   2          case U8X8_MSG_DISPLAY_INIT:
+ 282   2            u8x8_d_helper_display_init(u8x8);
+ 283   2            u8x8_cad_SendSequence(u8x8, u8x8_d_t6963_240x64_init_seq);
+*** ERROR C208 IN LINE 283 OF ..\U8G2\CSRC\U8X8_D_T6963.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 284   2            break;
+ 285   2          default:
+ 286   2            return u8x8_d_t6963_common(u8x8, msg, arg_int, arg_ptr);
+ 287   2        }
+ 288   1        return 1;
+ 289   1      }
+C51 COMPILER V9.01   U8X8_D_T6963                                                          04/30/2021 10:55:32 PAGE 6   
+
+ 290          
+ 291          
+ 292          
+ 293          /*=============================================*/
+ 294          
+ 295          
+ 296          
+ 297          static const u8x8_display_info_t u8x8_t6963_256x64_display_info =
+ 298          {
+ 299            /* chip_enable_level = */ 0,
+ 300            /* chip_disable_level = */ 1,
+ 301            
+ 302            /* post_chip_enable_wait_ns = */ 110, /* T6963 Datasheet p30 */
+ 303            /* pre_chip_disable_wait_ns = */ 100, /* T6963 Datasheet p30 */
+ 304            /* reset_pulse_width_ms = */ 1, 
+ 305            /* post_reset_wait_ms = */ 6, 
+ 306            /* sda_setup_time_ns = */ 20,   
+ 307            /* sck_pulse_width_ns = */  140,  
+ 308            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 309            /* spi_mode = */ 0,   
+ 310            /* i2c_bus_clock_100kHz = */ 4,
+ 311            /* data_setup_time_ns = */ 80,
+ 312            /* write_pulse_width_ns = */ 80,
+ 313            /* tile_width = */ 32,
+ 314            /* tile_hight = */ 8,
+ 315            /* default_x_offset = */ 0,
+ 316            /* flipmode_x_offset = */ 0,
+ 317            /* pixel_width = */ 256,
+ 318            /* pixel_height = */ 64
+ 319          };
+ 320          
+ 321          /* 256x64 */
+ 322          static const uint8_t u8x8_d_t6963_256x64_init_seq[] = {
+ 323            U8X8_DLY(100),
+ 324            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 325            U8X8_DLY(100),
+ 326            
+ 327            U8X8_AAC(0x00,0x00,0x021),  /* low, high, set cursor pos */
+ 328            U8X8_AAC(0x00,0x00,0x022),  /* low, high, set offset */
+ 329            U8X8_AAC(0x00,0x00,0x040),  /* low, high, set text home */
+ 330            U8X8_AAC(256/8,0x00,0x041), /* low, high, set text columns */
+ 331            U8X8_AAC(0x00,0x00,0x042),  /* low, high, graphics home */  
+ 332            U8X8_AAC(256/8,0x00,0x043), /* low, high, graphics columns */
+ 333            U8X8_DLY(2),          /* delay 2ms */
+ 334            // mode set
+ 335            // 0x080: Internal CG, OR Mode
+ 336            // 0x081: Internal CG, EXOR Mode
+ 337            // 0x083: Internal CG, AND Mode
+ 338            // 0x088: External CG, OR Mode
+ 339            // 0x089: External CG, EXOR Mode
+ 340            // 0x08B: External CG, AND Mode
+ 341            U8X8_C(0x080),                  /* mode register: OR Mode, Internal Character Mode */
+ 342            // display mode
+ 343            // 0x090: Display off
+ 344            // 0x094: Graphic off, text on, cursor off, blink off
+ 345            // 0x096: Graphic off, text on, cursor on, blink off
+ 346            // 0x097: Graphic off, text on, cursor on, blink on
+ 347            // 0x098: Graphic on, text off, cursor off, blink off
+ 348            // 0x09a: Graphic on, text off, cursor on, blink off
+ 349            // ...
+ 350            // 0x09c: Graphic on, text on, cursor off, blink off
+C51 COMPILER V9.01   U8X8_D_T6963                                                          04/30/2021 10:55:32 PAGE 7   
+
+ 351            // 0x09f: Graphic on, text on, cursor on, blink on
+ 352            U8X8_C(0x090),                             /* All Off */
+ 353            U8X8_AAC(0x00,0x00,0x024),  /* low, high, set adr pointer */
+ 354            
+ 355            U8X8_DLY(100),
+ 356            U8X8_END_TRANSFER(),              /* disable chip */
+ 357            U8X8_DLY(100),
+ 358          };
+ 359          
+ 360          uint8_t u8x8_d_t6963_256x64(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 361          {
+ 362   1        switch(msg)
+ 363   1        {
+ 364   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 365   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_t6963_256x64_display_info);
+ 366   2            break;
+ 367   2          case U8X8_MSG_DISPLAY_INIT:
+ 368   2            u8x8_d_helper_display_init(u8x8);
+ 369   2            u8x8_cad_SendSequence(u8x8, u8x8_d_t6963_256x64_init_seq);
+*** ERROR C208 IN LINE 369 OF ..\U8G2\CSRC\U8X8_D_T6963.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 370   2            break;
+ 371   2          default:
+ 372   2            return u8x8_d_t6963_common(u8x8, msg, arg_int, arg_ptr);
+ 373   2        }
+ 374   1        return 1;
+ 375   1      }
+ 376          
+ 377          
+ 378          /*=============================================*/
+ 379          
+ 380          static const u8x8_display_info_t u8x8_t6963_128x64_display_info =
+ 381          {
+ 382            /* chip_enable_level = */ 1,
+ 383            /* chip_disable_level = */ 0,
+ 384            
+ 385            /* post_chip_enable_wait_ns = */ 10,  /* T6963 Datasheet p30 */
+ 386            /* pre_chip_disable_wait_ns = */ 100, /* T6963 Datasheet p30 */
+ 387            /* reset_pulse_width_ms = */ 1, 
+ 388            /* post_reset_wait_ms = */ 6, 
+ 389            /* sda_setup_time_ns = */ 20,   
+ 390            /* sck_pulse_width_ns = */  140,  
+ 391            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 392            /* spi_mode = */ 0,   
+ 393            /* i2c_bus_clock_100kHz = */ 4,
+ 394            /* data_setup_time_ns = */ 80,
+ 395            /* write_pulse_width_ns = */ 80,
+ 396            /* tile_width = */ 16,
+ 397            /* tile_hight = */ 8,
+ 398            /* default_x_offset = */ 0,
+ 399            /* flipmode_x_offset = */ 0,
+ 400            /* pixel_width = */ 128,
+ 401            /* pixel_height = */ 64
+ 402          };
+ 403          
+ 404          /* 128x64 */
+ 405          static const uint8_t u8x8_d_t6963_128x64_init_seq[] = {
+ 406            U8X8_DLY(100),
+ 407            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 408            U8X8_DLY(100),
+ 409            
+ 410            U8X8_AAC(0x00,0x00,0x021),  /* low, high, set cursor pos */
+C51 COMPILER V9.01   U8X8_D_T6963                                                          04/30/2021 10:55:32 PAGE 8   
+
+ 411            U8X8_AAC(0x00,0x00,0x022),  /* low, high, set offset */
+ 412            U8X8_AAC(0x00,0x00,0x040),  /* low, high, set text home */
+ 413            U8X8_AAC(128/8,0x00,0x041), /* low, high, set text columns */
+ 414            U8X8_AAC(0x00,0x00,0x042),  /* low, high, graphics home */  
+ 415            U8X8_AAC(128/8,0x00,0x043), /* low, high, graphics columns */
+ 416            U8X8_DLY(2),          /* delay 2ms */
+ 417            // mode set
+ 418            // 0x080: Internal CG, OR Mode
+ 419            // 0x081: Internal CG, EXOR Mode
+ 420            // 0x083: Internal CG, AND Mode
+ 421            // 0x088: External CG, OR Mode
+ 422            // 0x089: External CG, EXOR Mode
+ 423            // 0x08B: External CG, AND Mode
+ 424            U8X8_C(0x080),                  /* mode register: OR Mode, Internal Character Mode */
+ 425            // display mode
+ 426            // 0x090: Display off
+ 427            // 0x094: Graphic off, text on, cursor off, blink off
+ 428            // 0x096: Graphic off, text on, cursor on, blink off
+ 429            // 0x097: Graphic off, text on, cursor on, blink on
+ 430            // 0x098: Graphic on, text off, cursor off, blink off
+ 431            // 0x09a: Graphic on, text off, cursor on, blink off
+ 432            // ...
+ 433            // 0x09c: Graphic on, text on, cursor off, blink off
+ 434            // 0x09f: Graphic on, text on, cursor on, blink on
+ 435            U8X8_C(0x090),                             /* All Off */
+ 436            U8X8_AAC(0x00,0x00,0x024),  /* low, high, set adr pointer */
+ 437            
+ 438            U8X8_DLY(100),
+ 439            U8X8_END_TRANSFER(),              /* disable chip */
+ 440            U8X8_DLY(100),
+ 441          };
+ 442          
+ 443          uint8_t u8x8_d_t6963_128x64(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 444          {
+ 445   1        switch(msg)
+ 446   1        {
+ 447   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 448   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_t6963_128x64_display_info);
+ 449   2            break;
+ 450   2          case U8X8_MSG_DISPLAY_INIT:
+ 451   2            u8x8_d_helper_display_init(u8x8);
+ 452   2            u8x8_cad_SendSequence(u8x8, u8x8_d_t6963_128x64_init_seq);
+*** ERROR C208 IN LINE 452 OF ..\U8G2\CSRC\U8X8_D_T6963.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 453   2            break;
+ 454   2          default:
+ 455   2            return u8x8_d_t6963_common(u8x8, msg, arg_int, arg_ptr);
+ 456   2        }
+ 457   1        return 1;
+ 458   1      }
+ 459          
+ 460          /*=============================================*/
+ 461          
+ 462          static const u8x8_display_info_t u8x8_t6963_160x80_display_info =
+ 463          {
+ 464            /* chip_enable_level = */ 0,
+ 465            /* chip_disable_level = */ 1,
+ 466            
+ 467            /* post_chip_enable_wait_ns = */ 10,  /* T6963 Datasheet p30 */
+ 468            /* pre_chip_disable_wait_ns = */ 100, /* T6963 Datasheet p30 */
+ 469            /* reset_pulse_width_ms = */ 1, 
+ 470            /* post_reset_wait_ms = */ 6, 
+ 471            /* sda_setup_time_ns = */ 20,   
+C51 COMPILER V9.01   U8X8_D_T6963                                                          04/30/2021 10:55:32 PAGE 9   
+
+ 472            /* sck_pulse_width_ns = */  140,  
+ 473            /* sck_clock_hz = */ 1000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 474            /* spi_mode = */ 0,   
+ 475            /* i2c_bus_clock_100kHz = */ 4,
+ 476            /* data_setup_time_ns = */ 80,
+ 477            /* write_pulse_width_ns = */ 80,
+ 478            /* tile_width = */ 20,
+ 479            /* tile_hight = */ 10,
+ 480            /* default_x_offset = */ 0,
+ 481            /* flipmode_x_offset = */ 0,
+ 482            /* pixel_width = */ 160,
+ 483            /* pixel_height = */ 80
+ 484          };
+ 485          
+ 486          /* 128x64 */
+ 487          static const uint8_t u8x8_d_t6963_160x80_init_seq[] = {
+ 488            U8X8_DLY(100),
+ 489            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 490            U8X8_DLY(100),
+ 491            
+ 492            U8X8_AAC(0x00,0x00,0x021),  /* low, high, set cursor pos */
+ 493            U8X8_AAC(0x00,0x00,0x022),  /* low, high, set offset */
+ 494            U8X8_AAC(0x00,0x00,0x040),  /* low, high, set text home */
+ 495            U8X8_AAC(160/8,0x00,0x041), /* low, high, set text columns */
+ 496            U8X8_AAC(0x00,0x00,0x042),  /* low, high, graphics home */  
+ 497            U8X8_AAC(160/8,0x00,0x043), /* low, high, graphics columns */
+ 498            U8X8_DLY(2),          /* delay 2ms */
+ 499            // mode set
+ 500            // 0x080: Internal CG, OR Mode
+ 501            // 0x081: Internal CG, EXOR Mode
+ 502            // 0x083: Internal CG, AND Mode
+ 503            // 0x088: External CG, OR Mode
+ 504            // 0x089: External CG, EXOR Mode
+ 505            // 0x08B: External CG, AND Mode
+ 506            U8X8_C(0x080),                  /* mode register: OR Mode, Internal Character Mode */
+ 507            // display mode
+ 508            // 0x090: Display off
+ 509            // 0x094: Graphic off, text on, cursor off, blink off
+ 510            // 0x096: Graphic off, text on, cursor on, blink off
+ 511            // 0x097: Graphic off, text on, cursor on, blink on
+ 512            // 0x098: Graphic on, text off, cursor off, blink off
+ 513            // 0x09a: Graphic on, text off, cursor on, blink off
+ 514            // ...
+ 515            // 0x09c: Graphic on, text on, cursor off, blink off
+ 516            // 0x09f: Graphic on, text on, cursor on, blink on
+ 517            U8X8_C(0x090),                             /* All Off */
+ 518            U8X8_AAC(0x00,0x00,0x024),  /* low, high, set adr pointer */
+ 519            
+ 520            U8X8_DLY(100),
+ 521            U8X8_END_TRANSFER(),              /* disable chip */
+ 522            U8X8_DLY(100),
+ 523          };
+ 524          
+ 525          uint8_t u8x8_d_t6963_160x80(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 526          {
+ 527   1        switch(msg)
+ 528   1        {
+ 529   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 530   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_t6963_160x80_display_info);
+ 531   2            break;
+ 532   2          case U8X8_MSG_DISPLAY_INIT:
+C51 COMPILER V9.01   U8X8_D_T6963                                                          04/30/2021 10:55:32 PAGE 10  
+
+ 533   2            u8x8_d_helper_display_init(u8x8);
+ 534   2            u8x8_cad_SendSequence(u8x8, u8x8_d_t6963_160x80_init_seq);
+*** ERROR C208 IN LINE 534 OF ..\U8G2\CSRC\U8X8_D_T6963.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 535   2            break;
+ 536   2          default:
+ 537   2            return u8x8_d_t6963_common(u8x8, msg, arg_int, arg_ptr);
+ 538   2        }
+ 539   1        return 1;
+ 540   1      }
+ 541          
+ 542          
+ 543          /* alternative version for the 128x64 t6963 display: use the 160x80 init sequence */
+ 544          uint8_t u8x8_d_t6963_128x64_alt(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 545          {
+ 546   1        switch(msg)
+ 547   1        {
+ 548   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 549   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_t6963_128x64_display_info);
+ 550   2            break;
+ 551   2          case U8X8_MSG_DISPLAY_INIT:
+ 552   2            u8x8_d_helper_display_init(u8x8);
+ 553   2            u8x8_cad_SendSequence(u8x8, u8x8_d_t6963_160x80_init_seq);
+*** ERROR C208 IN LINE 553 OF ..\U8G2\CSRC\U8X8_D_T6963.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 554   2            break;
+ 555   2          default:
+ 556   2            return u8x8_d_t6963_common(u8x8, msg, arg_int, arg_ptr);
+ 557   2        }
+ 558   1        return 1;
+ 559   1      }
+ 560          
+ 561          
+ 562            
+ 563          
+ 564            
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  12 ERROR(S)

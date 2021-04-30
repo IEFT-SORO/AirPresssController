@@ -1,0 +1,228 @@
+C51 COMPILER V9.01   U8X8_DEBOUNCE                                                         04/30/2021 10:55:34 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_DEBOUNCE
+OBJECT MODULE PLACED IN .\Objects\u8x8_debounce.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_debounce.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BRO
+                    -WSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PR
+                    -INT(.\Listings\u8x8_debounce.lst) TABS(2) OBJECT(.\Objects\u8x8_debounce.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_debounce.c
+   4            
+   5            Key/button simple debounce algorithm (Addon for u8x8)
+   6            
+   7            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   8          
+   9            Copyright (c) 2016, olikraus@gmail.com
+  10            All rights reserved.
+  11          
+  12            Redistribution and use in source and binary forms, with or without modification, 
+  13            are permitted provided that the following conditions are met:
+  14          
+  15            * Redistributions of source code must retain the above copyright notice, this list 
+  16              of conditions and the following disclaimer.
+  17              
+  18            * Redistributions in binary form must reproduce the above copyright notice, this 
+  19              list of conditions and the following disclaimer in the documentation and/or other 
+  20              materials provided with the distribution.
+  21          
+  22            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  23            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  24            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  25            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  26            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  27            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  28            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  29            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  30            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  31            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  32            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  33            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  34            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  35            
+  36          */
+  37          
+  38          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  39          
+  40          static uint8_t u8x8_read_pin_state(u8x8_t *u8x8)
+  41          {
+  42   1        uint8_t i;
+  43   1        uint8_t pin_state;
+  44   1        
+  45   1        pin_state = 255;  /* be compatible with the setup of the default pin setup, which is 255 */
+  46   1        for( i = 0; i < U8X8_PIN_INPUT_CNT; i++ )
+  47   1        {
+  48   2          pin_state <<= 1;
+  49   2          
+  50   2          /* the callback function should put the return value into this variable */
+C51 COMPILER V9.01   U8X8_DEBOUNCE                                                         04/30/2021 10:55:34 PAGE 2   
+
+  51   2          u8x8->gpio_result = 1;
+  52   2          u8x8_gpio_call(u8x8, U8X8_MSG_GPIO(i+U8X8_PIN_OUTPUT_CNT), 0);
+  53   2          pin_state |= u8x8->gpio_result & 1;
+  54   2        }
+  55   1        
+  56   1        return pin_state;
+  57   1      }
+  58          
+  59          /*
+  60            return 0 to U8X8_PIN_INPUT_CNT-1 if there is a difference
+  61            return U8X8_PIN_INPUT_CNT if there is no difference
+  62          */
+  63          static uint8_t u8x8_find_first_diff(uint8_t a, uint8_t b)
+  64          {
+  65   1        uint8_t mask;
+  66   1        uint8_t i;
+  67   1        mask = 1;
+  68   1        i = U8X8_PIN_INPUT_CNT;
+  69   1        do
+  70   1        {
+  71   2          i--;
+  72   2          if ( (a & mask) != (b & mask) )
+  73   2            return i;
+  74   2          mask <<= 1;
+  75   2        } while( i > 0 );
+  76   1        return U8X8_PIN_INPUT_CNT;
+  77   1      }
+  78          
+  79          /*
+  80            State A:
+  81              u8x8->debounce_last_pin_state == current_state 
+  82                --> State A
+  83              u8x8->debounce_last_pin_state != current_state 
+  84                --> u8x8->debounce_last_pin_state = current_state 
+  85                --> State B + cnt
+  86          
+  87            State B + cnt
+  88              --> state--
+  89          
+  90            State B
+  91              u8x8->debounce_last_pin_state == current_state 
+  92                --> keypress detected
+  93                --> State C
+  94              u8x8->debounce_last_pin_state != current_state 
+  95                --> State A
+  96          
+  97            State C
+  98              u8x8->debounce_last_pin_state == current_state 
+  99                --> State C
+ 100              u8x8->debounce_last_pin_state != current_state 
+ 101                --> State A
+ 102          
+ 103          */
+ 104          
+ 105          #ifdef __unix__xxxxxx_THIS_IS_DISABLED
+              
+              #include <stdio.h>
+              #include <stdlib.h>
+              uint8_t u8x8_GetMenuEvent(u8x8_t *u8x8)
+              {
+                  int c;
+                  c = getc(stdin);
+C51 COMPILER V9.01   U8X8_DEBOUNCE                                                         04/30/2021 10:55:34 PAGE 3   
+
+                  switch(c)
+                  {
+                      case 'n':
+                          return  U8X8_MSG_GPIO_MENU_NEXT;
+                      case 'p':
+                          return  U8X8_MSG_GPIO_MENU_PREV;
+                      case 's':
+                          return  U8X8_MSG_GPIO_MENU_SELECT;
+                      case 'h':
+                          return  U8X8_MSG_GPIO_MENU_HOME;
+                      case 'x':
+                          exit(0);
+                      default:
+                          puts("press n, p, s, h or x");
+                          break;
+                  }
+                  return 0;
+              }
+              
+              
+              #else  /* __unix__ */
+ 134          
+ 135          
+ 136          #define U8X8_DEBOUNCE_WAIT 2
+ 137          /* do debounce and return a GPIO msg which indicates the event */
+ 138          /* returns 0, if there is no event */
+ 139          #if defined(__GNUC__) && !defined(__CYGWIN__)
+              # pragma weak  u8x8_GetMenuEvent
+              #endif
+ 142          uint8_t u8x8_GetMenuEvent(u8x8_t *u8x8)
+ 143          {
+ 144   1        uint8_t pin_state;
+ 145   1        uint8_t result_msg = 0; /* invalid message, no event */
+ 146   1        
+ 147   1        pin_state = u8x8_read_pin_state(u8x8);
+ 148   1        
+ 149   1        /* States A, B, C & D are encoded in the upper 4 bit*/
+ 150   1        switch(u8x8->debounce_state)
+ 151   1        {
+ 152   2          case 0x00:  /* State A, default state */
+ 153   2            if ( u8x8->debounce_default_pin_state != pin_state )
+ 154   2            {
+ 155   3        //u8x8->debounce_last_pin_state = pin_state;
+ 156   3        u8x8->debounce_state = 0x010 + U8X8_DEBOUNCE_WAIT;
+ 157   3            }
+ 158   2            break;
+ 159   2          case 0x10:  /* State B */
+ 160   2            //if ( u8x8->debounce_last_pin_state != pin_state )
+ 161   2            if ( u8x8->debounce_default_pin_state == pin_state )
+ 162   2            {
+ 163   3        u8x8->debounce_state = 0x00;  /* back to state A */
+ 164   3            }
+ 165   2            else
+ 166   2            {
+ 167   3        /* keypress detected */
+ 168   3        u8x8->debounce_last_pin_state = pin_state;
+ 169   3        //result_msg = U8X8_MSG_GPIO_MENU_NEXT;
+ 170   3        u8x8->debounce_state = 0x020 + U8X8_DEBOUNCE_WAIT;  /* got to state C */  
+ 171   3            }
+ 172   2            break;
+ 173   2            
+ 174   2          case 0x20:  /* State C */
+C51 COMPILER V9.01   U8X8_DEBOUNCE                                                         04/30/2021 10:55:34 PAGE 4   
+
+ 175   2            if ( u8x8->debounce_last_pin_state != pin_state )
+ 176   2            {
+ 177   3        u8x8->debounce_state = 0x00;  /* back to state A */
+ 178   3            }
+ 179   2            else
+ 180   2            {
+ 181   3        u8x8->debounce_state = 0x030; /* got to state D */  
+ 182   3            }
+ 183   2            break;
+ 184   2            
+ 185   2          case 0x30:  /* State D */
+ 186   2            /* wait until key release */
+ 187   2            if ( u8x8->debounce_default_pin_state == pin_state )
+ 188   2            {
+ 189   3        u8x8->debounce_state = 0x00;  /* back to state A */
+ 190   3        result_msg = U8X8_MSG_GPIO(u8x8_find_first_diff(u8x8->debounce_default_pin_state, u8x8->debounce_last_pin
+             -_state)+U8X8_PIN_OUTPUT_CNT);
+ 191   3            }
+ 192   2            else
+ 193   2            {
+ 194   3        //result_msg = U8X8_MSG_GPIO_MENU_NEXT;
+ 195   3        // maybe implement autorepeat here 
+ 196   3            }
+ 197   2            break;
+ 198   2          default:
+ 199   2            u8x8->debounce_state--; /* count down, until there is a valid state */
+ 200   2            break;
+ 201   2        }
+ 202   1        return result_msg;
+ 203   1      }
+ 204          
+ 205          #endif /* __unix__ */
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

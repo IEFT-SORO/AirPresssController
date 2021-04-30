@@ -1,0 +1,292 @@
+C51 COMPILER V9.01   U8X8_D_ST7586S_ERC240160                                              04/30/2021 10:55:30 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_ST7586S_ERC240160
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_st7586s_erc240160.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_st7586s_erc240160.c LARGE WARNINGLEVEL(1) OPTIMIZE(8
+                    -,SPEED) BROWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJE
+                    -CTEXTEND PRINT(.\Listings\u8x8_d_st7586s_erc240160.lst) TABS(2) OBJECT(.\Objects\u8x8_d_st7586s_erc240160.obj)
+
+line level    source
+
+   1          /*
+   2            u8x8_d_st7586s_erc240160.c
+   3            
+   4            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   5            
+   6            Copyright (c) 2018, olikraus@gmail.com
+   7            
+   8            All rights reserved.
+   9            Redistribution and use in source and binary forms, with or without modification, 
+  10            are permitted provided that the following conditions are met:
+  11            * Redistributions of source code must retain the above copyright notice, this list 
+  12              of conditions and the following disclaimer.
+  13              
+  14            * Redistributions in binary form must reproduce the above copyright notice, this 
+  15              list of conditions and the following disclaimer in the documentation and/or other 
+  16              materials provided with the distribution.
+  17            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  18            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  19            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  20            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  21            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  22            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  23            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  24            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  25            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  26            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  27            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  28            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  29            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  30            
+  31          */
+  32          
+  33          #include "u8g2.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  34          
+  35          
+  36          static const uint8_t u8x8_d_st7586s_sleep_on[] = {
+  37            U8X8_START_TRANSFER(),  /* enable chip, delay is part of the transfer start */
+  38            U8X8_C(0x010), /* set power save mode */
+  39            U8X8_END_TRANSFER(),  /* disable chip */
+  40            U8X8_END()                  /* end of sequence */
+  41          };
+  42          
+  43          static const uint8_t u8x8_d_st7586s_sleep_off[] = {
+  44            U8X8_START_TRANSFER(),  /* enable chip, delay is part of the transfer start */
+  45            U8X8_C(0x011), //Sleep out
+  46            U8X8_DLY(50), /* delay 50 ms */
+  47            U8X8_END_TRANSFER(),  /* disable chip */
+  48            U8X8_END()                  /* end of sequence */
+  49          };
+  50          
+C51 COMPILER V9.01   U8X8_D_ST7586S_ERC240160                                              04/30/2021 10:55:30 PAGE 2   
+
+  51          static const uint8_t u8x8_d_st7586s_erc240160_flip0_seq[] = {
+  52            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  53            U8X8_C(0x036),  /* Scan Direction Setting */
+  54            U8X8_A(0x0C8),  /* COM159 -> COM0 SEG383 -> SEG0 */
+  55            U8X8_C(0x037),  /* Start line 0 */
+  56            U8X8_A(0x000),
+  57            U8X8_C(0x02A), /* Column Address Setting */
+  58            U8X8_A(0x000),  /* COL8 -> COL127 */
+  59            U8X8_A(0x008),  
+  60            U8X8_A(0x000), 
+  61            U8X8_A(0x07F),  /* 120*3=240 pixels + 120 unused */
+  62            U8X8_END_TRANSFER(),  /* disable chip */
+  63            U8X8_END()            /* end of sequence */
+  64          };
+  65          
+  66          static const uint8_t u8x8_d_st7586s_erc240160_flip1_seq[] = {
+  67            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  68            U8X8_C(0x036),  /* Scan Direction Setting */
+  69            U8X8_A(0x000),  /* COM0 -> COM159 SEG0 -> SEG383 */
+  70            U8X8_C(0x037),  /* Start line 0 */
+  71            U8X8_A(0x000),
+  72            U8X8_C(0x02A),  /* Column Address Setting */
+  73            U8X8_A(0x000),  /* COL0 -> COL119 */
+  74            U8X8_A(0x000),
+  75            U8X8_A(0x000),
+  76            U8X8_A(0x077),  /* 120*3=240 pixels + 120 unused */
+  77            U8X8_END_TRANSFER(),  /* disable chip */
+  78            U8X8_END()            /* end of sequence */
+  79          };
+  80          
+  81          static const uint8_t u8x8_d_st7586s_erc240160_init_seq[] = {
+  82            U8X8_END_TRANSFER(),/* disable chip */
+  83           // U8G_ESC_RST(1), /* hardware reset */
+  84            U8X8_DLY(60),   /* Delay 60 ms */
+  85            U8X8_START_TRANSFER(),/* enable chip */
+  86          
+  87            U8X8_C(0x001), // Soft reset
+  88            U8X8_DLY(60), // Delay 120 ms
+  89          
+  90            U8X8_C(0x011), // Sleep Out
+  91            U8X8_C(0x028), // Display OFF
+  92            U8X8_DLY(25), // Delay 50 ms
+  93          
+  94            U8X8_CAA(0x0C0,0x036,0x01),// Vop = 136h data sheet suggested 0x0145 but this caused streaks
+  95          
+  96            U8X8_CA(0x0C3,0x000), // BIAS = 1/14
+  97          
+  98            U8X8_CA(0x0C4,0x007), // Booster = x8
+  99          
+ 100            U8X8_CA(0x0D0,0x01D), // Enable Analog Circuit
+ 101          
+ 102            U8X8_CA(0x0B3,0x000), // Set FOSC divider
+ 103          
+ 104            U8X8_CA(0x0B5,0x000), // N-Line = 0
+ 105          
+ 106            U8X8_C(0x039), // 0x39 Monochrome mode. 0x38 - gray Mode
+ 107          
+ 108            U8X8_C(0x03A), // Enable DDRAM Interface
+ 109            U8X8_A(0x002), // monochrome and 4-level
+ 110          
+ 111            U8X8_C(0x036), // Scan Direction Setting
+ 112            U8X8_A(0x0C8), // COM:C159->C0   SEG: SEG383->SEG0
+C51 COMPILER V9.01   U8X8_D_ST7586S_ERC240160                                              04/30/2021 10:55:30 PAGE 3   
+
+ 113          
+ 114            U8X8_C(0x0B1), // First output COM
+ 115            U8X8_A(0x000), // 
+ 116            
+ 117            U8X8_C(0x0B0), // Duty Setting (num rows - 1)
+ 118            U8X8_A(0x09F), 
+ 119          
+ 120            U8X8_C(0x020), // Display inversion off
+ 121          
+ 122            U8X8_C(0x02A), // Column Address Setting
+ 123            U8X8_A(0x000), // COL0 -> COL127
+ 124            U8X8_A(0x008), // 
+ 125            U8X8_A(0x000), //
+ 126            U8X8_A(0x07F), // 80*3=240 pixels
+ 127          
+ 128            U8X8_C(0x02B), // Row Address Setting
+ 129            U8X8_A(0x000), // ROW0 -> ROW159
+ 130            U8X8_A(0x000), //
+ 131            U8X8_A(0x000), //
+ 132            U8X8_A(0x09F), // 160 pixels
+ 133          
+ 134            U8X8_C(0x029), // Display ON
+ 135            U8X8_END()  /* end of sequence */
+ 136          };
+ 137          
+ 138          static const u8x8_display_info_t u8x8_st7586s_erc240160_display_info =
+ 139          {
+ 140            /* chip_enable_level = */ 0,
+ 141            /* chip_disable_level = */ 1,
+ 142          
+ 143            /* post_chip_enable_wait_ns = */ 5,
+ 144            /* pre_chip_disable_wait_ns = */ 5,
+ 145            /* reset_pulse_width_ms = */ 1,
+ 146            /* post_reset_wait_ms = */ 6,
+ 147            /* sda_setup_time_ns = */ 20,
+ 148            /* sck_pulse_width_ns = */  100,  /* datasheet ST7586S */
+ 149            /* sck_clock_hz = */ 8000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 150            /* ST7586+Atmega128RFA1 works with 8MHz */
+ 151            /* spi_mode = */ 3,   /* active high, rising edge */
+ 152            /* i2c_bus_clock_100kHz = */ 4,
+ 153            /* data_setup_time_ns = */ 20, /* datasheet suggests min 20 */
+ 154            /* write_pulse_width_ns = */ 40,
+ 155            /* tile_width = */ 30,
+ 156            /* tile_height = */ 20,
+ 157            /* default_x_offset = */ 0,  /* abused as flag to know if we are flipped */
+ 158            /* flipmode_x_offset = */ 1, /* as pixel order different for normal/flipped  */
+ 159            /* pixel_width = */ 240,
+ 160            /* pixel_height = */ 160
+ 161          };
+ 162          
+ 163          /*******************************************************************************
+ 164           * st7586s_erc240160 driver. ST7586 based display from buydisplay.com
+ 165           ******************************************************************************/
+ 166          uint8_t u8x8_d_st7586s_erc240160(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr) {
+ 167   1        
+ 168   1        uint8_t c;
+ 169   1        uint8_t *ptr;
+ 170   1        uint8_t i, byte;
+ 171   1        uint32_t input;
+ 172   1        uint8_t output[4];
+ 173   1        switch (msg) {
+C51 COMPILER V9.01   U8X8_D_ST7586S_ERC240160                                              04/30/2021 10:55:30 PAGE 4   
+
+ 174   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 175   2          u8x8_cad_StartTransfer(u8x8); // OK Start transfer
+ 176   2          u8x8_cad_SendCmd(u8x8, 0x02B);  /* Row Address Setting */
+ 177   2          u8x8_cad_SendArg(u8x8, 0x000);
+ 178   2          u8x8_cad_SendArg(u8x8, 0x008 * ((u8x8_tile_t *)arg_ptr)->y_pos);
+ 179   2          u8x8_cad_SendArg(u8x8, 0x000);
+ 180   2          u8x8_cad_SendArg(u8x8, 0x09F); // should set end row based on display dimensions
+ 181   2          u8x8_cad_SendCmd(u8x8, 0x02C);  /* cmd write display data to ram */
+ 182   2          c = ((u8x8_tile_t *) arg_ptr)->cnt; //
+ 183   2          c *= 8;
+ 184   2          ptr = ((u8x8_tile_t *) arg_ptr)->tile_ptr;  //
+ 185   2      
+ 186   2      // The ST7586S has an unusual 3 pixels per byte format the ERC240160 is even more annoying
+ 187   2      // as it has every 3rd COM line disconnected for extra oddness so here we read in a byte 
+ 188   2      // (8 pixels) and pack that into 4 bytes of 2 pixels + 1 unused each. This has to be done
+ 189   2      // in a different order for flipped, normal UUx11x22 flipped 11x22xUU
+ 190   2        while (c > 0) {
+ 191   3            input = ((uint8_t)ptr[0]);
+ 192   3            
+ 193   3            for (i=0; i<4; i++)
+ 194   3            {
+ 195   4              byte = 0;
+ 196   4              if (u8x8->x_offset ==0){
+ 197   5                if (input & 0x80)          // if bit 7
+ 198   5                  byte = byte | 0x18;  //set pixel 1
+ 199   5                if (input & 0x40)          // if bit 6
+ 200   5                  byte = byte | 0x3;  //set pixel 2
+ 201   5              }
+ 202   4              if (u8x8->x_offset ==1){
+ 203   5                if (input & 0x80)          // if bit 7
+ 204   5                  byte = byte | 0xC0;  //set pixel 1
+ 205   5                if (input & 0x40)          // if bit 6
+ 206   5                  byte = byte | 0x18;  //set pixel 2
+ 207   5              }
+ 208   4              output[i] = byte;
+ 209   4              input <<= 2;
+ 210   4            }
+ 211   3            
+ 212   3            u8x8_cad_SendData(u8x8, 4, output);
+*** ERROR C208 IN LINE 212 OF ..\U8G2\CSRC\U8X8_D_ST7586S_ERC240160.C: '_u8x8_cad_SendData': too many actual parameters
+ 213   3            ptr += 1;
+ 214   3            c -= 1;
+ 215   3          }
+ 216   2          u8x8_cad_EndTransfer(u8x8); 
+ 217   2          break;
+ 218   2        case U8X8_MSG_DISPLAY_INIT:
+ 219   2          u8x8_d_helper_display_init(u8x8);
+ 220   2          u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_erc240160_init_seq);
+*** ERROR C208 IN LINE 220 OF ..\U8G2\CSRC\U8X8_D_ST7586S_ERC240160.C: '_u8x8_cad_SendSequence': too many actual paramet
+             -ers
+ 221   2          break;
+ 222   2        case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 223   2          u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7586s_erc240160_display_info);
+ 224   2          break;
+ 225   2        case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 226   2          if ( arg_int == 0 )
+ 227   2          {
+ 228   3             u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_erc240160_flip0_seq);
+*** ERROR C208 IN LINE 228 OF ..\U8G2\CSRC\U8X8_D_ST7586S_ERC240160.C: '_u8x8_cad_SendSequence': too many actual paramet
+             -ers
+ 229   3             u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 230   3          }
+C51 COMPILER V9.01   U8X8_D_ST7586S_ERC240160                                              04/30/2021 10:55:30 PAGE 5   
+
+ 231   2          else
+ 232   2          {
+ 233   3            u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_erc240160_flip1_seq);
+*** ERROR C208 IN LINE 233 OF ..\U8G2\CSRC\U8X8_D_ST7586S_ERC240160.C: '_u8x8_cad_SendSequence': too many actual paramet
+             -ers
+ 234   3            u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 235   3          } 
+ 236   2          break;
+ 237   2        case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 238   2          if (arg_int == 0)
+ 239   2            u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_sleep_off);
+*** ERROR C208 IN LINE 239 OF ..\U8G2\CSRC\U8X8_D_ST7586S_ERC240160.C: '_u8x8_cad_SendSequence': too many actual paramet
+             -ers
+ 240   2          else
+ 241   2            u8x8_cad_SendSequence(u8x8, u8x8_d_st7586s_sleep_on);
+*** ERROR C208 IN LINE 241 OF ..\U8G2\CSRC\U8X8_D_ST7586S_ERC240160.C: '_u8x8_cad_SendSequence': too many actual paramet
+             -ers
+ 242   2          break;
+ 243   2      #ifdef U8X8_WITH_SET_CONTRAST
+ 244   2        case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 245   2          u8x8_cad_StartTransfer(u8x8);
+ 246   2          u8x8_cad_SendCmd(u8x8, 0x0C0);
+ 247   2          u8x8_cad_SendArg(u8x8, arg_int);
+ 248   2          u8x8_cad_SendArg(u8x8, 1);
+ 249   2          u8x8_cad_EndTransfer(u8x8);
+ 250   2          break;
+ 251   2      #endif
+ 252   2        default:
+ 253   2          return 0;
+ 254   2        }
+ 255   1        return 1;
+ 256   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  9 ERROR(S)

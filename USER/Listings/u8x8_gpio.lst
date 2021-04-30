@@ -1,0 +1,69 @@
+C51 COMPILER V9.01   U8X8_GPIO                                                             04/30/2021 10:55:34 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_GPIO
+OBJECT MODULE PLACED IN .\Objects\u8x8_gpio.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_gpio.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROWSE 
+                    -INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRINT(
+                    -.\Listings\u8x8_gpio.lst) TABS(2) OBJECT(.\Objects\u8x8_gpio.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_gpio.c
+   4            
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          */
+  35          
+  36          
+  37          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  38          
+  39          
+  40          void u8x8_gpio_call(u8x8_t *u8x8, uint8_t msg, uint8_t arg)
+  41          {
+  42   1        u8x8->gpio_and_delay_cb(u8x8, msg, arg, NULL);
+*** ERROR C212 IN LINE 42 OF ..\U8G2\CSRC\U8X8_GPIO.C: indirect call: parameters do not fit within registers
+  43   1      }
+  44          
+  45          /*
+  46          void u8x8_gpio_Delay(u8x8_t *u8x8, uint8_t msg, uint8_t dly)
+  47          {
+  48            u8x8->gpio_and_delay_cb(u8x8, msg, dly, NULL);
+  49          }
+C51 COMPILER V9.01   U8X8_GPIO                                                             04/30/2021 10:55:34 PAGE 2   
+
+  50          */
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  4 ERROR(S)

@@ -1,0 +1,144 @@
+C51 COMPILER V9.01   U8X8_INPUT_VALUE                                                      04/30/2021 10:55:34 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_INPUT_VALUE
+OBJECT MODULE PLACED IN .\Objects\u8x8_input_value.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_input_value.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) 
+                    -BROWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND
+                    - PRINT(.\Listings\u8x8_input_value.lst) TABS(2) OBJECT(.\Objects\u8x8_input_value.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_input_value.c
+   4            
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33            
+  34          */
+  35          
+  36          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  37          
+  38          /*
+  39            return:
+  40              0: value is not changed (HOME/Break Button pressed)
+  41              1: value has been updated
+  42          */
+  43          
+  44          uint8_t u8x8_UserInterfaceInputValue(u8x8_t *u8x8, const char *title, const char *pre, uint8_t *value, uin
+             -t8_t lo, uint8_t hi, uint8_t digits, const char *post)
+  45          {
+  46   1        uint8_t height;
+  47   1        uint8_t y;
+  48   1        uint8_t width;
+  49   1        uint8_t x;
+C51 COMPILER V9.01   U8X8_INPUT_VALUE                                                      04/30/2021 10:55:34 PAGE 2   
+
+  50   1        uint8_t local_value = *value;
+  51   1        uint8_t r;
+  52   1        uint8_t event;
+  53   1      
+  54   1        /* calculate overall height of the input value box */
+  55   1        height = 1; /* button line */
+  56   1        height += u8x8_GetStringLineCnt(title);
+  57   1        
+  58   1        /* calculate offset from top */
+  59   1        y = 0;
+  60   1        if ( height < u8x8_GetRows(u8x8)  )
+  61   1        {
+  62   2          y = u8x8_GetRows(u8x8);
+  63   2          y -= height;
+  64   2          y /= 2;
+  65   2        }
+  66   1        
+  67   1        /* calculate offset from left for the label */
+  68   1        x = 0;
+  69   1        width = u8x8_GetUTF8Len(u8x8, pre);
+  70   1        width += digits;
+  71   1        width += u8x8_GetUTF8Len(u8x8, post);
+  72   1        if ( width < u8x8_GetCols(u8x8) )
+  73   1        {
+  74   2          x = u8x8_GetCols(u8x8);
+  75   2          x -= width;
+  76   2          x /= 2;
+  77   2        }
+  78   1        
+  79   1        /* render */
+  80   1        u8x8_ClearDisplay(u8x8);   /* required, because not everything is filled */
+  81   1        u8x8_SetInverseFont(u8x8, 0);  
+  82   1        y += u8x8_DrawUTF8Lines(u8x8, 0, y, u8x8_GetCols(u8x8), title);
+  83   1        x += u8x8_DrawUTF8(u8x8, x, y, pre);
+  84   1        u8x8_DrawUTF8(u8x8, x+digits, y, post);
+  85   1        u8x8_SetInverseFont(u8x8, 1);
+  86   1        
+  87   1        /* event loop */
+  88   1        u8x8_DrawUTF8(u8x8, x, y, u8x8_u8toa(local_value, digits));
+  89   1        for(;;)
+  90   1        {
+  91   2          event = u8x8_GetMenuEvent(u8x8);
+  92   2          if ( event == U8X8_MSG_GPIO_MENU_SELECT )
+  93   2          {
+  94   3            *value = local_value;
+  95   3            r = 1;
+  96   3            break;
+  97   3          }
+  98   2          else if ( event == U8X8_MSG_GPIO_MENU_HOME )
+  99   2          {
+ 100   3            r = 0;
+ 101   3            break;
+ 102   3          }
+ 103   2          else if ( event == U8X8_MSG_GPIO_MENU_NEXT || event == U8X8_MSG_GPIO_MENU_UP )
+ 104   2          {
+ 105   3            if ( local_value >= hi )
+ 106   3        local_value = lo;
+ 107   3            else
+ 108   3        local_value++;
+ 109   3            u8x8_DrawUTF8(u8x8, x, y, u8x8_u8toa(local_value, digits));
+ 110   3          }
+ 111   2          else if ( event == U8X8_MSG_GPIO_MENU_PREV || event == U8X8_MSG_GPIO_MENU_DOWN )
+C51 COMPILER V9.01   U8X8_INPUT_VALUE                                                      04/30/2021 10:55:34 PAGE 3   
+
+ 112   2          {
+ 113   3            if ( local_value <= lo )
+ 114   3        local_value = hi;
+ 115   3            else
+ 116   3        local_value--;
+ 117   3            u8x8_DrawUTF8(u8x8, x, y, u8x8_u8toa(local_value, digits));
+ 118   3          }        
+ 119   2        }
+ 120   1        
+ 121   1        u8x8_SetInverseFont(u8x8, 0);
+ 122   1        return r;  
+ 123   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

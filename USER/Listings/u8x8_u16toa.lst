@@ -1,0 +1,95 @@
+C51 COMPILER V9.01   U8X8_U16TOA                                                           04/30/2021 10:55:35 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_U16TOA
+OBJECT MODULE PLACED IN .\Objects\u8x8_u16toa.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_u16toa.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROWS
+                    -E INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRIN
+                    -T(.\Listings\u8x8_u16toa.lst) TABS(2) OBJECT(.\Objects\u8x8_u16toa.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_u16toa.c
+   4          
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34            
+  35          */
+  36          
+  37          
+  38          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  39          
+  40          const char *u8x8_u16toap(char * dest, uint16_t v)
+  41          {
+  42   1        uint8_t pos;
+  43   1        uint8_t d;
+  44   1        uint16_t c;
+  45   1        c = 10000;
+  46   1        for( pos = 0; pos < 5; pos++ )
+  47   1        {
+  48   2            d = '0';
+  49   2            while( v >= c )
+  50   2            {
+C51 COMPILER V9.01   U8X8_U16TOA                                                           04/30/2021 10:55:35 PAGE 2   
+
+  51   3        v -= c;
+  52   3        d++;
+  53   3            }
+  54   2            dest[pos] = d;
+  55   2            c /= 10;
+  56   2        }  
+  57   1        dest[5] = '\0';
+  58   1        return dest;
+  59   1      }
+  60          
+  61          /* v = value, d = number of digits */
+  62          const char *u8x8_u16toa(uint16_t v, uint8_t d)
+  63          {
+  64   1        static char buf[6];
+  65   1        d = 5-d;
+  66   1        return u8x8_u16toap(buf, v) + d;
+  67   1      }
+  68          
+  69          const char *u8x8_utoa(uint16_t v)
+  70          {
+  71   1        const char *s = u8x8_u16toa(v, 5);
+  72   1        while( *s == '0' )
+  73   1          s++;
+  74   1        if ( *s == '\0' )
+  75   1          s--;
+  76   1        return s;
+  77   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

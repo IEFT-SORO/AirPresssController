@@ -1,0 +1,234 @@
+C51 COMPILER V9.01   U8X8_D_UC1701_DOGS102                                                 04/30/2021 10:55:33 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_UC1701_DOGS102
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_uc1701_dogs102.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_uc1701_dogs102.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SP
+                    -EED) BROWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTE
+                    -XTEND PRINT(.\Listings\u8x8_d_uc1701_dogs102.lst) TABS(2) OBJECT(.\Objects\u8x8_d_uc1701_dogs102.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_uc1701_dogs102.c
+   4            
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34            
+  35          */
+  36          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  37          
+  38          
+  39          
+  40          
+  41          static const uint8_t u8x8_d_uc1701_dogs102_init_seq[] = {
+  42              
+  43            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  44            
+  45            U8X8_C(0x0e2),                  /* soft reset */
+  46            U8X8_C(0x0ae),                    /* display off */
+  47            U8X8_C(0x040),                    /* set display start line to 0 */
+  48            
+  49            U8X8_C(0x0a1),                    /* ADC set to reverse */
+  50            U8X8_C(0x0c0),                    /* common output mode */
+C51 COMPILER V9.01   U8X8_D_UC1701_DOGS102                                                 04/30/2021 10:55:33 PAGE 2   
+
+  51            // Flipmode
+  52            //U8X8_C(0x0a0),                    /* ADC set to reverse */
+  53            //U8X8_C(0x0c8),                    /* common output mode */
+  54            
+  55            U8X8_C(0x0a6),                    /* display normal, bit val 0: LCD pixel off. */
+  56            U8X8_C(0x0a2),                    /* LCD bias 1/9 */
+  57            U8X8_C(0x02f),                    /* all power  control circuits on */
+  58            U8X8_C(0x027),                    /* regulator, booster and follower */
+  59            U8X8_CA(0x081, 0x00e),    /* set contrast, contrast value, EA default: 0x010, previous value for S102: 0x0
+             -e */
+  60            U8X8_C(0x0fa),                    /* Set Temp compensation */ 
+  61            U8X8_C(0x090),                    /* 0.11 deg/c WP Off WC Off*/
+  62            
+  63            U8X8_C(0x0ae),                    /* display off */
+  64            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+  65            
+  66            U8X8_END_TRANSFER(),              /* disable chip */
+  67            U8X8_END()                  /* end of sequence */
+  68          };
+  69          
+  70          static const uint8_t u8x8_d_uc1701_dogs102_powersave0_seq[] = {
+  71            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  72            U8X8_C(0x0a4),                    /* all pixel off, issue 142 */
+  73            U8X8_C(0x0af),                    /* display on */
+  74            U8X8_END_TRANSFER(),              /* disable chip */
+  75            U8X8_END()                  /* end of sequence */
+  76          };
+  77          
+  78          static const uint8_t u8x8_d_uc1701_dogs102_powersave1_seq[] = {
+  79            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  80            U8X8_C(0x0ae),                    /* display off */
+  81            U8X8_C(0x0a5),                    /* enter powersafe: all pixel on, issue 142 */
+  82            U8X8_END_TRANSFER(),              /* disable chip */
+  83            U8X8_END()                  /* end of sequence */
+  84          };
+  85          
+  86          static const uint8_t u8x8_d_uc1701_dogs102_flip0_seq[] = {
+  87            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  88            U8X8_C(0x0a1),        /* segment remap a0/a1*/
+  89            U8X8_C(0x0c0),        /* c0: scan dir normal, c8: reverse */
+  90            U8X8_END_TRANSFER(),              /* disable chip */
+  91            U8X8_END()                  /* end of sequence */
+  92          };
+  93          
+  94          static const uint8_t u8x8_d_uc1701_dogs102_flip1_seq[] = {
+  95            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  96            U8X8_C(0x0a0),        /* segment remap a0/a1*/
+  97            U8X8_C(0x0c8),        /* c0: scan dir normal, c8: reverse */
+  98            U8X8_END_TRANSFER(),              /* disable chip */
+  99            U8X8_END()                  /* end of sequence */
+ 100          };
+ 101          
+ 102          
+ 103          static const u8x8_display_info_t u8x8_uc1701_display_info =
+ 104          {
+ 105            /* chip_enable_level = */ 0,
+ 106            /* chip_disable_level = */ 1,
+ 107            
+ 108            /* post_chip_enable_wait_ns = */ 5,
+ 109            /* pre_chip_disable_wait_ns = */ 5,
+ 110            /* reset_pulse_width_ms = */ 1, 
+ 111            /* post_reset_wait_ms = */ 6, 
+C51 COMPILER V9.01   U8X8_D_UC1701_DOGS102                                                 04/30/2021 10:55:33 PAGE 3   
+
+ 112            /* sda_setup_time_ns = */ 12,   
+ 113            /* sck_pulse_width_ns = */ 75,  /* half of cycle time (100ns according to datasheet), AVR: below 70: 8 MH
+             -z, >= 70 --> 4MHz clock */
+ 114            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 115            /* spi_mode = */ 0,   /* active high, rising edge */
+ 116            /* i2c_bus_clock_100kHz = */ 4,
+ 117            /* data_setup_time_ns = */ 30,
+ 118            /* write_pulse_width_ns = */ 40,
+ 119            /* tile_width = */ 13,    /* width of 13*8=104 pixel */
+ 120            /* tile_hight = */ 8,
+ 121            /* default_x_offset = */ 0,
+ 122            /* flipmode_x_offset = */ 30,
+ 123            /* pixel_width = */ 102,
+ 124            /* pixel_height = */ 64
+ 125          };
+ 126          
+ 127          uint8_t u8x8_d_uc1701_ea_dogs102(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 128          {
+ 129   1        uint8_t x, c;
+ 130   1        uint8_t *ptr;
+ 131   1        switch(msg)
+ 132   1        {
+ 133   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 134   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_uc1701_display_info);
+ 135   2            break;
+ 136   2          case U8X8_MSG_DISPLAY_INIT:
+ 137   2            u8x8_d_helper_display_init(u8x8);
+ 138   2            u8x8_cad_SendSequence(u8x8, u8x8_d_uc1701_dogs102_init_seq);
+*** ERROR C208 IN LINE 138 OF ..\U8G2\CSRC\U8X8_D_UC1701_DOGS102.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 139   2            break;
+ 140   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 141   2            if ( arg_int == 0 )
+ 142   2        u8x8_cad_SendSequence(u8x8, u8x8_d_uc1701_dogs102_powersave0_seq);
+*** ERROR C208 IN LINE 142 OF ..\U8G2\CSRC\U8X8_D_UC1701_DOGS102.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 143   2            else
+ 144   2        u8x8_cad_SendSequence(u8x8, u8x8_d_uc1701_dogs102_powersave1_seq);
+*** ERROR C208 IN LINE 144 OF ..\U8G2\CSRC\U8X8_D_UC1701_DOGS102.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 145   2            break;
+ 146   2          case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 147   2            if ( arg_int == 0 )
+ 148   2            {
+ 149   3        u8x8_cad_SendSequence(u8x8, u8x8_d_uc1701_dogs102_flip0_seq);
+*** ERROR C208 IN LINE 149 OF ..\U8G2\CSRC\U8X8_D_UC1701_DOGS102.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 150   3        u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 151   3            }
+ 152   2            else
+ 153   2            {
+ 154   3        u8x8_cad_SendSequence(u8x8, u8x8_d_uc1701_dogs102_flip1_seq);
+*** ERROR C208 IN LINE 154 OF ..\U8G2\CSRC\U8X8_D_UC1701_DOGS102.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 155   3        u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 156   3            } 
+ 157   2            break;
+ 158   2      #ifdef U8X8_WITH_SET_CONTRAST
+ 159   2          case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 160   2            u8x8_cad_StartTransfer(u8x8);
+ 161   2            u8x8_cad_SendCmd(u8x8, 0x081 );
+ 162   2            u8x8_cad_SendArg(u8x8, arg_int >> 2 );  /* uc1701 has range from 0 to 63 */
+ 163   2            u8x8_cad_EndTransfer(u8x8);
+ 164   2            break;
+ 165   2      #endif
+ 166   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+C51 COMPILER V9.01   U8X8_D_UC1701_DOGS102                                                 04/30/2021 10:55:33 PAGE 4   
+
+ 167   2            u8x8_cad_StartTransfer(u8x8);
+ 168   2          
+ 169   2            x = ((u8x8_tile_t *)arg_ptr)->x_pos;
+ 170   2            x *= 8;
+ 171   2            x += u8x8->x_offset;
+ 172   2            u8x8_cad_SendCmd(u8x8, 0x010 | (x>>4) );
+ 173   2            u8x8_cad_SendCmd(u8x8, 0x000 | ((x&15)));
+ 174   2            u8x8_cad_SendCmd(u8x8, 0x0b0 | (((u8x8_tile_t *)arg_ptr)->y_pos));
+ 175   2          
+ 176   2            c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 177   2            c *= 8;
+ 178   2            ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 179   2            /* 
+ 180   2        The following if condition checks the hardware limits of the uc1701 
+ 181   2        controller: It is not allowed to write beyond the display limits.
+ 182   2        This is in fact an issue within flip mode.
+ 183   2            */
+ 184   2            if ( c + x > 132u )
+ 185   2            {
+ 186   3        c = 132u;
+ 187   3        c -= x;
+ 188   3            }
+ 189   2            do
+ 190   2            {
+ 191   3        u8x8_cad_SendData(u8x8, c, ptr);  /* note: SendData can not handle more than 255 bytes */
+*** ERROR C208 IN LINE 191 OF ..\U8G2\CSRC\U8X8_D_UC1701_DOGS102.C: '_u8x8_cad_SendData': too many actual parameters
+ 192   3        arg_int--;
+ 193   3            } while( arg_int > 0 );
+ 194   2            
+ 195   2            u8x8_cad_EndTransfer(u8x8);
+ 196   2            break;
+ 197   2          default:
+ 198   2            return 0;
+ 199   2        }
+ 200   1        return 1;
+ 201   1      }
+ 202          
+ 203          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  9 ERROR(S)

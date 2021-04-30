@@ -1,0 +1,851 @@
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_CAD
+OBJECT MODULE PLACED IN .\Objects\u8x8_cad.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_cad.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROWSE I
+                    -NCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRINT(.
+                    -\Listings\u8x8_cad.lst) TABS(2) OBJECT(.\Objects\u8x8_cad.obj)
+
+line level    source
+
+   1          /*
+   2            
+   3            u8x8_cad.c
+   4            
+   5            "command arg data" interface to the graphics controller
+   6          
+   7            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   8          
+   9            Copyright (c) 2016, olikraus@gmail.com
+  10            All rights reserved.
+  11          
+  12            Redistribution and use in source and binary forms, with or without modification, 
+  13            are permitted provided that the following conditions are met:
+  14          
+  15            * Redistributions of source code must retain the above copyright notice, this list 
+  16              of conditions and the following disclaimer.
+  17              
+  18            * Redistributions in binary form must reproduce the above copyright notice, this 
+  19              list of conditions and the following disclaimer in the documentation and/or other 
+  20              materials provided with the distribution.
+  21          
+  22            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  23            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  24            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  25            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  26            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  27            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  28            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  29            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  30            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  31            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  32            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  33            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  34            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  35          
+  36          
+  37            The following sequence must be used for any data, which is set to the display:
+  38            
+  39            
+  40            uint8_t u8x8_cad_StartTransfer(u8x8_t *u8x8)
+  41          
+  42            any of the following calls
+  43              uint8_t u8x8_cad_SendCmd(u8x8_t *u8x8, uint8_t cmd)
+  44              uint8_t u8x8_cad_SendArg(u8x8_t *u8x8, uint8_t arg)
+  45              uint8_t u8x8_cad_SendData(u8x8_t *u8x8, uint8_t cnt, uint8_t *data)
+  46            
+  47            uint8_t u8x8_cad_EndTransfer(u8x8_t *u8x8)
+  48          
+  49          
+  50          
+  51          */
+  52          /*
+  53          uint8_t u8x8_cad_template(u8x8_t *u8x8, uint8_t msg, uint16_t arg_int, void *arg_ptr)
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 2   
+
+  54          {
+  55            uint8_t i;
+  56            
+  57            switch(msg)
+  58            {
+  59              case U8X8_MSG_CAD_SEND_CMD:
+  60                u8x8_mcd_byte_SetDC(mcd->next, 1);
+  61                u8x8_mcd_byte_Send(mcd->next, arg_int);
+  62                break;
+  63              case U8X8_MSG_CAD_SEND_ARG:
+  64                u8x8_mcd_byte_SetDC(mcd->next, 1);
+  65                u8x8_mcd_byte_Send(mcd->next, arg_int);
+  66                break;
+  67              case U8X8_MSG_CAD_SEND_DATA:
+  68                u8x8_mcd_byte_SetDC(mcd->next, 0);
+  69                for( i = 0; i < 8; i++ )
+  70            u8x8_mcd_byte_Send(mcd->next, ((uint8_t *)arg_ptr)[i]);
+  71                break;
+  72              case U8X8_MSG_CAD_RESET:
+  73                return mcd->next->cb(mcd->next, msg, arg_int, arg_ptr);
+  74              case U8X8_MSG_CAD_START_TRANSFER:
+  75                return mcd->next->cb(mcd->next, msg, arg_int, arg_ptr);
+  76              case U8X8_MSG_CAD_END_TRANSFER:
+  77                return mcd->next->cb(mcd->next, msg, arg_int, arg_ptr);
+  78              default:
+  79                break;
+  80            }
+  81            return 1;
+  82          }
+  83          
+  84          */
+  85          
+  86          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  87          
+  88          uint8_t u8x8_cad_SendCmd(u8x8_t *u8x8, uint8_t cmd)
+  89          {
+  90   1        return u8x8->cad_cb(u8x8, U8X8_MSG_CAD_SEND_CMD, cmd, NULL);
+*** ERROR C212 IN LINE 90 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+  91   1      }
+  92          
+  93          uint8_t u8x8_cad_SendArg(u8x8_t *u8x8, uint8_t arg)
+  94          {
+  95   1        return u8x8->cad_cb(u8x8, U8X8_MSG_CAD_SEND_ARG, arg, NULL);
+*** ERROR C212 IN LINE 95 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+  96   1      }
+  97          
+  98          uint8_t u8x8_cad_SendMultipleArg(u8x8_t *u8x8, uint8_t cnt, uint8_t arg)
+  99          {
+ 100   1        while( cnt > 0 )
+ 101   1        {
+ 102   2          u8x8->cad_cb(u8x8, U8X8_MSG_CAD_SEND_ARG, arg, NULL);
+*** ERROR C212 IN LINE 102 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 103   2          cnt--;
+ 104   2        }
+ 105   1        return 1;
+ 106   1      }
+ 107          
+ 108          uint8_t u8x8_cad_SendData(u8x8_t *u8x8, uint8_t cnt, uint8_t *data)
+*** ERROR C141 IN LINE 108 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near ')'
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 3   
+
+ 109          {
+ 110   1        return u8x8->cad_cb(u8x8, U8X8_MSG_CAD_SEND_DATA, cnt, data);
+*** ERROR C141 IN LINE 110 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+*** ERROR C212 IN LINE 110 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 111   1      }
+ 112          
+ 113          uint8_t u8x8_cad_StartTransfer(u8x8_t *u8x8)
+ 114          {
+ 115   1        return u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 115 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 116   1      }
+ 117          
+ 118          uint8_t u8x8_cad_EndTransfer(u8x8_t *u8x8)
+ 119          {
+ 120   1        return u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 120 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 121   1      }
+ 122          
+ 123          void u8x8_cad_vsendf(u8x8_t * u8x8, const char *fmt, va_list va)
+ 124          {
+ 125   1        uint8_t d;
+ 126   1        u8x8_cad_StartTransfer(u8x8);
+ 127   1        while( *fmt != '\0' )
+ 128   1        {
+ 129   2          d = (uint8_t)va_arg(va, int);
+ 130   2          switch(*fmt)
+ 131   2          {
+ 132   3            case 'a':  u8x8_cad_SendArg(u8x8, d); break;
+ 133   3            case 'c':  u8x8_cad_SendCmd(u8x8, d); break;
+ 134   3            case 'd':  u8x8_cad_SendData(u8x8, 1, &d); break;
+*** ERROR C208 IN LINE 134 OF ..\U8G2\CSRC\U8X8_CAD.C: '_u8x8_cad_SendData': too many actual parameters
+ 135   3          }
+ 136   2          fmt++;
+ 137   2        }
+ 138   1        u8x8_cad_EndTransfer(u8x8);
+ 139   1      }
+ 140          
+ 141          void u8x8_SendF(u8x8_t * u8x8, const char *fmt, ...)
+ 142          {
+ 143   1        va_list va;
+ 144   1        va_start(va, fmt);
+ 145   1        u8x8_cad_vsendf(u8x8, fmt, va);
+ 146   1        va_end(va);
+ 147   1      }
+ 148          
+ 149          /*
+ 150            21 c    send command c
+ 151            22 a    send arg a
+ 152            23 d    send data d
+ 153            24      CS on
+ 154            25      CS off
+ 155            254 milli delay by milliseconds
+ 156            255   end of sequence
+ 157          */
+ 158          
+ 159          void u8x8_cad_SendSequence(u8x8_t *u8x8, uint8_t const *data)
+*** ERROR C141 IN LINE 159 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near ')'
+ 160          {
+ 161   1        uint8_t cmd;
+ 162   1        uint8_t v;
+ 163   1      
+ 164   1        for(;;)
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 4   
+
+ 165   1        {
+ 166   2          cmd = *data;
+*** ERROR C141 IN LINE 166 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 167   2          data++;
+*** ERROR C141 IN LINE 167 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 168   2          switch( cmd )
+ 169   2          {
+ 170   3            case U8X8_MSG_CAD_SEND_CMD:
+ 171   3            case U8X8_MSG_CAD_SEND_ARG:
+ 172   3          v = *data;
+*** ERROR C141 IN LINE 172 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 173   3          u8x8->cad_cb(u8x8, cmd, v, NULL);
+*** ERROR C212 IN LINE 173 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 174   3          data++;
+*** ERROR C141 IN LINE 174 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 175   3          break;
+ 176   3            case U8X8_MSG_CAD_SEND_DATA:
+ 177   3          v = *data;
+*** ERROR C141 IN LINE 177 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 178   3          u8x8_cad_SendData(u8x8, 1, &v);
+*** ERROR C208 IN LINE 178 OF ..\U8G2\CSRC\U8X8_CAD.C: '_u8x8_cad_SendData': too many actual parameters
+ 179   3          data++;
+*** ERROR C141 IN LINE 179 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 180   3          break;
+ 181   3            case U8X8_MSG_CAD_START_TRANSFER:
+ 182   3            case U8X8_MSG_CAD_END_TRANSFER:
+ 183   3          u8x8->cad_cb(u8x8, cmd, 0, NULL);
+*** ERROR C212 IN LINE 183 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 184   3          break;
+ 185   3            case 0x0fe:
+ 186   3          v = *data;
+*** ERROR C141 IN LINE 186 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 187   3          u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_MILLI, v);     
+ 188   3          data++;
+*** ERROR C141 IN LINE 188 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 189   3          break;
+ 190   3            default:
+ 191   3        return;
+ 192   3          }
+ 193   2        }
+ 194   1      }
+ 195          
+ 196          
+ 197          uint8_t u8x8_cad_empty(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 198          {
+ 199   1        switch(msg)
+ 200   1        {
+ 201   2          case U8X8_MSG_CAD_SEND_CMD:
+ 202   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 203   2            break;
+ 204   2          case U8X8_MSG_CAD_SEND_ARG:
+ 205   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 206   2            break;
+ 207   2          case U8X8_MSG_CAD_SEND_DATA:
+ 208   2          case U8X8_MSG_CAD_INIT:
+ 209   2          case U8X8_MSG_CAD_START_TRANSFER:
+ 210   2          case U8X8_MSG_CAD_END_TRANSFER:
+ 211   2            return u8x8->byte_cb(u8x8, msg, arg_int, arg_ptr);
+*** ERROR C212 IN LINE 211 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 212   2          default:
+ 213   2            return 0;
+ 214   2        }
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 5   
+
+ 215   1        return 1;
+ 216   1      }
+ 217          
+ 218          
+ 219          /*
+ 220            convert to bytes by using 
+ 221              dc = 1 for commands and args and
+ 222              dc = 0 for data
+ 223          */
+ 224          uint8_t u8x8_cad_110(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 225          {
+ 226   1        switch(msg)
+ 227   1        {
+ 228   2          case U8X8_MSG_CAD_SEND_CMD:
+ 229   2            u8x8_byte_SetDC(u8x8, 1);
+ 230   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 231   2            break;
+ 232   2          case U8X8_MSG_CAD_SEND_ARG:
+ 233   2            u8x8_byte_SetDC(u8x8, 1);
+ 234   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 235   2            break;
+ 236   2          case U8X8_MSG_CAD_SEND_DATA:
+ 237   2            u8x8_byte_SetDC(u8x8, 0);
+ 238   2            //u8x8_byte_SendBytes(u8x8, arg_int, arg_ptr);
+ 239   2            //break;
+ 240   2            /* fall through */
+ 241   2          case U8X8_MSG_CAD_INIT:
+ 242   2          case U8X8_MSG_CAD_START_TRANSFER:
+ 243   2          case U8X8_MSG_CAD_END_TRANSFER:
+ 244   2            return u8x8->byte_cb(u8x8, msg, arg_int, arg_ptr);
+*** ERROR C212 IN LINE 244 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 245   2          default:
+ 246   2            return 0;
+ 247   2        }
+ 248   1        return 1;
+ 249   1      }
+ 250          
+ 251          /*
+ 252            convert to bytes by using 
+ 253              dc = 1 for commands and args and
+ 254              dc = 0 for data
+ 255              t6963
+ 256          */
+ 257          uint8_t u8x8_cad_100(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 258          {
+ 259   1        switch(msg)
+ 260   1        {
+ 261   2          case U8X8_MSG_CAD_SEND_CMD:
+ 262   2            u8x8_byte_SetDC(u8x8, 1);
+ 263   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 264   2            break;
+ 265   2          case U8X8_MSG_CAD_SEND_ARG:
+ 266   2            u8x8_byte_SetDC(u8x8, 0);
+ 267   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 268   2            break;
+ 269   2          case U8X8_MSG_CAD_SEND_DATA:
+ 270   2            u8x8_byte_SetDC(u8x8, 0);
+ 271   2            //u8x8_byte_SendBytes(u8x8, arg_int, arg_ptr);
+ 272   2            //break;
+ 273   2            /* fall through */
+ 274   2          case U8X8_MSG_CAD_INIT:
+ 275   2          case U8X8_MSG_CAD_START_TRANSFER:
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 6   
+
+ 276   2          case U8X8_MSG_CAD_END_TRANSFER:
+ 277   2            return u8x8->byte_cb(u8x8, msg, arg_int, arg_ptr);
+*** ERROR C212 IN LINE 277 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 278   2          default:
+ 279   2            return 0;
+ 280   2        }
+ 281   1        return 1;
+ 282   1      }
+ 283          
+ 284          /*
+ 285            convert to bytes by using 
+ 286              dc = 0 for commands and args and
+ 287              dc = 1 for data
+ 288          */
+ 289          uint8_t u8x8_cad_001(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 290          {
+ 291   1        switch(msg)
+ 292   1        {
+ 293   2          case U8X8_MSG_CAD_SEND_CMD:
+ 294   2            u8x8_byte_SetDC(u8x8, 0);
+ 295   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 296   2            break;
+ 297   2          case U8X8_MSG_CAD_SEND_ARG:
+ 298   2            u8x8_byte_SetDC(u8x8, 0);
+ 299   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 300   2            break;
+ 301   2          case U8X8_MSG_CAD_SEND_DATA:
+ 302   2            u8x8_byte_SetDC(u8x8, 1);
+ 303   2            //u8x8_byte_SendBytes(u8x8, arg_int, arg_ptr);
+ 304   2            //break;
+ 305   2            /* fall through */
+ 306   2          case U8X8_MSG_CAD_INIT:
+ 307   2          case U8X8_MSG_CAD_START_TRANSFER:
+ 308   2          case U8X8_MSG_CAD_END_TRANSFER:
+ 309   2            return u8x8->byte_cb(u8x8, msg, arg_int, arg_ptr);
+*** ERROR C212 IN LINE 309 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 310   2          default:
+ 311   2            return 0;
+ 312   2        }
+ 313   1        return 1;
+ 314   1      }
+ 315          
+ 316          /*
+ 317            convert to bytes by using 
+ 318              dc = 0 for commands 
+ 319              dc = 1 for args and data
+ 320          */
+ 321          uint8_t u8x8_cad_011(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 322          {
+ 323   1        switch(msg)
+ 324   1        {
+ 325   2          case U8X8_MSG_CAD_SEND_CMD:
+ 326   2            u8x8_byte_SetDC(u8x8, 0);
+ 327   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 328   2            break;
+ 329   2          case U8X8_MSG_CAD_SEND_ARG:
+ 330   2            u8x8_byte_SetDC(u8x8, 1);
+ 331   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 332   2            break;
+ 333   2          case U8X8_MSG_CAD_SEND_DATA:
+ 334   2            u8x8_byte_SetDC(u8x8, 1);
+ 335   2            //u8x8_byte_SendBytes(u8x8, arg_int, arg_ptr);
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 7   
+
+ 336   2            //break;
+ 337   2            /* fall through */
+ 338   2          case U8X8_MSG_CAD_INIT:
+ 339   2          case U8X8_MSG_CAD_START_TRANSFER:
+ 340   2          case U8X8_MSG_CAD_END_TRANSFER:
+ 341   2            return u8x8->byte_cb(u8x8, msg, arg_int, arg_ptr);
+*** ERROR C212 IN LINE 341 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 342   2          default:
+ 343   2            return 0;
+ 344   2        }
+ 345   1        return 1;
+ 346   1      }
+ 347          
+ 348          /* cad procedure for the ST7920 in SPI mode */
+ 349          /* u8x8_byte_SetDC is not used */
+ 350          uint8_t u8x8_cad_st7920_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 351          {
+ 352   1        uint8_t *data;
+*** ERROR C141 IN LINE 352 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near ';'
+ 353   1        uint8_t b;
+*** ERROR C141 IN LINE 353 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'uint8_t'
+*** ERROR C202 IN LINE 353 OF ..\U8G2\CSRC\U8X8_CAD.C: 'b': undefined identifier
+ 354   1        uint8_t i;
+*** ERROR C141 IN LINE 354 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'uint8_t'
+*** ERROR C202 IN LINE 354 OF ..\U8G2\CSRC\U8X8_CAD.C: 'i': undefined identifier
+ 355   1        static uint8_t buf[16];
+*** ERROR C141 IN LINE 355 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'static'
+*** ERROR C202 IN LINE 355 OF ..\U8G2\CSRC\U8X8_CAD.C: 'buf': undefined identifier
+ 356   1        uint8_t *ptr;
+*** ERROR C141 IN LINE 356 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'uint8_t'
+*** ERROR C202 IN LINE 356 OF ..\U8G2\CSRC\U8X8_CAD.C: 'ptr': undefined identifier
+ 357   1        
+ 358   1        switch(msg)
+ 359   1        {
+ 360   2          case U8X8_MSG_CAD_SEND_CMD:
+ 361   2            u8x8_byte_SendByte(u8x8, 0x0f8);
+ 362   2            u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, 1);
+ 363   2            u8x8_byte_SendByte(u8x8, arg_int & 0x0f0);
+ 364   2            u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, 1);
+ 365   2            u8x8_byte_SendByte(u8x8, arg_int << 4);
+ 366   2            u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, 1);
+ 367   2            break;
+ 368   2          case U8X8_MSG_CAD_SEND_ARG:
+ 369   2            u8x8_byte_SendByte(u8x8, 0x0f8);
+ 370   2            u8x8_byte_SendByte(u8x8, arg_int & 0x0f0);
+ 371   2            u8x8_byte_SendByte(u8x8, arg_int << 4);
+ 372   2            break;
+ 373   2          case U8X8_MSG_CAD_SEND_DATA:
+ 374   2          
+ 375   2            u8x8_byte_SendByte(u8x8, 0x0fa);
+ 376   2            u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, 1);
+ 377   2      
+ 378   2            /* this loop should be optimized: multiple bytes should be sent */
+ 379   2            /* u8x8_byte_SendBytes(u8x8, arg_int, arg_ptr); */
+ 380   2            data = (uint8_t *)arg_ptr;
+*** ERROR C141 IN LINE 380 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 381   2          
+ 382   2            /* the following loop increases speed by 20% */
+ 383   2            while( arg_int >= 8 )
+ 384   2            {
+ 385   3        i = 8;
+*** ERROR C202 IN LINE 385 OF ..\U8G2\CSRC\U8X8_CAD.C: 'i': undefined identifier
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 8   
+
+ 386   3        ptr = buf;
+*** ERROR C202 IN LINE 386 OF ..\U8G2\CSRC\U8X8_CAD.C: 'ptr': undefined identifier
+ 387   3        do
+ 388   3        {
+ 389   4          b = *data++;
+*** ERROR C202 IN LINE 389 OF ..\U8G2\CSRC\U8X8_CAD.C: 'b': undefined identifier
+*** ERROR C141 IN LINE 389 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 390   4          *ptr++= b & 0x0f0;
+ 391   4          b <<= 4;
+*** ERROR C202 IN LINE 391 OF ..\U8G2\CSRC\U8X8_CAD.C: 'b': undefined identifier
+ 392   4          *ptr++= b;
+*** ERROR C202 IN LINE 392 OF ..\U8G2\CSRC\U8X8_CAD.C: 'ptr': undefined identifier
+ 393   4          i--;
+*** ERROR C202 IN LINE 393 OF ..\U8G2\CSRC\U8X8_CAD.C: 'i': undefined identifier
+ 394   4        } while( i > 0 );
+*** ERROR C202 IN LINE 394 OF ..\U8G2\CSRC\U8X8_CAD.C: 'i': undefined identifier
+ 395   3        arg_int -= 8;
+ 396   3        u8x8_byte_SendBytes(u8x8, 16, buf); 
+*** ERROR C202 IN LINE 396 OF ..\U8G2\CSRC\U8X8_CAD.C: 'buf': undefined identifier
+ 397   3            }
+ 398   2            
+ 399   2          
+ 400   2            while( arg_int > 0 )
+ 401   2            {
+ 402   3        b = *data;
+*** ERROR C202 IN LINE 402 OF ..\U8G2\CSRC\U8X8_CAD.C: 'b': undefined identifier
+*** ERROR C141 IN LINE 402 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 403   3        u8x8_byte_SendByte(u8x8, b & 0x0f0);
+ 404   3        u8x8_byte_SendByte(u8x8, b << 4);
+*** ERROR C202 IN LINE 404 OF ..\U8G2\CSRC\U8X8_CAD.C: 'b': undefined identifier
+ 405   3        data++;
+*** ERROR C141 IN LINE 405 OF ..\U8G2\CSRC\U8X8_CAD.C: syntax error near 'data'
+ 406   3        arg_int--;
+ 407   3            }
+ 408   2            u8x8_gpio_Delay(u8x8, U8X8_MSG_DELAY_NANO, 1);
+ 409   2            break;
+ 410   2          case U8X8_MSG_CAD_INIT:
+ 411   2          case U8X8_MSG_CAD_START_TRANSFER:
+ 412   2          case U8X8_MSG_CAD_END_TRANSFER:
+ 413   2            return u8x8->byte_cb(u8x8, msg, arg_int, arg_ptr);
+*** ERROR C212 IN LINE 413 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 414   2          default:
+ 415   2            return 0;
+ 416   2        }
+ 417   1        return 1;
+ 418   1      }
+ 419          
+ 420          
+ 421          /* cad procedure for the SSD13xx family in I2C mode */
+ 422          /* this procedure is also used by the ST7588 */
+ 423          /* u8x8_byte_SetDC is not used */
+ 424          /* U8X8_MSG_BYTE_START_TRANSFER starts i2c transfer, U8X8_MSG_BYTE_END_TRANSFER stops transfer */
+ 425          /* After transfer start, a full byte indicates command or data mode */
+ 426          
+ 427          static void u8x8_i2c_data_transfer(u8x8_t *u8x8, uint8_t arg_int, void *arg_ptr) U8X8_NOINLINE;
+ 428          static void u8x8_i2c_data_transfer(u8x8_t *u8x8, uint8_t arg_int, void *arg_ptr)
+ 429          {
+ 430   1          u8x8_byte_StartTransfer(u8x8);    
+ 431   1          u8x8_byte_SendByte(u8x8, 0x040);
+ 432   1          u8x8->byte_cb(u8x8, U8X8_MSG_CAD_SEND_DATA, arg_int, arg_ptr);
+*** ERROR C212 IN LINE 432 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 433   1          u8x8_byte_EndTransfer(u8x8);
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 9   
+
+ 434   1      }
+ 435          
+ 436          /* classic version: will put a start/stop condition around each command and arg */
+ 437          uint8_t u8x8_cad_ssd13xx_i2c(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 438          {
+ 439   1        uint8_t *p;
+ 440   1        switch(msg)
+ 441   1        {
+ 442   2          case U8X8_MSG_CAD_SEND_CMD:
+ 443   2          case U8X8_MSG_CAD_SEND_ARG:
+ 444   2            /* 7 Nov 2016: Can this be improved?  */
+ 445   2            //u8x8_byte_SetDC(u8x8, 0);
+ 446   2            u8x8_byte_StartTransfer(u8x8);
+ 447   2            //u8x8_byte_SendByte(u8x8, u8x8_GetI2CAddress(u8x8));
+ 448   2            u8x8_byte_SendByte(u8x8, 0x000);
+ 449   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 450   2            u8x8_byte_EndTransfer(u8x8);      
+ 451   2            break;
+ 452   2          case U8X8_MSG_CAD_SEND_DATA:
+ 453   2            //u8x8_byte_SetDC(u8x8, 1);
+ 454   2          
+ 455   2            /* the FeatherWing OLED with the 32u4 transfer of long byte */
+ 456   2            /* streams was not possible. This is broken down to */
+ 457   2            /* smaller streams, 32 seems to be the limit... */
+ 458   2            /* I guess this is related to the size of the Wire buffers in Arduino */
+ 459   2            /* Unfortunately, this can not be handled in the byte level drivers, */
+ 460   2            /* so this is done here. Even further, only 24 bytes will be sent, */
+ 461   2            /* because there will be another byte (DC) required during the transfer */
+ 462   2            p = arg_ptr;
+ 463   2             while( arg_int > 24 )
+ 464   2            {
+ 465   3        u8x8_i2c_data_transfer(u8x8, 24, p);
+ 466   3        arg_int-=24;
+ 467   3        p+=24;
+ 468   3            }
+ 469   2            u8x8_i2c_data_transfer(u8x8, arg_int, p);
+ 470   2            break;
+ 471   2          case U8X8_MSG_CAD_INIT:
+ 472   2            /* apply default i2c adr if required so that the start transfer msg can use this */
+ 473   2            if ( u8x8->i2c_address == 255 )
+ 474   2        u8x8->i2c_address = 0x078;
+ 475   2            return u8x8->byte_cb(u8x8, msg, arg_int, arg_ptr);
+*** ERROR C212 IN LINE 475 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 476   2          case U8X8_MSG_CAD_START_TRANSFER:
+ 477   2          case U8X8_MSG_CAD_END_TRANSFER:
+ 478   2            /* cad transfer commands are ignored */
+ 479   2            break;
+ 480   2          default:
+ 481   2            return 0;
+ 482   2        }
+ 483   1        return 1;
+ 484   1      }
+ 485          
+ 486          
+ 487          /* fast version with reduced data start/stops, issue 735 */
+ 488          uint8_t u8x8_cad_ssd13xx_fast_i2c(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 489          {
+ 490   1        static uint8_t in_transfer = 0;
+ 491   1        uint8_t *p;
+ 492   1        switch(msg)
+ 493   1        {
+ 494   2          case U8X8_MSG_CAD_SEND_CMD:
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 10  
+
+ 495   2            /* improved version, takeover from ld7032 */
+ 496   2            /* assumes, that the args of a command is not longer than 31 bytes */
+ 497   2            /* speed improvement is about 4% compared to the classic version */
+ 498   2            if ( in_transfer != 0 )
+ 499   2         u8x8_byte_EndTransfer(u8x8); 
+ 500   2            
+ 501   2            u8x8_byte_StartTransfer(u8x8);
+ 502   2            u8x8_byte_SendByte(u8x8, 0x000);  /* cmd byte for ssd13xx controller */
+ 503   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 504   2            in_transfer = 1;
+ 505   2            /* lightning version: can replace the improved version from above */
+ 506   2            /* the drawback of the lightning version is this: The complete init sequence */
+ 507   2            /* must fit into the 32 byte Arduino Wire buffer, which might not always be the case */
+ 508   2            /* speed improvement is about 6% compared to the classic version */
+ 509   2            // if ( in_transfer == 0 )
+ 510   2        // {
+ 511   2        //   u8x8_byte_StartTransfer(u8x8);
+ 512   2        //   u8x8_byte_SendByte(u8x8, 0x000); /* cmd byte for ssd13xx controller */
+ 513   2        //   in_transfer = 1;
+ 514   2        // }
+ 515   2        //u8x8_byte_SendByte(u8x8, arg_int);
+ 516   2            break;
+ 517   2          case U8X8_MSG_CAD_SEND_ARG:
+ 518   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 519   2            break;      
+ 520   2          case U8X8_MSG_CAD_SEND_DATA:
+ 521   2            if ( in_transfer != 0 )
+ 522   2        u8x8_byte_EndTransfer(u8x8); 
+ 523   2            
+ 524   2          
+ 525   2            /* the FeatherWing OLED with the 32u4 transfer of long byte */
+ 526   2            /* streams was not possible. This is broken down to */
+ 527   2            /* smaller streams, 32 seems to be the limit... */
+ 528   2            /* I guess this is related to the size of the Wire buffers in Arduino */
+ 529   2            /* Unfortunately, this can not be handled in the byte level drivers, */
+ 530   2            /* so this is done here. Even further, only 24 bytes will be sent, */
+ 531   2            /* because there will be another byte (DC) required during the transfer */
+ 532   2            p = arg_ptr;
+ 533   2             while( arg_int > 24 )
+ 534   2            {
+ 535   3        u8x8_i2c_data_transfer(u8x8, 24, p);
+ 536   3        arg_int-=24;
+ 537   3        p+=24;
+ 538   3            }
+ 539   2            u8x8_i2c_data_transfer(u8x8, arg_int, p);
+ 540   2            in_transfer = 0;
+ 541   2            break;
+ 542   2          case U8X8_MSG_CAD_INIT:
+ 543   2            /* apply default i2c adr if required so that the start transfer msg can use this */
+ 544   2            if ( u8x8->i2c_address == 255 )
+ 545   2        u8x8->i2c_address = 0x078;
+ 546   2            return u8x8->byte_cb(u8x8, msg, arg_int, arg_ptr);
+*** ERROR C212 IN LINE 546 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 547   2          case U8X8_MSG_CAD_START_TRANSFER:
+ 548   2            in_transfer = 0;
+ 549   2            break;
+ 550   2          case U8X8_MSG_CAD_END_TRANSFER:
+ 551   2            if ( in_transfer != 0 )
+ 552   2        u8x8_byte_EndTransfer(u8x8); 
+ 553   2            in_transfer = 0;
+ 554   2            break;
+ 555   2          default:
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 11  
+
+ 556   2            return 0;
+ 557   2        }
+ 558   1        return 1;
+ 559   1      }
+ 560          
+ 561          
+ 562          
+ 563          /* the st75256 i2c driver is a copy of the ssd13xx driver, but with arg=1 */
+ 564          /* modified from cad001 (ssd13xx) to cad011 */
+ 565          uint8_t u8x8_cad_st75256_i2c(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 566          {
+ 567   1        uint8_t *p;
+ 568   1        switch(msg)
+ 569   1        {
+ 570   2          case U8X8_MSG_CAD_SEND_CMD:
+ 571   2            u8x8_byte_StartTransfer(u8x8);
+ 572   2            u8x8_byte_SendByte(u8x8, 0x000);
+ 573   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 574   2            u8x8_byte_EndTransfer(u8x8);      
+ 575   2            break;
+ 576   2          case U8X8_MSG_CAD_SEND_ARG:
+ 577   2            u8x8_byte_StartTransfer(u8x8);
+ 578   2            u8x8_byte_SendByte(u8x8, 0x040);
+ 579   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 580   2            u8x8_byte_EndTransfer(u8x8);
+ 581   2            break;
+ 582   2          case U8X8_MSG_CAD_SEND_DATA:
+ 583   2            /* see ssd13xx driver */
+ 584   2            p = arg_ptr;
+ 585   2             while( arg_int > 24 )
+ 586   2            {
+ 587   3        u8x8_i2c_data_transfer(u8x8, 24, p);
+ 588   3        arg_int-=24;
+ 589   3        p+=24;
+ 590   3            }
+ 591   2            u8x8_i2c_data_transfer(u8x8, arg_int, p);
+ 592   2            break;
+ 593   2          case U8X8_MSG_CAD_INIT:
+ 594   2            /* apply default i2c adr if required so that the start transfer msg can use this */
+ 595   2            if ( u8x8->i2c_address == 255 )
+ 596   2        u8x8->i2c_address = 0x078;  /* ST75256, often this is 0x07e */
+ 597   2            return u8x8->byte_cb(u8x8, msg, arg_int, arg_ptr);
+*** ERROR C212 IN LINE 597 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 598   2          case U8X8_MSG_CAD_START_TRANSFER:
+ 599   2          case U8X8_MSG_CAD_END_TRANSFER:
+ 600   2            /* cad transfer commands are ignored */
+ 601   2            break;
+ 602   2          default:
+ 603   2            return 0;
+ 604   2        }
+ 605   1        return 1;
+ 606   1      }
+ 607          
+ 608          /* cad i2c procedure for the ld7032 controller */
+ 609          /* Issue https://github.com/olikraus/u8g2/issues/865 mentiones, that I2C does not work */
+ 610          /* Workaround is to remove the while loop (or increase the value in the condition) */
+ 611          uint8_t u8x8_cad_ld7032_i2c(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 612          {
+ 613   1        static uint8_t in_transfer = 0;
+ 614   1        uint8_t *p;
+ 615   1        switch(msg)
+ 616   1        {
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 12  
+
+ 617   2          case U8X8_MSG_CAD_SEND_CMD:
+ 618   2            if ( in_transfer != 0 )
+ 619   2        u8x8_byte_EndTransfer(u8x8); 
+ 620   2            u8x8_byte_StartTransfer(u8x8);
+ 621   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 622   2            in_transfer = 1;
+ 623   2            break;
+ 624   2          case U8X8_MSG_CAD_SEND_ARG:
+ 625   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 626   2            break;
+ 627   2          case U8X8_MSG_CAD_SEND_DATA:
+ 628   2            //u8x8_byte_SetDC(u8x8, 1);
+ 629   2          
+ 630   2            /* the FeatherWing OLED with the 32u4 transfer of long byte */
+ 631   2            /* streams was not possible. This is broken down to */
+ 632   2            /* smaller streams, 32 seems to be the limit... */
+ 633   2            /* I guess this is related to the size of the Wire buffers in Arduino */
+ 634   2            /* Unfortunately, this can not be handled in the byte level drivers, */
+ 635   2            /* so this is done here. Even further, only 24 bytes will be sent, */
+ 636   2            /* because there will be another byte (DC) required during the transfer */
+ 637   2            p = arg_ptr;
+ 638   2             while( arg_int > 24 )
+ 639   2            {
+ 640   3        u8x8->byte_cb(u8x8, U8X8_MSG_CAD_SEND_DATA, 24, p);
+*** ERROR C212 IN LINE 640 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 641   3        arg_int-=24;
+ 642   3        p+=24;
+ 643   3        u8x8_byte_EndTransfer(u8x8); 
+ 644   3        u8x8_byte_StartTransfer(u8x8);
+ 645   3        u8x8_byte_SendByte(u8x8, 0x08); /* data write for LD7032 */
+ 646   3            }
+ 647   2            u8x8->byte_cb(u8x8, U8X8_MSG_CAD_SEND_DATA, arg_int, p);
+*** ERROR C212 IN LINE 647 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 648   2            break;
+ 649   2          case U8X8_MSG_CAD_INIT:
+ 650   2            /* apply default i2c adr if required so that the start transfer msg can use this */
+ 651   2            if ( u8x8->i2c_address == 255 )
+ 652   2        u8x8->i2c_address = 0x060;
+ 653   2            return u8x8->byte_cb(u8x8, msg, arg_int, arg_ptr);
+*** ERROR C212 IN LINE 653 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 654   2          case U8X8_MSG_CAD_START_TRANSFER:
+ 655   2            in_transfer = 0;
+ 656   2            break;
+ 657   2          case U8X8_MSG_CAD_END_TRANSFER:
+ 658   2            if ( in_transfer != 0 )
+ 659   2        u8x8_byte_EndTransfer(u8x8); 
+ 660   2            break;
+ 661   2          default:
+ 662   2            return 0;
+ 663   2        }
+ 664   1        return 1;
+ 665   1      }
+ 666          
+ 667          /* cad procedure for the UC16xx family in I2C mode */
+ 668          /* u8x8_byte_SetDC is not used */
+ 669          /* DC bit is encoded into the adr byte */
+ 670          uint8_t u8x8_cad_uc16xx_i2c(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 671          {
+ 672   1        static uint8_t in_transfer = 0; 
+ 673   1        static uint8_t is_data = 0;
+ 674   1        uint8_t *p;
+ 675   1        switch(msg)
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 13  
+
+ 676   1        {
+ 677   2          case U8X8_MSG_CAD_SEND_CMD:
+ 678   2          case U8X8_MSG_CAD_SEND_ARG:
+ 679   2            if ( in_transfer != 0 )
+ 680   2            {
+ 681   3        if ( is_data != 0 )
+ 682   3        {
+ 683   4          /* transfer mode is active, but data transfer */
+ 684   4          u8x8_byte_EndTransfer(u8x8); 
+ 685   4          /* clear the lowest two bits of the adr */
+ 686   4          u8x8_SetI2CAddress( u8x8, u8x8_GetI2CAddress(u8x8)&0x0fc );
+ 687   4          u8x8_byte_StartTransfer(u8x8); 
+ 688   4        }
+ 689   3            }
+ 690   2            else
+ 691   2            {
+ 692   3        /* clear the lowest two bits of the adr */
+ 693   3        u8x8_SetI2CAddress( u8x8, u8x8_GetI2CAddress(u8x8)&0x0fc );
+ 694   3        u8x8_byte_StartTransfer(u8x8);
+ 695   3            }
+ 696   2            u8x8_byte_SendByte(u8x8, arg_int);
+ 697   2            in_transfer = 1;
+ 698   2            break;
+ 699   2          case U8X8_MSG_CAD_SEND_DATA:
+ 700   2            if ( in_transfer != 0 )
+ 701   2            {
+ 702   3        if ( is_data == 0 )
+ 703   3        {
+ 704   4          /* transfer mode is active, but data transfer */
+ 705   4          u8x8_byte_EndTransfer(u8x8); 
+ 706   4          /* clear the lowest two bits of the adr */
+ 707   4          u8x8_SetI2CAddress( u8x8, (u8x8_GetI2CAddress(u8x8)&0x0fc)|2 );
+ 708   4          u8x8_byte_StartTransfer(u8x8); 
+ 709   4        }
+ 710   3            }
+ 711   2            else
+ 712   2            {
+ 713   3        /* clear the lowest two bits of the adr */
+ 714   3        u8x8_SetI2CAddress( u8x8, (u8x8_GetI2CAddress(u8x8)&0x0fc)|2 );
+ 715   3        u8x8_byte_StartTransfer(u8x8);
+ 716   3            }
+ 717   2            in_transfer = 1;
+ 718   2            
+ 719   2            p = arg_ptr;
+ 720   2            while( arg_int > 24 )
+ 721   2            {
+ 722   3        u8x8->byte_cb(u8x8, U8X8_MSG_CAD_SEND_DATA, 24, p);
+*** ERROR C212 IN LINE 722 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 723   3        arg_int-=24;
+ 724   3        p+=24;
+ 725   3        u8x8_byte_EndTransfer(u8x8); 
+ 726   3        u8x8_byte_StartTransfer(u8x8);
+ 727   3            }
+ 728   2            u8x8->byte_cb(u8x8, U8X8_MSG_CAD_SEND_DATA, arg_int, p);
+*** ERROR C212 IN LINE 728 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 729   2            
+ 730   2            break;
+ 731   2          case U8X8_MSG_CAD_INIT:
+ 732   2            /* apply default i2c adr if required so that the start transfer msg can use this */
+ 733   2            if ( u8x8->i2c_address == 255 )
+ 734   2        u8x8->i2c_address = 0x070;
+ 735   2            return u8x8->byte_cb(u8x8, msg, arg_int, arg_ptr);
+C51 COMPILER V9.01   U8X8_CAD                                                              04/30/2021 10:55:22 PAGE 14  
+
+*** ERROR C212 IN LINE 735 OF ..\U8G2\CSRC\U8X8_CAD.C: indirect call: parameters do not fit within registers
+ 736   2          case U8X8_MSG_CAD_START_TRANSFER:
+ 737   2            in_transfer = 0;    
+ 738   2            /* actual start is delayed, because we do not whether this is data or cmd transfer */
+ 739   2            break;
+ 740   2          case U8X8_MSG_CAD_END_TRANSFER:
+ 741   2            if ( in_transfer != 0 )
+ 742   2        u8x8_byte_EndTransfer(u8x8);
+ 743   2            in_transfer = 0;
+ 744   2            break;
+ 745   2          default:
+ 746   2            return 0;
+ 747   2        }
+ 748   1        return 1;
+ 749   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  63 ERROR(S)

@@ -1,0 +1,254 @@
+C51 COMPILER V9.01   U8X8_D_SH1108                                                         04/30/2021 10:55:26 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_SH1108
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_sh1108.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_sh1108.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BRO
+                    -WSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PR
+                    -INT(.\Listings\u8x8_d_sh1108.lst) TABS(2) OBJECT(.\Objects\u8x8_d_sh1108.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_sh1108.c
+   4          
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2018, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33            
+  34          */
+  35          
+  36          
+  37          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  38          
+  39          /* 
+  40            code copyied from sh1107
+  41            SH1108: 160x160 controller from Sino Wealth
+  42          */
+  43          
+  44          
+  45          
+  46          static const uint8_t u8x8_d_sh1108_noname_powersave0_seq[] = {
+  47            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  48            U8X8_C(0x0af),                    /* display on */
+  49            U8X8_END_TRANSFER(),              /* disable chip */
+  50            U8X8_END()                  /* end of sequence */
+C51 COMPILER V9.01   U8X8_D_SH1108                                                         04/30/2021 10:55:26 PAGE 2   
+
+  51          };
+  52          
+  53          static const uint8_t u8x8_d_sh1108_noname_powersave1_seq[] = {
+  54            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  55            U8X8_C(0x0ae),                    /* display off */
+  56            U8X8_END_TRANSFER(),              /* disable chip */
+  57            U8X8_END()                  /* end of sequence */
+  58          };
+  59          
+  60          static const uint8_t u8x8_d_sh1108_160x160_noname_powersave0_seq[] = {
+  61            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  62            U8X8_C(0x0a0),        /* segment remap a0/a1*/
+  63            U8X8_C(0x0c0),        /* c0: scan dir normal, c8: reverse */
+  64            U8X8_END_TRANSFER(),              /* disable chip */
+  65            U8X8_END()                  /* end of sequence */
+  66          };
+  67          
+  68          static const uint8_t u8x8_d_sh1108_160x160_noname_powersave1_seq[] = {
+  69            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  70            U8X8_C(0x0a1),        /* segment remap a0/a1*/
+  71            U8X8_C(0x0c8),        /* c0: scan dir normal, c8: reverse */
+  72            U8X8_END_TRANSFER(),              /* disable chip */
+  73            U8X8_END()                  /* end of sequence */
+  74          };
+  75          
+  76          
+  77          static uint8_t u8x8_d_sh1108_generic(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+  78          {
+  79   1        uint8_t x, c;
+  80   1        uint8_t *ptr;
+  81   1        switch(msg)
+  82   1        {
+  83   2          /* handled by the calling function
+  84   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+  85   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_sh1108_64x128_noname_display_info);
+  86   2            break;
+  87   2          */
+  88   2          /* handled by the calling function
+  89   2          case U8X8_MSG_DISPLAY_INIT:
+  90   2            u8x8_d_helper_display_init(u8x8);
+  91   2            u8x8_cad_SendSequence(u8x8, u8x8_d_sh1108_64x128_noname_init_seq);    
+  92   2            break;
+  93   2          */
+  94   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+  95   2            if ( arg_int == 0 )
+  96   2        u8x8_cad_SendSequence(u8x8, u8x8_d_sh1108_noname_powersave0_seq);
+*** ERROR C208 IN LINE 96 OF ..\U8G2\CSRC\U8X8_D_SH1108.C: '_u8x8_cad_SendSequence': too many actual parameters
+  97   2            else
+  98   2        u8x8_cad_SendSequence(u8x8, u8x8_d_sh1108_noname_powersave1_seq);
+*** ERROR C208 IN LINE 98 OF ..\U8G2\CSRC\U8X8_D_SH1108.C: '_u8x8_cad_SendSequence': too many actual parameters
+  99   2            break;
+ 100   2          case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 101   2            if ( arg_int == 0 )
+ 102   2            {
+ 103   3        u8x8_cad_SendSequence(u8x8, u8x8_d_sh1108_160x160_noname_powersave0_seq);
+*** ERROR C208 IN LINE 103 OF ..\U8G2\CSRC\U8X8_D_SH1108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 104   3        u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 105   3            }
+ 106   2            else
+ 107   2            {
+ 108   3        u8x8_cad_SendSequence(u8x8, u8x8_d_sh1108_160x160_noname_powersave1_seq);
+*** ERROR C208 IN LINE 108 OF ..\U8G2\CSRC\U8X8_D_SH1108.C: '_u8x8_cad_SendSequence': too many actual parameters
+C51 COMPILER V9.01   U8X8_D_SH1108                                                         04/30/2021 10:55:26 PAGE 3   
+
+ 109   3        u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 110   3            }
+ 111   2            break;
+ 112   2      #ifdef U8X8_WITH_SET_CONTRAST
+ 113   2          case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 114   2            u8x8_cad_StartTransfer(u8x8);
+ 115   2            u8x8_cad_SendCmd(u8x8, 0x081 );
+ 116   2            u8x8_cad_SendArg(u8x8, arg_int ); /* sh1108 has range from 0 to 255 */
+ 117   2            u8x8_cad_EndTransfer(u8x8);
+ 118   2            break;
+ 119   2      #endif
+ 120   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 121   2            u8x8_cad_StartTransfer(u8x8);
+ 122   2            x = ((u8x8_tile_t *)arg_ptr)->x_pos;    
+ 123   2            x *= 8;
+ 124   2            x += u8x8->x_offset;
+ 125   2      
+ 126   2            //u8x8_cad_SendCmd(u8x8, 0x040 ); /* set line offset to 0 */
+ 127   2      
+ 128   2            // set column address
+ 129   2            u8x8_cad_SendCmd(u8x8, 0x010 | (x >> 4));
+ 130   2            u8x8_cad_SendCmd(u8x8, 0x000 | ((x & 15))); 
+ 131   2            
+ 132   2            // set page address
+ 133   2            u8x8_cad_SendCmd(u8x8, 0x0b0 );     // page cmd is a two byte command
+ 134   2            u8x8_cad_SendArg(u8x8, (((u8x8_tile_t *)arg_ptr)->y_pos)); 
+ 135   2          
+ 136   2            do
+ 137   2            {
+ 138   3        c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 139   3        ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 140   3        u8x8_cad_SendData(u8x8, c*8, ptr);  /* note: SendData can not handle more than 255 bytes */
+*** ERROR C208 IN LINE 140 OF ..\U8G2\CSRC\U8X8_D_SH1108.C: '_u8x8_cad_SendData': too many actual parameters
+ 141   3        arg_int--;
+ 142   3            } while( arg_int > 0 );
+ 143   2            
+ 144   2            u8x8_cad_EndTransfer(u8x8);
+ 145   2            break;
+ 146   2          default:
+ 147   2            return 0;
+ 148   2        }
+ 149   1        return 1;
+ 150   1      }
+ 151          
+ 152          /*==================================================*/
+ 153          
+ 154          /* issue #619, 160x160 OLED */
+ 155          static const uint8_t u8x8_d_sh1108_160x160_noname_init_seq[] = {
+ 156              
+ 157            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 158              
+ 159            U8X8_C(0x0ae),                    /* display off */
+ 160            U8X8_CA(0x0d5, 0x060),    /* clock divide ratio and oscillator frequency */
+ 161            U8X8_CA(0x0a9, 0x003),    /* set display resolution, 0=64x160, 1=96x160, 2=128x160, 3=160x160 */
+ 162            U8X8_C(0x020),                    /* use page addressing mode */
+ 163            U8X8_CA(0x081, 0x01f),    /* set contrast control */
+ 164            U8X8_CA(0x0ad, 0x80),     /* DC/DC control 80=Use external Vpp, 89=Use internal DC/DC*/
+ 165            U8X8_C(0x030),        /* set discharge VSL level, 0x030..0x03f */
+ 166            U8X8_CA(0x0d9, 0x028),    /* pre-charge period */
+ 167            U8X8_CA(0x0db, 0x035),    /* vcomh deselect level */    
+ 168            U8X8_CA(0x0dc, 0x035),    /* VSEGM Deselect Level */
+ 169          
+C51 COMPILER V9.01   U8X8_D_SH1108                                                         04/30/2021 10:55:26 PAGE 4   
+
+ 170            U8X8_C(0x0a0),        /* segment remap a0/a1*/
+ 171            U8X8_C(0x0c0),        /* c0: scan dir normal, c8: reverse */
+ 172            
+ 173            U8X8_C(0x0a4),        /* output ram to display */
+ 174            U8X8_C(0x0a6),        /* none inverted normal display mode */
+ 175              
+ 176            U8X8_END_TRANSFER(),              /* disable chip */
+ 177            U8X8_END()                  /* end of sequence */
+ 178          };
+ 179          
+ 180          static const u8x8_display_info_t u8x8_sh1108_160x160_noname_display_info =
+ 181          {
+ 182            /* chip_enable_level = */ 0,
+ 183            /* chip_disable_level = */ 1,
+ 184            
+ 185            /* post_chip_enable_wait_ns = */ 60,
+ 186            /* pre_chip_disable_wait_ns = */ 120,
+ 187            /* reset_pulse_width_ms = */ 100,   /* sh1108: 3 us */
+ 188            /* post_reset_wait_ms = */ 100, /* sometimes OLEDs need much longer setup time */
+ 189            /* sda_setup_time_ns = */ 100,    /* sh1108: 100ns */
+ 190            /* sck_pulse_width_ns = */ 100, /* sh1108: 100ns */
+ 191            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 192            /* spi_mode = */ 0,   /* active high, rising edge */
+ 193            /* i2c_bus_clock_100kHz = */ 4,
+ 194            /* data_setup_time_ns = */ 40,
+ 195            /* write_pulse_width_ns = */ 150, /* sh1108: cycle time is 300ns, so use 300/2 = 150 */
+ 196            /* tile_width = */ 20,
+ 197            /* tile_height = */ 20,
+ 198            /* default_x_offset = */ 0,
+ 199            /* flipmode_x_offset = */ 0,
+ 200            /* pixel_width = */ 160,
+ 201            /* pixel_height = */ 160
+ 202          };
+ 203          
+ 204          uint8_t u8x8_d_sh1108_160x160(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 205          {
+ 206   1          
+ 207   1        if ( u8x8_d_sh1108_generic(u8x8, msg, arg_int, arg_ptr) != 0 )
+ 208   1          return 1;
+ 209   1        
+ 210   1        switch(msg)
+ 211   1        {
+ 212   2          case U8X8_MSG_DISPLAY_INIT:
+ 213   2            u8x8_d_helper_display_init(u8x8);
+ 214   2            u8x8_cad_SendSequence(u8x8, u8x8_d_sh1108_160x160_noname_init_seq);
+*** ERROR C208 IN LINE 214 OF ..\U8G2\CSRC\U8X8_D_SH1108.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 215   2            break;
+ 216   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 217   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_sh1108_160x160_noname_display_info);
+ 218   2            break;
+ 219   2          default:
+ 220   2            return 0;
+ 221   2        }
+ 222   1        return 1;
+ 223   1      }
+ 224          
+ 225          /*==================================================*/
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  9 ERROR(S)

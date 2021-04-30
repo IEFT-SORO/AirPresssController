@@ -1,0 +1,244 @@
+C51 COMPILER V9.01   U8G2_BITMAP                                                           04/30/2021 10:55:16 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8G2_BITMAP
+OBJECT MODULE PLACED IN .\Objects\u8g2_bitmap.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8g2_bitmap.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROWS
+                    -E INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRIN
+                    -T(.\Listings\u8g2_bitmap.lst) TABS(2) OBJECT(.\Objects\u8g2_bitmap.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8g2_bitmap.c
+   4          
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          */
+  35          
+  36          #include "u8g2.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  37          
+  38          
+  39          void u8g2_SetBitmapMode(u8g2_t *u8g2, uint8_t is_transparent) {
+  40   1        u8g2->bitmap_transparency = is_transparent;
+  41   1      }
+  42          
+  43          /*
+  44            x,y   Position on the display
+  45            len   Length of bitmap line in pixel. Note: This differs from u8glib which had a bytecount here.
+  46            b   Pointer to the bitmap line.
+  47            Only draw pixels which are set.
+  48          */
+  49          
+  50          void u8g2_DrawHorizontalBitmap(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t len, const uint8_t 
+C51 COMPILER V9.01   U8G2_BITMAP                                                           04/30/2021 10:55:16 PAGE 2   
+
+             -*b)
+  51          {
+  52   1        uint8_t mask;
+  53   1        uint8_t color = u8g2->draw_color;
+  54   1        uint8_t ncolor = (color == 0 ? 1 : 0);
+  55   1      
+  56   1      #ifdef U8G2_WITH_INTERSECTION
+  57   1        if ( u8g2_IsIntersection(u8g2, x, y, x+len, y+1) == 0 ) 
+  58   1          return;
+  59   1      #endif /* U8G2_WITH_INTERSECTION */
+  60   1        
+  61   1        mask = 128;
+  62   1        while(len > 0)
+  63   1        {
+  64   2          if ( *b & mask ) {
+  65   3            u8g2->draw_color = color;
+  66   3            u8g2_DrawHVLine(u8g2, x, y, 1, 0);
+  67   3          } else if ( u8g2->bitmap_transparency == 0 ) {
+  68   3            u8g2->draw_color = ncolor;
+  69   3            u8g2_DrawHVLine(u8g2, x, y, 1, 0);
+  70   3          }
+  71   2      
+  72   2          x++;
+  73   2          mask >>= 1;
+  74   2          if ( mask == 0 )
+  75   2          {
+  76   3            mask = 128;
+  77   3            b++;
+  78   3          }
+  79   2          len--;
+  80   2        }
+  81   1        u8g2->draw_color = color;
+  82   1      }
+  83          
+  84          
+  85          /* u8glib compatible bitmap draw function */
+  86          void u8g2_DrawBitmap(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t cnt, u8g2_uint_t h, const uin
+             -t8_t *bitmap)
+  87          {
+  88   1        u8g2_uint_t w;
+  89   1        w = cnt;
+  90   1        w *= 8;
+  91   1      #ifdef U8G2_WITH_INTERSECTION
+  92   1        if ( u8g2_IsIntersection(u8g2, x, y, x+w, y+h) == 0 ) 
+  93   1          return;
+  94   1      #endif /* U8G2_WITH_INTERSECTION */
+  95   1        
+  96   1        while( h > 0 )
+  97   1        {
+  98   2          u8g2_DrawHorizontalBitmap(u8g2, x, y, w, bitmap);
+  99   2          bitmap += cnt;
+ 100   2          y++;
+ 101   2          h--;
+ 102   2        }
+ 103   1      }
+ 104          
+ 105          
+ 106          
+ 107          void u8g2_DrawHXBM(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t len, const uint8_t *b)
+ 108          {
+ 109   1        uint8_t mask;
+ 110   1        uint8_t color = u8g2->draw_color;
+C51 COMPILER V9.01   U8G2_BITMAP                                                           04/30/2021 10:55:16 PAGE 3   
+
+ 111   1        uint8_t ncolor = (color == 0 ? 1 : 0);
+ 112   1      #ifdef U8G2_WITH_INTERSECTION
+ 113   1        if ( u8g2_IsIntersection(u8g2, x, y, x+len, y+1) == 0 ) 
+ 114   1          return;
+ 115   1      #endif /* U8G2_WITH_INTERSECTION */
+ 116   1        
+ 117   1        mask = 1;
+ 118   1        while(len > 0) {
+ 119   2          if ( *b & mask ) {
+ 120   3            u8g2->draw_color = color;
+ 121   3            u8g2_DrawHVLine(u8g2, x, y, 1, 0);
+ 122   3          } else if ( u8g2->bitmap_transparency == 0 ) {
+ 123   3            u8g2->draw_color = ncolor;
+ 124   3            u8g2_DrawHVLine(u8g2, x, y, 1, 0);
+ 125   3          }
+ 126   2          x++;
+ 127   2          mask <<= 1;
+ 128   2          if ( mask == 0 )
+ 129   2          {
+ 130   3            mask = 1;
+ 131   3            b++;
+ 132   3          }
+ 133   2          len--;
+ 134   2        }
+ 135   1        u8g2->draw_color = color;
+ 136   1      }
+ 137          
+ 138          
+ 139          void u8g2_DrawXBM(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h, const uint8_t 
+             -*bitmap)
+ 140          {
+ 141   1        u8g2_uint_t blen;
+ 142   1        blen = w;
+ 143   1        blen += 7;
+ 144   1        blen >>= 3;
+ 145   1      #ifdef U8G2_WITH_INTERSECTION
+ 146   1        if ( u8g2_IsIntersection(u8g2, x, y, x+w, y+h) == 0 ) 
+ 147   1          return;
+ 148   1      #endif /* U8G2_WITH_INTERSECTION */
+ 149   1        
+ 150   1        while( h > 0 )
+ 151   1        {
+ 152   2          u8g2_DrawHXBM(u8g2, x, y, w, bitmap);
+ 153   2          bitmap += blen;
+ 154   2          y++;
+ 155   2          h--;
+ 156   2        }
+ 157   1      }
+ 158          
+ 159          
+ 160          
+ 161          
+ 162          
+ 163          
+ 164          void u8g2_DrawHXBMP(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t len, const uint8_t *b)
+ 165          {
+ 166   1        uint8_t mask;
+ 167   1        uint8_t color = u8g2->draw_color;
+ 168   1        uint8_t ncolor = (color == 0 ? 1 : 0);
+ 169   1      #ifdef U8G2_WITH_INTERSECTION
+ 170   1        if ( u8g2_IsIntersection(u8g2, x, y, x+len, y+1) == 0 ) 
+ 171   1          return;
+C51 COMPILER V9.01   U8G2_BITMAP                                                           04/30/2021 10:55:16 PAGE 4   
+
+ 172   1      #endif /* U8G2_WITH_INTERSECTION */
+ 173   1        
+ 174   1        mask = 1;
+ 175   1        while(len > 0)
+ 176   1        {
+ 177   2          if( u8x8_pgm_read(b) & mask ) {
+ 178   3            u8g2->draw_color = color;
+ 179   3            u8g2_DrawHVLine(u8g2, x, y, 1, 0);
+ 180   3          } else if( u8g2->bitmap_transparency == 0 ) {
+ 181   3            u8g2->draw_color = ncolor;
+ 182   3            u8g2_DrawHVLine(u8g2, x, y, 1, 0);
+ 183   3          }
+ 184   2         
+ 185   2          x++;
+ 186   2          mask <<= 1;
+ 187   2          if ( mask == 0 )
+ 188   2          {
+ 189   3            mask = 1;
+ 190   3            b++;
+ 191   3          }
+ 192   2          len--;
+ 193   2        }
+ 194   1        u8g2->draw_color = color;
+ 195   1      }
+ 196          
+ 197          
+ 198          void u8g2_DrawXBMP(u8g2_t *u8g2, u8g2_uint_t x, u8g2_uint_t y, u8g2_uint_t w, u8g2_uint_t h, const uint8_t
+             - *bitmap)
+ 199          {
+ 200   1        u8g2_uint_t blen;
+ 201   1        blen = w;
+ 202   1        blen += 7;
+ 203   1        blen >>= 3;
+ 204   1      #ifdef U8G2_WITH_INTERSECTION
+ 205   1        if ( u8g2_IsIntersection(u8g2, x, y, x+w, y+h) == 0 ) 
+ 206   1          return;
+ 207   1      #endif /* U8G2_WITH_INTERSECTION */
+ 208   1        
+ 209   1        while( h > 0 )
+ 210   1        {
+ 211   2          u8g2_DrawHXBMP(u8g2, x, y, w, bitmap);
+ 212   2          bitmap += blen;
+ 213   2          y++;
+ 214   2          h--;
+ 215   2        }
+ 216   1      }
+ 217          
+ 218          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

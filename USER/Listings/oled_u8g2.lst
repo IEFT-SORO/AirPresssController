@@ -1,0 +1,121 @@
+C51 COMPILER V9.01   OLED_U8G2                                                             04/30/2021 10:55:35 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE OLED_U8G2
+OBJECT MODULE PLACED IN .\Objects\oled_u8g2.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\u8g2_driver\oled_u8g2.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) 
+                    -BROWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND
+                    - PRINT(.\Listings\oled_u8g2.lst) TABS(2) OBJECT(.\Objects\oled_u8g2.obj)
+
+line level    source
+
+   1          /*
+   2           * @Author: your name
+   3           * @Date: 2021-04-03 11:04:54
+   4           * @LastEditTime: 2021-04-03 15:49:19
+   5           * @LastEditors: Please set LastEditors
+   6           * @Description: In User Settings Edit
+   7           * @FilePath: \AirPump_Controler\src\u8g2_driver\oled_u8g2.c
+   8           */
+   9            
+  10          sbit IIC_SCL=P3^4;
+*** ERROR C202 IN LINE 10 OF ..\U8G2\U8G2_DRIVER\OLED_U8G2.C: 'P3': undefined identifier
+  11          sbit IIC_SDA=P3^3;
+*** ERROR C202 IN LINE 11 OF ..\U8G2\U8G2_DRIVER\OLED_U8G2.C: 'P3': undefined identifier
+  12          
+  13          uint8_t u8x8_byte_ch55x_hw_i2c(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+*** ERROR C129 IN LINE 13 OF ..\U8G2\U8G2_DRIVER\OLED_U8G2.C: missing ';' before 'u8x8_byte_ch55x_hw_i2c'
+  14          {
+  15              static uint8_t buffer[32];                /* u8g2/u8x8 will never send more than 32 bytes between STAR
+             -T_TRANSFER and END_TRANSFER */
+  16              static uint8_t buf_idx;
+  17            uint8_t *data;
+  18          
+  19              switch(msg)
+  20              {
+  21                  case U8X8_MSG_BYTE_SEND:
+  22                  data = (uint8_t *)arg_ptr;      
+  23                  while( arg_int > 0 )
+  24                  {
+  25                      buffer[buf_idx++] = *data;
+  26                      data++;
+  27                      arg_int--;
+  28                  }      
+  29                  break;
+  30                  case U8X8_MSG_BYTE_INIT:
+  31                  /* add your custom code to init i2c subsystem */
+  32                  break;
+  33                  case U8X8_MSG_BYTE_SET_DC:
+  34                  /* ignored for i2c */
+  35                  break;
+  36                  case U8X8_MSG_BYTE_START_TRANSFER:
+  37                  buf_idx = 0;
+  38                  break;
+  39                  case U8X8_MSG_BYTE_END_TRANSFER:
+  40                  i2c_transfer(OLED_ADDRESS, buf_idx, buffer);
+  41                  break;
+  42                  default:
+  43                      return 0;
+  44              }
+  45              return 1;
+  46          }
+  47          
+  48          uint8_t gpio_and_delay(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+  49          {
+C51 COMPILER V9.01   OLED_U8G2                                                             04/30/2021 10:55:35 PAGE 2   
+
+  50            switch(msg)
+  51            {
+  52              case U8X8_MSG_DELAY_100NANO:    // delay arg_int * 100 nano seconds
+  53                  _nop_();
+  54              break;
+  55              case U8X8_MSG_DELAY_10MICRO:    // delay arg_int * 10 micro seconds
+  56            for (uint16_t n = 0; n < 320; n++)
+  57              {
+  58                  _nop_();
+  59              }
+  60              break;
+  61              case U8X8_MSG_DELAY_MILLI:                      // delay arg_int * 1 milli second
+  62                HAL_Delay(1);
+  63                  break;
+  64              case U8X8_MSG_DELAY_I2C:                    // arg_int is the I2C speed in 100KHz, e.g. 4 = 400 KHz
+  65                delay_us(5);
+  66                break;                              // arg_int=1: delay by 5us, arg_int = 4: delay by 1.25us
+  67              case U8X8_MSG_GPIO_I2C_CLOCK:                   // arg_int=0: Output low at I2C clock pin
+  68                  if(arg_int == 1)    
+  69                      IIC_SCL=1;                                 // arg_int=1: Input dir with pullup high for I2C cl
+             -ock pin
+  70                    // HAL_GPIO_WritePin(GPIOB, SCL_Pin, GPIO_PIN_SET);
+  71                  else if(arg_int == 0)
+  72                      IIC_SCL=1;
+  73                    // HAL_GPIO_WritePin(GPIOB, SCL_Pin, GPIO_PIN_RESET);
+  74                break;
+  75              case U8X8_MSG_GPIO_I2C_DATA:                  // arg_int=0: Output low at I2C data pin
+  76                  if(arg_int == 1)   
+  77                  IIC_SDA=1;                                  // arg_int=1: Input dir with pullup high for I2C data 
+             -pin
+  78                    // HAL_GPIO_WritePin(GPIOB, SDA_Pin, GPIO_PIN_SET);
+  79                  else if(arg_int == 0)
+  80                  IIC_SDA=0
+  81                    // HAL_GPIO_WritePin(GPIOB, SDA_Pin, GPIO_PIN_RESET);
+  82                break;
+  83              case U8X8_MSG_GPIO_MENU_SELECT:
+  84                  u8x8_SetGPIOResult(u8x8, /* get menu select pin state */ 0);
+  85                  break;
+  86              case U8X8_MSG_GPIO_MENU_NEXT:
+  87                  u8x8_SetGPIOResult(u8x8, /* get menu next pin state */ 0);
+  88                  break;
+  89              case U8X8_MSG_GPIO_MENU_PREV:
+  90                  u8x8_SetGPIOResult(u8x8, /* get menu prev pin state */ 0);
+  91                  break;
+  92              case U8X8_MSG_GPIO_MENU_HOME:
+  93                  u8x8_SetGPIOResult(u8x8, /* get menu home pin state */ 0);
+  94                  break;
+  95              default:
+  96                  u8x8_SetGPIOResult(u8x8, 1);               // default return value
+  97                  break;
+  98            }
+  99            return 1;
+ 100          }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

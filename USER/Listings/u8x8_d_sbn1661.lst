@@ -1,0 +1,265 @@
+C51 COMPILER V9.01   U8X8_D_SBN1661                                                        04/30/2021 10:55:25 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_SBN1661
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_sbn1661.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_sbn1661.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BR
+                    -OWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND P
+                    -RINT(.\Listings\u8x8_d_sbn1661.lst) TABS(2) OBJECT(.\Objects\u8x8_d_sbn1661.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_sbn1661.c 
+   4            
+   5            SED1520 / SBN1661 122x32 5V LCD
+   6            
+   7            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   8          
+   9            Copyright (c) 2016, olikraus@gmail.com
+  10            All rights reserved.
+  11          
+  12            Redistribution and use in source and binary forms, with or without modification, 
+  13            are permitted provided that the following conditions are met:
+  14          
+  15            * Redistributions of source code must retain the above copyright notice, this list 
+  16              of conditions and the following disclaimer.
+  17              
+  18            * Redistributions in binary form must reproduce the above copyright notice, this 
+  19              list of conditions and the following disclaimer in the documentation and/or other 
+  20              materials provided with the distribution.
+  21          
+  22            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  23            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  24            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  25            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  26            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  27            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  28            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  29            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  30            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  31            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  32            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  33            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  34            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  35          
+  36            
+  37          */
+  38          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  39          
+  40          
+  41          
+  42          
+  43          static const uint8_t u8x8_d_sbn1661_init_seq[] = {
+  44            U8X8_C(0x0c0),                    /* display start at line 0  */  
+  45            U8X8_C(0x0a0),                    /* a0: ADC forward, a1: ADC reverse */  
+  46            U8X8_C(0x0a4),                    /* a4: normal driving, a5: power save */  
+  47            U8X8_C(0x0a9),                    /* a8: 1/16, a9: 1/32 duty */  
+  48          
+  49            //U8X8_C(0x0af),        /* display on */
+  50            
+C51 COMPILER V9.01   U8X8_D_SBN1661                                                        04/30/2021 10:55:25 PAGE 2   
+
+  51            U8X8_END()                  /* end of sequence */
+  52          };
+  53          
+  54          static const uint8_t u8x8_d_sbn1661_powersave0_seq[] = {
+  55            U8X8_C(0x0af),                    /* display on */
+  56            U8X8_END()                  /* end of sequence */
+  57          };
+  58          
+  59          static const uint8_t u8x8_d_sbn1661_powersave1_seq[] = {
+  60            U8X8_C(0x0ae),                    /* display off */
+  61            U8X8_END()                  /* end of sequence */
+  62          };
+  63          
+  64          
+  65          struct u8x8_sbn1661_vars
+  66          {
+  67            uint8_t *ptr;
+  68            uint8_t x;
+  69            uint8_t c;
+  70            uint8_t arg_int;
+  71          };
+  72          
+  73          #ifdef NOT_USED
+              static void u8x8_sbn1661_out(u8x8_t *u8x8, struct u8x8_sbn1661_vars *v, void *arg_ptr)
+              {
+                uint8_t cnt;
+                u8x8_cad_SendCmd(u8x8, 0x000 | ((v->x << 3) & 63) );
+                u8x8_cad_SendCmd(u8x8, 0x0b8 | (((u8x8_tile_t *)arg_ptr)->y_pos));
+                
+                while( v->arg_int > 0 )
+                {
+                    /* calculate tiles to next boundary (end or chip limit) */
+                    cnt = v->x;
+                    cnt += 8;
+                    cnt &= 0x0f8;
+                    cnt -= v->x;
+                          
+                    if ( cnt > v->c )
+                cnt = v->c;
+                  
+                    /* of course we still could use cnt=1 here... */
+                    /* but setting cnt to 1 is not very efficient */
+                    //cnt = 1;
+                  
+                    v->x +=cnt;
+                    v->c-=cnt;
+                    cnt<<=3;
+                    u8x8_cad_SendData(u8x8, cnt, v->ptr); /* note: SendData can not handle more than 255 bytes */    
+                    v->ptr += cnt;
+                  
+                    if ( v->c == 0 )
+                    {
+                v->ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+                v->c = ((u8x8_tile_t *)arg_ptr)->cnt;
+                v->arg_int--;
+                    }
+                    if ( ((v->x) & 7) == 0 )
+                break;       
+                } 
+              }
+              #endif /* NOT_USED */
+ 112          
+C51 COMPILER V9.01   U8X8_D_SBN1661                                                        04/30/2021 10:55:25 PAGE 3   
+
+ 113          
+ 114          static const u8x8_display_info_t u8x8_sbn1661_122x32_display_info =
+ 115          {
+ 116            /* chip_enable_level = */ 0,    /* sbn1661: Not used */
+ 117            /* chip_disable_level = */ 1,   /* sbn1661: Not used */
+ 118            
+ 119            /* post_chip_enable_wait_ns = */ 100,
+ 120            /* pre_chip_disable_wait_ns = */ 20,
+ 121            /* reset_pulse_width_ms = */ 1, 
+ 122            /* post_reset_wait_ms = */ 6,     /*  */
+ 123            /* sda_setup_time_ns = */ 12,   
+ 124            /* sck_pulse_width_ns = */ 75,  /* sbn1661: Not used */
+ 125            /* sck_clock_hz = */ 4000000UL, /* sbn1661: Not used */
+ 126            /* spi_mode = */ 0,       /* active high, rising edge */
+ 127            /* i2c_bus_clock_100kHz = */ 4, /* sbn1661: Not used */
+ 128            /* data_setup_time_ns = */ 200,
+ 129            /* write_pulse_width_ns = */ 200, /*  */
+ 130            /* tile_width = */ 16,    /* width of 16*8=128 pixel */
+ 131            /* tile_hight = */ 4,
+ 132            /* default_x_offset = */ 0,
+ 133            /* flipmode_x_offset = */ 0,
+ 134            /* pixel_width = */ 122,
+ 135            /* pixel_height = */ 32
+ 136          };
+ 137          
+ 138          uint8_t u8x8_d_sbn1661_122x32(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 139          {
+ 140   1        uint8_t *ptr;
+ 141   1        //uint8_t x;
+ 142   1        //uint8_t c;
+ 143   1        
+ 144   1        switch(msg)
+ 145   1        {
+ 146   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 147   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_sbn1661_122x32_display_info);
+ 148   2            break;
+ 149   2          case U8X8_MSG_DISPLAY_INIT:
+ 150   2            u8x8_d_helper_display_init(u8x8);
+ 151   2          
+ 152   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 152 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 153   2            u8x8_cad_SendSequence(u8x8, u8x8_d_sbn1661_init_seq);
+*** ERROR C208 IN LINE 153 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 154   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 154 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 155   2          
+ 156   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 1, NULL);
+*** ERROR C212 IN LINE 156 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 157   2            u8x8_cad_SendSequence(u8x8, u8x8_d_sbn1661_init_seq);
+*** ERROR C208 IN LINE 157 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 158   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 1, NULL);
+*** ERROR C212 IN LINE 158 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 159   2            break;
+ 160   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 161   2            
+ 162   2            if ( arg_int == 0 )
+ 163   2            {
+ 164   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 164 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 165   3        u8x8_cad_SendSequence(u8x8, u8x8_d_sbn1661_powersave0_seq);
+*** ERROR C208 IN LINE 165 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 166   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+C51 COMPILER V9.01   U8X8_D_SBN1661                                                        04/30/2021 10:55:25 PAGE 4   
+
+*** ERROR C212 IN LINE 166 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 167   3      
+ 168   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 1, NULL);
+*** ERROR C212 IN LINE 168 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 169   3        u8x8_cad_SendSequence(u8x8, u8x8_d_sbn1661_powersave0_seq);
+*** ERROR C208 IN LINE 169 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 170   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 1, NULL); 
+*** ERROR C212 IN LINE 170 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 171   3            }
+ 172   2            else
+ 173   2            {
+ 174   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 174 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 175   3        u8x8_cad_SendSequence(u8x8, u8x8_d_sbn1661_powersave1_seq);
+*** ERROR C208 IN LINE 175 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 176   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 176 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 177   3        
+ 178   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 1, NULL);
+*** ERROR C212 IN LINE 178 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 179   3        u8x8_cad_SendSequence(u8x8, u8x8_d_sbn1661_powersave1_seq);
+*** ERROR C208 IN LINE 179 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 180   3        u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 1, NULL);
+*** ERROR C212 IN LINE 180 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 181   3        
+ 182   3            }
+ 183   2            break;
+ 184   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 185   2      
+ 186   2            ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 187   2            // x and c are ignored (u8g2 only)
+ 188   2            //x = ((u8x8_tile_t *)arg_ptr)->x_pos;
+ 189   2            //c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 190   2            
+ 191   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 191 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 192   2            u8x8_cad_SendCmd(u8x8, 0x000 | 0);    // column 0
+ 193   2            u8x8_cad_SendCmd(u8x8, 0x0b8 | (((u8x8_tile_t *)arg_ptr)->y_pos));
+ 194   2            u8x8_cad_SendData(u8x8, 61, ptr); /* note: SendData can not handle more than 255 bytes */    
+*** ERROR C208 IN LINE 194 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: '_u8x8_cad_SendData': too many actual parameters
+ 195   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 0, NULL);
+*** ERROR C212 IN LINE 195 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 196   2      
+ 197   2            ptr += 61;
+ 198   2            
+ 199   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_START_TRANSFER, 1, NULL);
+*** ERROR C212 IN LINE 199 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 200   2            u8x8_cad_SendCmd(u8x8, 0x000 | 0);    // column 0
+ 201   2            u8x8_cad_SendCmd(u8x8, 0x0b8 | (((u8x8_tile_t *)arg_ptr)->y_pos));
+ 202   2          
+ 203   2            u8x8_cad_SendData(u8x8, 61, ptr); /* note: SendData can not handle more than 255 bytes */    
+*** ERROR C208 IN LINE 203 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: '_u8x8_cad_SendData': too many actual parameters
+ 204   2            u8x8->cad_cb(u8x8, U8X8_MSG_CAD_END_TRANSFER, 1, NULL);
+*** ERROR C212 IN LINE 204 OF ..\U8G2\CSRC\U8X8_D_SBN1661.C: indirect call: parameters do not fit within registers
+ 205   2          
+ 206   2            break;
+ 207   2          default:
+ 208   2            return 0;
+ 209   2        }
+ 210   1        return 1;
+ 211   1      }
+ 212          
+C51 COMPILER V9.01   U8X8_D_SBN1661                                                        04/30/2021 10:55:25 PAGE 5   
+
+ 213          uint8_t u8x8_d_sed1520_122x32(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 214          {
+ 215   1        return u8x8_d_sbn1661_122x32(u8x8, msg, arg_int, arg_ptr);
+ 216   1      
+ 217   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  27 ERROR(S)

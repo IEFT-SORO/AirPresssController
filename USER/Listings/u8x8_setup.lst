@@ -1,0 +1,171 @@
+C51 COMPILER V9.01   U8X8_SETUP                                                            04/30/2021 10:55:35 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_SETUP
+OBJECT MODULE PLACED IN .\Objects\u8x8_setup.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_setup.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROWSE
+                    - INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PRINT
+                    -(.\Listings\u8x8_setup.lst) TABS(2) OBJECT(.\Objects\u8x8_setup.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_setup.c
+   4          
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2016, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          */
+  35          
+  36          
+  37          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  38          
+  39          /* universal dummy callback, which will be default for all callbacks */
+  40          uint8_t u8x8_dummy_cb(U8X8_UNUSED u8x8_t *u8x8, U8X8_UNUSED uint8_t msg, U8X8_UNUSED uint8_t arg_int, U8X8
+             -_UNUSED void *arg_ptr)
+  41          {
+  42   1        /* the dummy callback will not handle any message and will fail for all messages */
+  43   1        return 0;
+  44   1      }
+  45          
+  46          
+  47          static const u8x8_display_info_t u8x8_null_display_info =
+  48          {
+  49            /* chip_enable_level = */ 0,
+C51 COMPILER V9.01   U8X8_SETUP                                                            04/30/2021 10:55:35 PAGE 2   
+
+  50            /* chip_disable_level = */ 1,
+  51            
+  52            /* post_chip_enable_wait_ns = */ 0,
+  53            /* pre_chip_disable_wait_ns = */ 0,
+  54            /* reset_pulse_width_ms = */ 0, 
+  55            /* post_reset_wait_ms = */ 0, 
+  56            /* sda_setup_time_ns = */ 0,    
+  57            /* sck_pulse_width_ns = */ 0, /* half of cycle time (100ns according to datasheet), AVR: below 70: 8 MHz
+             -, >= 70 --> 4MHz clock */
+  58            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+  59            /* spi_mode = */ 0,   /* active high, rising edge */
+  60            /* i2c_bus_clock_100kHz = */ 4,
+  61            /* data_setup_time_ns = */ 0,
+  62            /* write_pulse_width_ns = */ 0,
+  63            /* tile_width = */ 1,   /* 8x8 */
+  64            /* tile_hight = */ 1,
+  65            /* default_x_offset = */ 0,
+  66            /* flipmode_x_offset = */ 0,
+  67            /* pixel_width = */ 8,
+  68            /* pixel_height = */ 8
+  69          };
+  70          
+  71          
+  72          /* a special null device */
+  73          uint8_t u8x8_d_null_cb(u8x8_t *u8x8, uint8_t msg, U8X8_UNUSED uint8_t arg_int, U8X8_UNUSED void *arg_ptr)
+  74          {
+  75   1        switch(msg)
+  76   1        {
+  77   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+  78   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_null_display_info);
+  79   2            break;
+  80   2          case U8X8_MSG_DISPLAY_INIT:
+  81   2            u8x8_d_helper_display_init(u8x8);
+  82   2            break;
+  83   2        }
+  84   1        /* the null device callback will succeed for all messages */
+  85   1        return 1;
+  86   1      }
+  87          
+  88          
+  89          /*
+  90            Description:
+  91              Setup u8x8
+  92            Args:
+  93              u8x8  An empty u8x8 structure
+  94          */
+  95          void u8x8_SetupDefaults(u8x8_t *u8x8)
+  96          {
+  97   1          u8x8->display_info = NULL;
+  98   1          u8x8->display_cb = u8x8_dummy_cb;
+  99   1          u8x8->cad_cb = u8x8_dummy_cb;
+ 100   1          u8x8->byte_cb = u8x8_dummy_cb;
+ 101   1          u8x8->gpio_and_delay_cb = u8x8_dummy_cb;
+ 102   1          u8x8->is_font_inverse_mode = 0;
+ 103   1          u8x8->device_address = 0;
+ 104   1          u8x8->utf8_state = 0;   /* also reset by u8x8_utf8_init */
+ 105   1          u8x8->bus_clock = 0;    /* issue 769 */
+ 106   1          u8x8->i2c_address = 255;
+ 107   1          u8x8->debounce_default_pin_state = 255; /* assume all low active buttons */
+ 108   1        
+ 109   1      #ifdef U8X8_USE_PINS 
+C51 COMPILER V9.01   U8X8_SETUP                                                            04/30/2021 10:55:35 PAGE 3   
+
+                {
+                  uint8_t i;
+                  for( i = 0; i < U8X8_PIN_CNT; i++ )
+                    u8x8->pins[i] = U8X8_PIN_NONE;
+                }
+              #endif
+ 116   1      }
+ 117          
+ 118          
+ 119          /*
+ 120            Description:
+ 121              Setup u8x8 and assign the callback function. The dummy 
+ 122              callback "u8x8_dummy_cb" can be used, if no callback is required.
+ 123              This setup will not communicate with the display itself.
+ 124              Use u8x8_InitDisplay() to send the startup code to the Display.
+ 125            Args:
+ 126              u8x8        An empty u8x8 structure
+ 127              display_cb      Display/controller specific callback function
+ 128              cad_cb        Display controller specific communication callback function
+ 129              byte_cb     Display controller/communication specific callback funtion
+ 130              gpio_and_delay_cb Environment specific callback function
+ 131          
+ 132          */
+ 133          void u8x8_Setup(u8x8_t *u8x8, u8x8_msg_cb display_cb, u8x8_msg_cb cad_cb, u8x8_msg_cb byte_cb, u8x8_msg_cb
+             - gpio_and_delay_cb)
+ 134          {
+ 135   1        /* setup defaults and reset pins to U8X8_PIN_NONE */
+ 136   1        u8x8_SetupDefaults(u8x8);
+ 137   1      
+ 138   1        /* setup specific callbacks */
+ 139   1        u8x8->display_cb = display_cb;
+ 140   1        u8x8->cad_cb = cad_cb;
+ 141   1        u8x8->byte_cb = byte_cb;
+ 142   1        u8x8->gpio_and_delay_cb = gpio_and_delay_cb;
+ 143   1      
+ 144   1        /* setup display info */
+ 145   1        u8x8_SetupMemory(u8x8);
+ 146   1      }
+ 147          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  3 ERROR(S)

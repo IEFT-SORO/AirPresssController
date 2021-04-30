@@ -1,0 +1,304 @@
+C51 COMPILER V9.01   U8X8_D_ST75320                                                        04/30/2021 10:55:31 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_ST75320
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_st75320.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_st75320.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BR
+                    -OWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND P
+                    -RINT(.\Listings\u8x8_d_st75320.lst) TABS(2) OBJECT(.\Objects\u8x8_d_st75320.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_st75320.c
+   4          
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2019, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          
+  35            ST75320: 320x240 monochrome LCD
+  36            
+  37            https://github.com/olikraus/u8g2/issues/921
+  38          
+  39          */
+  40          
+  41          
+  42          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  43          
+  44          static const uint8_t u8x8_d_st75320_jlx320240_powersave0_seq[] = {
+  45            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  46            U8X8_C(0x0af),                    /* display on */
+  47            U8X8_END_TRANSFER(),              /* disable chip */
+  48            U8X8_END()                  /* end of sequence */
+  49          };
+  50          
+C51 COMPILER V9.01   U8X8_D_ST75320                                                        04/30/2021 10:55:31 PAGE 2   
+
+  51          static const uint8_t u8x8_d_st75320_jlx320240_powersave1_seq[] = {
+  52            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  53            U8X8_C(0x0ae),                    /* display off */
+  54            U8X8_END_TRANSFER(),              /* disable chip */
+  55            U8X8_END()                  /* end of sequence */
+  56          };
+  57          
+  58          static const uint8_t u8x8_d_st75320_jlx320240_flip0_seq[] = {
+  59            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  60            U8X8_CA(0xC4, 0x02),      /* COM Output Status, Bits 0 & 1 */
+  61            U8X8_C(0xA1),         /* Column Address Direction: Bit 0 */
+  62            //U8X8_C(0x0a1),        /* segment remap a0/a1*/
+  63            //U8X8_C(0x0c8),        /* c0: scan dir normal, c8: reverse */
+  64            U8X8_END_TRANSFER(),              /* disable chip */
+  65            U8X8_END()                  /* end of sequence */
+  66          };
+  67          
+  68          static const uint8_t u8x8_d_st75320_jlx320240_flip1_seq[] = {
+  69            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  70            //U8X8_C(0x0a0),        /* segment remap a0/a1*/
+  71            //U8X8_C(0x0c0),        /* c0: scan dir normal, c8: reverse */
+  72            U8X8_CA(0xC4, 0x03),      /* COM Output Status, Bits 0 & 1 */
+  73            U8X8_C(0xA0),         /* Column Address Direction: Bit 0 */
+  74            U8X8_END_TRANSFER(),              /* disable chip */
+  75            U8X8_END()                  /* end of sequence */
+  76          };
+  77          
+  78          
+  79          
+  80          
+  81          /*===================================================*/
+  82          
+  83          static uint8_t u8x8_d_st75320_generic(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+  84          {
+  85   1        uint16_t x;
+  86   1        uint8_t c;
+  87   1        uint8_t *ptr;
+  88   1        switch(msg)
+  89   1        {
+  90   2          /* handled by the calling function
+  91   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+  92   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st75320_jlx320240_display_info);
+  93   2            break;
+  94   2          */
+  95   2          /* handled by the calling function
+  96   2          case U8X8_MSG_DISPLAY_INIT:
+  97   2            u8x8_d_helper_display_init(u8x8);
+  98   2            u8x8_cad_SendSequence(u8x8, u8x8_d_st75320_jlx320240_init_seq);    
+  99   2            break;
+ 100   2          */
+ 101   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 102   2            if ( arg_int == 0 )
+ 103   2        u8x8_cad_SendSequence(u8x8, u8x8_d_st75320_jlx320240_powersave0_seq);
+*** ERROR C208 IN LINE 103 OF ..\U8G2\CSRC\U8X8_D_ST75320.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 104   2            else
+ 105   2        u8x8_cad_SendSequence(u8x8, u8x8_d_st75320_jlx320240_powersave1_seq);
+*** ERROR C208 IN LINE 105 OF ..\U8G2\CSRC\U8X8_D_ST75320.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 106   2            break;
+ 107   2          case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 108   2            if ( arg_int == 0 )
+ 109   2            {
+ 110   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st75320_jlx320240_flip0_seq);
+C51 COMPILER V9.01   U8X8_D_ST75320                                                        04/30/2021 10:55:31 PAGE 3   
+
+*** ERROR C208 IN LINE 110 OF ..\U8G2\CSRC\U8X8_D_ST75320.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 111   3        u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 112   3            }
+ 113   2            else
+ 114   2            {
+ 115   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st75320_jlx320240_flip1_seq);
+*** ERROR C208 IN LINE 115 OF ..\U8G2\CSRC\U8X8_D_ST75320.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 116   3        u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 117   3            }
+ 118   2            break;
+ 119   2      #ifdef U8X8_WITH_SET_CONTRAST
+ 120   2          case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 121   2            u8x8_cad_StartTransfer(u8x8);
+ 122   2            u8x8_cad_SendCmd(u8x8, 0x081 );
+ 123   2            u8x8_cad_SendArg(u8x8, arg_int<<2 );  
+ 124   2            u8x8_cad_SendArg(u8x8, arg_int>>6 );  
+ 125   2            u8x8_cad_EndTransfer(u8x8);
+ 126   2            break;
+ 127   2      #endif
+ 128   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 129   2            x = ((u8x8_tile_t *)arg_ptr)->x_pos;    
+ 130   2            x *= 8;
+ 131   2            x += u8x8->x_offset;
+ 132   2      
+ 133   2            u8x8_cad_StartTransfer(u8x8);
+ 134   2          
+ 135   2            u8x8_cad_SendCmd(u8x8, 0x013);
+ 136   2            u8x8_cad_SendArg(u8x8, (x>>8) );
+ 137   2            u8x8_cad_SendArg(u8x8, (x&255) );
+ 138   2            u8x8_cad_SendCmd(u8x8, 0x0b1 ); 
+ 139   2            u8x8_cad_SendArg(u8x8, (((u8x8_tile_t *)arg_ptr)->y_pos)); 
+ 140   2      
+ 141   2      
+ 142   2            u8x8_cad_SendCmd(u8x8, 0x01d );   // write data 
+ 143   2          
+ 144   2            do
+ 145   2            {
+ 146   3              c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 147   3              ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 148   3              /* SendData can not handle more than 255 bytes */
+ 149   3              if ( c > 31 )
+ 150   3              {
+ 151   4                u8x8_cad_SendData(u8x8, 248, ptr);  /* 31*8=248 */
+*** ERROR C208 IN LINE 151 OF ..\U8G2\CSRC\U8X8_D_ST75320.C: '_u8x8_cad_SendData': too many actual parameters
+ 152   4                ptr+=248;
+ 153   4                c -= 31;
+ 154   4              }
+ 155   3              
+ 156   3              u8x8_cad_SendData(u8x8, c*8, ptr);  
+*** ERROR C208 IN LINE 156 OF ..\U8G2\CSRC\U8X8_D_ST75320.C: '_u8x8_cad_SendData': too many actual parameters
+ 157   3              arg_int--;
+ 158   3            } while( arg_int > 0 );
+ 159   2      
+ 160   2            
+ 161   2            u8x8_cad_EndTransfer(u8x8);
+ 162   2            break;
+ 163   2          default:
+ 164   2            return 0;
+ 165   2        }
+ 166   1        return 1;
+ 167   1      }
+ 168          
+C51 COMPILER V9.01   U8X8_D_ST75320                                                        04/30/2021 10:55:31 PAGE 4   
+
+ 169          /*===================================================*/
+ 170          
+ 171          
+ 172          /* QT-2832TSWUG02/ZJY-2832TSWZG02 */
+ 173          static const uint8_t u8x8_d_st75320_jlx320240_init_seq[] = {
+ 174              
+ 175            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 176            
+ 177            U8X8_C(0xAE),         // Display OFF
+ 178            U8X8_CA(0xEA, 0x00),      // Power Discharge Control, Discharge OFF
+ 179            U8X8_C(0xA8),         // sleep out
+ 180            U8X8_C(0xAB),         // OSC ON
+ 181            U8X8_C(0x69),         // Temperature Detection ON
+ 182            U8X8_C(0x4E),         // TC Setting
+ 183            U8X8_A8(0xff, 0x44, 0x12, 0x11,  0x11, 0x11, 0x22, 0x23),
+ 184            U8X8_CAA(0x39, 0x00, 0x00),   //TC Flag
+ 185            
+ 186            
+ 187            U8X8_CA(0x2B, 0x00),      // Frame Rate Level
+ 188            U8X8_CAA(0x5F, 0x66, 0x66),   // Set Frame Frequency, fFR=80Hz in all temperature range
+ 189            U8X8_CAAA(0xEC, 0x19, 0x64, 0x6e), // FR Compensation Temp. Range, TA = -15 degree, TB = 60 degree, TC =
+             - 70 degree
+ 190            U8X8_CAA(0xED, 0x04, 0x04),   // Temp. Hysteresis Value (thermal sensitivity)
+ 191            U8X8_C(0xA6),         // Display Inverse OFF
+ 192            U8X8_C(0xA4),         // Disable Display All Pixel ON
+ 193          
+ 194            U8X8_CA(0xC4, 0x02),      // COM Output Status  
+ 195            U8X8_C(0xA1),         // Column Address Direction: MX=0
+ 196            
+ 197            U8X8_CAA(0x6D, 0x07, 0x00),   // Display Area, Duty = 1/240 duty, Start Group = 1
+ 198            U8X8_C(0x84),         // Display Data Input Direction: Column
+ 199            U8X8_CA(0x36, 0x1e),      // Set N-Line
+ 200            U8X8_C(0xE4),         // N-Line On
+ 201            U8X8_CA(0xE7, 0x19),      // LCD Drive Method //NLFR=1//
+ 202          
+ 203            U8X8_CAA(0x81, 0x4f, 0x01),   // OX81: Set EV=64h, 0..255, 0..3
+ 204            U8X8_CA(0xA2, 0x0a),      // BIAS //1/16 BIAS
+ 205            U8X8_CA(0x25, 0x020),     // Power Control //AVDD ON
+ 206            U8X8_DLY(10),
+ 207            U8X8_CA(0x25, 0x60),      // Power Control//AVDD, MV3 & NAVDD ON
+ 208            U8X8_DLY(10),
+ 209            U8X8_CA(0x25, 0x70),      // Power Control //AVDD, MV3, NAVDD & V3 ON
+ 210            U8X8_DLY(10),
+ 211            U8X8_CA(0x25, 0x78),      // Power Control//AVDD, MV3, NAVDD, V3 & VPF ON
+ 212            U8X8_DLY(10),
+ 213            U8X8_CA(0x25, 0x7c),      // Power Control//AVDD, MV3, NAVDD, V3, VPF & VNF ON
+ 214            U8X8_DLY(10),
+ 215            U8X8_CA(0x25, 0x7e),      // Power Control//VOUT, AVDD, MV3, NAVDD, V3, VPF & VNF ON
+ 216            U8X8_DLY(10),
+ 217            U8X8_CA(0x25, 0x7f),      // Power Control/VOUT, AVDD, MV3, NAVDD, V3, VPF & VNF ON
+ 218            U8X8_DLY(10),
+ 219            //U8X8_C(0xaf); //Display ON  
+ 220              
+ 221            U8X8_END_TRANSFER(),              /* disable chip */
+ 222            U8X8_END()                /* end of sequence */
+ 223          };
+ 224          
+ 225          
+ 226          
+ 227          
+ 228          static const u8x8_display_info_t u8x8_st75320_jlx320240_display_info =
+ 229          {
+C51 COMPILER V9.01   U8X8_D_ST75320                                                        04/30/2021 10:55:31 PAGE 5   
+
+ 230            /* chip_enable_level = */ 0,
+ 231            /* chip_disable_level = */ 1,
+ 232            
+ 233            /* post_chip_enable_wait_ns = */ 20,
+ 234            /* pre_chip_disable_wait_ns = */ 20,
+ 235            /* reset_pulse_width_ms = */ 5,   
+ 236            /* post_reset_wait_ms = */ 5,     /**/
+ 237            /* sda_setup_time_ns = */ 20,   /* */
+ 238            /* sck_pulse_width_ns = */ 40,  /*  */
+ 239            /* sck_clock_hz = */ 4000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 240            /* spi_mode = */ 0,   /* active high, rising edge */
+ 241            /* i2c_bus_clock_100kHz = */ 4, /* 400KHz */
+ 242            /* data_setup_time_ns = */ 15,
+ 243            /* write_pulse_width_ns = */ 70,  
+ 244            /* tile_width = */ 40,
+ 245            /* tile_hight = */ 30,
+ 246            /* default_x_offset = */ 0,
+ 247            /* flipmode_x_offset = */ 0,
+ 248            /* pixel_width = */ 320,
+ 249            /* pixel_height = */ 240
+ 250          };
+ 251          
+ 252          uint8_t u8x8_d_st75320_jlx320240(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 253          {
+ 254   1          
+ 255   1        if ( u8x8_d_st75320_generic(u8x8, msg, arg_int, arg_ptr) != 0 )
+ 256   1          return 1;
+ 257   1        
+ 258   1        switch(msg)
+ 259   1        {
+ 260   2          case U8X8_MSG_DISPLAY_INIT:
+ 261   2            u8x8_d_helper_display_init(u8x8);
+ 262   2            u8x8_cad_SendSequence(u8x8, u8x8_d_st75320_jlx320240_init_seq);    
+*** ERROR C208 IN LINE 262 OF ..\U8G2\CSRC\U8X8_D_ST75320.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 263   2            break;
+ 264   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 265   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st75320_jlx320240_display_info);
+ 266   2            break;
+ 267   2          default:
+ 268   2            return 0;
+ 269   2        }
+ 270   1        return 1;
+ 271   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  10 ERROR(S)

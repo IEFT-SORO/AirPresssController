@@ -1,0 +1,243 @@
+C51 COMPILER V9.01   U8X8_D_ST7511                                                         04/30/2021 10:55:29 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_ST7511
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_st7511.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_st7511.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BRO
+                    -WSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND PR
+                    -INT(.\Listings\u8x8_d_st7511.lst) TABS(2) OBJECT(.\Objects\u8x8_d_st7511.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_st7511.c
+   4            
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2019, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          
+  35            20 May 2019:
+  36            https://github.com/olikraus/u8g2/issues/876
+  37            Probably HW Flip does not work 
+  38          
+  39            
+  40          */
+  41          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  42          
+  43          
+  44          
+  45          
+  46          static const uint8_t u8x8_d_st7511_320x240_powersave0_seq[] = {
+  47            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  48            U8X8_CA(0x015, 0x0a5),    /* display on */
+  49            U8X8_END_TRANSFER(),              /* disable chip */
+  50            U8X8_END()                  /* end of sequence */
+C51 COMPILER V9.01   U8X8_D_ST7511                                                         04/30/2021 10:55:29 PAGE 2   
+
+  51          };
+  52          
+  53          static const uint8_t u8x8_d_st7511_320x240_powersave1_seq[] = {
+  54            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  55            U8X8_CA(0x014, 0x0a5),    /* display off */
+  56            // maybe use sleep mode here, but it not clear whether sleep mode will reset all the settings
+  57            U8X8_END_TRANSFER(),              /* disable chip */
+  58            U8X8_END()                  /* end of sequence */
+  59          };
+  60          
+  61          static const uint8_t u8x8_d_st7511_320x240_flip0_seq[] = {
+  62            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  63            U8X8_CAAAA(0x24, 0x01, 0xa5, 0xa5, 0xa5),   /* memory control directions */
+  64            U8X8_END_TRANSFER(),              /* disable chip */
+  65            U8X8_END()                  /* end of sequence */
+  66          };
+  67          
+  68          static const uint8_t u8x8_d_st7511_320x240_flip1_seq[] = {
+  69            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  70            U8X8_CAAAA(0x24, 0x02, 0xa5, 0xa5, 0xa5),   /* memory control directions */
+  71            U8X8_END_TRANSFER(),              /* disable chip */
+  72            U8X8_END()                  /* end of sequence */
+  73          };
+  74          
+  75          
+  76          
+  77          /*=====================================================*/
+  78          /* AV-Display: AVD-TM57QV-NW-001-B, issue 876 */
+  79          
+  80          static const u8x8_display_info_t u8x8_st7511_320x240_display_info =
+  81          {
+  82            /* chip_enable_level = */ 0,
+  83            /* chip_disable_level = */ 1,
+  84            
+  85            /* post_chip_enable_wait_ns = */ 150, /* ST7511 Datasheet */
+  86            /* pre_chip_disable_wait_ns = */ 150, /* ST7511 Datasheet */
+  87            /* reset_pulse_width_ms = */ 1, 
+  88            /* post_reset_wait_ms = */ 1, 
+  89            /* sda_setup_time_ns = */ 120,    /* ST7511 Datasheet */
+  90            /* sck_pulse_width_ns = */ 150, /* ST7511 Datasheet */
+  91            /* sck_clock_hz = */ 3300000UL, /* ST7511 Datasheet: 300ns cycle */
+  92            /* spi_mode = */ 0,   /* active high, rising edge */
+  93            /* i2c_bus_clock_100kHz = */ 4,
+  94            /* data_setup_time_ns = */ 200, /* */
+  95            /* write_pulse_width_ns = */ 250, /* ST7511 Datasheet: 500ns */
+  96            /* tile_width = */ 40,    /* width of 17*8=136 pixel */
+  97            /* tile_hight = */ 30,
+  98            /* default_x_offset = */ 160,
+  99            /* flipmode_x_offset = */ 0,
+ 100            /* pixel_width = */ 320,
+ 101            /* pixel_height = */ 240
+ 102          };
+ 103          
+ 104          static const uint8_t u8x8_d_st7511_320x240_init_seq[] = {
+ 105              
+ 106            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 107            
+ 108            U8X8_CA(0xae, 0xa5),            /* SW Reset */
+ 109            U8X8_CAAAA(0x61, 0x0f, 0x04, 0x02, 0xa5), /* all power on */
+ 110            U8X8_CAAAA(0x62, 0x0a, 0x06, 0x0f, 0xa5), /* electronic volumne set 1 */
+ 111            U8X8_CAAAA(0x63, 0x0f, 0x0f, 0xa5, 0xa5),   /* electronic volumne set 2 */
+ 112            U8X8_CAAAA(0x66, 0x00, 0xa5, 0xa5, 0xa5),   /* electronic volumne set 2 */
+C51 COMPILER V9.01   U8X8_D_ST7511                                                         04/30/2021 10:55:29 PAGE 3   
+
+ 113            U8X8_CA(0x12, 0xa5),            /* SLeeP OUT */
+ 114            U8X8_DLY(50),
+ 115            // skiping display on here, deviation from https://github.com/olikraus/u8g2/issues/876
+ 116            // will be called later in u8x8_d_st7511_320x240_powersave0_seq
+ 117            U8X8_CAAAA(0x22, 0x00, 0xa5, 0xa5, 0xa5),   /* monochrome display */
+ 118            U8X8_CAAAA(0x24, 0x01, 0xa5, 0xa5, 0xa5),   /* memory control directions */
+ 119          
+ 120            U8X8_DLY(50),
+ 121            
+ 122            U8X8_END_TRANSFER(),              /* disable chip */
+ 123            U8X8_END()                  /* end of sequence */
+ 124          };
+ 125          
+ 126          uint8_t u8x8_d_st7511_avd_320x240(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 127          {
+ 128   1        uint16_t x, c;
+ 129   1        uint8_t *ptr;
+ 130   1        switch(msg)
+ 131   1        {
+ 132   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 133   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_st7511_320x240_display_info);
+ 134   2            break;
+ 135   2          case U8X8_MSG_DISPLAY_INIT:
+ 136   2            u8x8_d_helper_display_init(u8x8);
+ 137   2            u8x8_cad_SendSequence(u8x8, u8x8_d_st7511_320x240_init_seq);
+*** ERROR C208 IN LINE 137 OF ..\U8G2\CSRC\U8X8_D_ST7511.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 138   2            break;
+ 139   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+ 140   2            if ( arg_int == 0 )
+ 141   2        u8x8_cad_SendSequence(u8x8, u8x8_d_st7511_320x240_powersave0_seq);
+*** ERROR C208 IN LINE 141 OF ..\U8G2\CSRC\U8X8_D_ST7511.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 142   2            else
+ 143   2        u8x8_cad_SendSequence(u8x8, u8x8_d_st7511_320x240_powersave1_seq);
+*** ERROR C208 IN LINE 143 OF ..\U8G2\CSRC\U8X8_D_ST7511.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 144   2            break;
+ 145   2          case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 146   2            if ( arg_int == 0 )
+ 147   2            {
+ 148   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7511_320x240_flip0_seq);
+*** ERROR C208 IN LINE 148 OF ..\U8G2\CSRC\U8X8_D_ST7511.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 149   3        u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 150   3            }
+ 151   2            else
+ 152   2            {
+ 153   3        u8x8_cad_SendSequence(u8x8, u8x8_d_st7511_320x240_flip1_seq);
+*** ERROR C208 IN LINE 153 OF ..\U8G2\CSRC\U8X8_D_ST7511.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 154   3        u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 155   3            } 
+ 156   2            break;
+ 157   2      #ifdef U8X8_WITH_SET_CONTRAST
+ 158   2          case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 159   2            // not sure how to implement this....
+ 160   2            // u8x8_cad_StartTransfer(u8x8);
+ 161   2            // u8x8_cad_EndTransfer(u8x8);
+ 162   2            break;
+ 163   2      #endif
+ 164   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 165   2            u8x8_cad_StartTransfer(u8x8);
+ 166   2      
+ 167   2            // set page
+ 168   2            u8x8_cad_SendCmd(u8x8, 0x025);
+ 169   2            u8x8_cad_SendArg(u8x8, (((u8x8_tile_t *)arg_ptr)->y_pos));
+C51 COMPILER V9.01   U8X8_D_ST7511                                                         04/30/2021 10:55:29 PAGE 4   
+
+ 170   2            u8x8_cad_SendArg(u8x8, 0x09f);    // end page
+ 171   2            u8x8_cad_SendArg(u8x8, 0x000);    // frame 0
+ 172   2            u8x8_cad_SendArg(u8x8, 0x0a5);    
+ 173   2          
+ 174   2            x = ((u8x8_tile_t *)arg_ptr)->x_pos;
+ 175   2            x *= 8;
+ 176   2            x += u8x8->x_offset;
+ 177   2          
+ 178   2            // set column
+ 179   2            u8x8_cad_SendCmd(u8x8, 0x026);
+ 180   2            u8x8_cad_SendArg(u8x8, (x>>8) );
+ 181   2            u8x8_cad_SendArg(u8x8, (x&255) );
+ 182   2            u8x8_cad_SendArg(u8x8, 0x002);
+ 183   2            u8x8_cad_SendArg(u8x8, 0x07f);
+ 184   2      
+ 185   2            // start data transfer
+ 186   2            u8x8_cad_SendCmd(u8x8, 0x02c);
+ 187   2            u8x8_cad_SendArg(u8x8, 0x0a5 );
+ 188   2      
+ 189   2            do
+ 190   2            {
+ 191   3        c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 192   3        c *= 8;
+ 193   3        ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 194   3        
+ 195   3        while ( c > 128 )
+ 196   3        {
+ 197   4          u8x8_cad_SendData(u8x8, 128, ptr);  /* note: SendData can not handle more than 255 bytes */
+*** ERROR C208 IN LINE 197 OF ..\U8G2\CSRC\U8X8_D_ST7511.C: '_u8x8_cad_SendData': too many actual parameters
+ 198   4          c -= 128;
+ 199   4          ptr += 128;
+ 200   4        }
+ 201   3        u8x8_cad_SendData(u8x8, c, ptr);  /* note: SendData can not handle more than 255 bytes */
+*** ERROR C208 IN LINE 201 OF ..\U8G2\CSRC\U8X8_D_ST7511.C: '_u8x8_cad_SendData': too many actual parameters
+ 202   3        arg_int--;
+ 203   3            } while( arg_int > 0 );
+ 204   2            
+ 205   2            u8x8_cad_EndTransfer(u8x8);
+ 206   2            break;
+ 207   2          default:
+ 208   2            return 0;
+ 209   2        }
+ 210   1        return 1;
+ 211   1      }
+ 212          
+ 213          
+ 214          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  10 ERROR(S)

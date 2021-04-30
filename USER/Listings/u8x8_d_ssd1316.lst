@@ -1,0 +1,270 @@
+C51 COMPILER V9.01   U8X8_D_SSD1316                                                        04/30/2021 10:55:28 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE U8X8_D_SSD1316
+OBJECT MODULE PLACED IN .\Objects\u8x8_d_ssd1316.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\u8g2\csrc\u8x8_d_ssd1316.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BR
+                    -OWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP) DEBUG OBJECTEXTEND P
+                    -RINT(.\Listings\u8x8_d_ssd1316.lst) TABS(2) OBJECT(.\Objects\u8x8_d_ssd1316.obj)
+
+line level    source
+
+   1          /*
+   2          
+   3            u8x8_d_ssd1316.c
+   4          
+   5            Universal 8bit Graphics Library (https://github.com/olikraus/u8g2/)
+   6          
+   7            Copyright (c) 2019, olikraus@gmail.com
+   8            All rights reserved.
+   9          
+  10            Redistribution and use in source and binary forms, with or without modification, 
+  11            are permitted provided that the following conditions are met:
+  12          
+  13            * Redistributions of source code must retain the above copyright notice, this list 
+  14              of conditions and the following disclaimer.
+  15              
+  16            * Redistributions in binary form must reproduce the above copyright notice, this 
+  17              list of conditions and the following disclaimer in the documentation and/or other 
+  18              materials provided with the distribution.
+  19          
+  20            THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND 
+  21            CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+  22            INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
+  23            MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+  24            DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR 
+  25            CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+  26            SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+  27            NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; 
+  28            LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+  29            CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, 
+  30            STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+  31            ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF 
+  32            ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  
+  33          
+  34          
+  35            SSD1316: 128x39 OLED
+  36            
+  37            https://github.com/olikraus/u8g2/issues/919
+  38          
+  39          */
+  40          
+  41          
+  42          #include "u8x8.h"
+*** ERROR C141 IN LINE 600 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 632 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+*** ERROR C141 IN LINE 663 OF ..\U8G2\CSRC\U8X8.H: syntax error near ')'
+  43          
+  44          static const uint8_t u8x8_d_ssd1316_128x32_powersave0_seq[] = {
+  45            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  46            U8X8_C(0x0af),                    /* display on */
+  47            U8X8_END_TRANSFER(),              /* disable chip */
+  48            U8X8_END()                  /* end of sequence */
+  49          };
+  50          
+C51 COMPILER V9.01   U8X8_D_SSD1316                                                        04/30/2021 10:55:28 PAGE 2   
+
+  51          static const uint8_t u8x8_d_ssd1316_128x32_powersave1_seq[] = {
+  52            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  53            U8X8_C(0x0ae),                    /* display off */
+  54            U8X8_END_TRANSFER(),              /* disable chip */
+  55            U8X8_END()                  /* end of sequence */
+  56          };
+  57          
+  58          static const uint8_t u8x8_d_ssd1316_128x32_flip0_seq[] = {
+  59            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  60            U8X8_C(0x0a1),        /* segment remap a0/a1*/
+  61            U8X8_C(0x0c0),        /* c0: scan dir normal, c8: reverse */
+  62            U8X8_END_TRANSFER(),              /* disable chip */
+  63            U8X8_END()                  /* end of sequence */
+  64          };
+  65          
+  66          static const uint8_t u8x8_d_ssd1316_128x32_flip1_seq[] = {
+  67            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+  68            U8X8_C(0x0a0),        /* segment remap a0/a1*/
+  69            U8X8_C(0x0c8),        /* c0: scan dir normal, c8: reverse */
+  70            U8X8_END_TRANSFER(),              /* disable chip */
+  71            U8X8_END()                  /* end of sequence */
+  72          };
+  73          
+  74          
+  75          
+  76          
+  77          /*===================================================*/
+  78          
+  79          static uint8_t u8x8_d_ssd1316_generic(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+  80          {
+  81   1        uint8_t x, c;
+  82   1        uint8_t *ptr;
+  83   1        switch(msg)
+  84   1        {
+  85   2          /* handled by the calling function
+  86   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+  87   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_ssd1316_128x32_display_info);
+  88   2            break;
+  89   2          */
+  90   2          /* handled by the calling function
+  91   2          case U8X8_MSG_DISPLAY_INIT:
+  92   2            u8x8_d_helper_display_init(u8x8);
+  93   2            u8x8_cad_SendSequence(u8x8, u8x8_d_ssd1316_128x32_init_seq);    
+  94   2            break;
+  95   2          */
+  96   2          case U8X8_MSG_DISPLAY_SET_POWER_SAVE:
+  97   2            if ( arg_int == 0 )
+  98   2        u8x8_cad_SendSequence(u8x8, u8x8_d_ssd1316_128x32_powersave0_seq);
+*** ERROR C208 IN LINE 98 OF ..\U8G2\CSRC\U8X8_D_SSD1316.C: '_u8x8_cad_SendSequence': too many actual parameters
+  99   2            else
+ 100   2        u8x8_cad_SendSequence(u8x8, u8x8_d_ssd1316_128x32_powersave1_seq);
+*** ERROR C208 IN LINE 100 OF ..\U8G2\CSRC\U8X8_D_SSD1316.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 101   2            break;
+ 102   2          case U8X8_MSG_DISPLAY_SET_FLIP_MODE:
+ 103   2            if ( arg_int == 0 )
+ 104   2            {
+ 105   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ssd1316_128x32_flip0_seq);
+*** ERROR C208 IN LINE 105 OF ..\U8G2\CSRC\U8X8_D_SSD1316.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 106   3        u8x8->x_offset = u8x8->display_info->default_x_offset;
+ 107   3            }
+ 108   2            else
+ 109   2            {
+C51 COMPILER V9.01   U8X8_D_SSD1316                                                        04/30/2021 10:55:28 PAGE 3   
+
+ 110   3        u8x8_cad_SendSequence(u8x8, u8x8_d_ssd1316_128x32_flip1_seq);
+*** ERROR C208 IN LINE 110 OF ..\U8G2\CSRC\U8X8_D_SSD1316.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 111   3        u8x8->x_offset = u8x8->display_info->flipmode_x_offset;
+ 112   3            }
+ 113   2            break;
+ 114   2      #ifdef U8X8_WITH_SET_CONTRAST
+ 115   2          case U8X8_MSG_DISPLAY_SET_CONTRAST:
+ 116   2            u8x8_cad_StartTransfer(u8x8);
+ 117   2            u8x8_cad_SendCmd(u8x8, 0x081 );
+ 118   2            u8x8_cad_SendArg(u8x8, arg_int ); /* ssd1306 has range from 0 to 255 */
+ 119   2            u8x8_cad_EndTransfer(u8x8);
+ 120   2            break;
+ 121   2      #endif
+ 122   2          case U8X8_MSG_DISPLAY_DRAW_TILE:
+ 123   2            x = ((u8x8_tile_t *)arg_ptr)->x_pos;    
+ 124   2            x *= 8;
+ 125   2            x += u8x8->x_offset;
+ 126   2      
+ 127   2            u8x8_cad_StartTransfer(u8x8);
+ 128   2          
+ 129   2            u8x8_cad_SendCmd(u8x8, 0x010 | (x>>4) );
+ 130   2            u8x8_cad_SendCmd(u8x8, 0x000 | ((x&15))); /* probably wrong, should be SendCmd */
+ 131   2            u8x8_cad_SendCmd(u8x8, 0x0b0 | (((u8x8_tile_t *)arg_ptr)->y_pos)); /* probably wrong, should be Send
+             -Cmd */
+ 132   2      
+ 133   2            do
+ 134   2            {
+ 135   3        c = ((u8x8_tile_t *)arg_ptr)->cnt;
+ 136   3        ptr = ((u8x8_tile_t *)arg_ptr)->tile_ptr;
+ 137   3        u8x8_cad_SendData(u8x8, c*8, ptr);  /* note: SendData can not handle more than 255 bytes */
+*** ERROR C208 IN LINE 137 OF ..\U8G2\CSRC\U8X8_D_SSD1316.C: '_u8x8_cad_SendData': too many actual parameters
+ 138   3        arg_int--;
+ 139   3            } while( arg_int > 0 );
+ 140   2            
+ 141   2            u8x8_cad_EndTransfer(u8x8);
+ 142   2            break;
+ 143   2          default:
+ 144   2            return 0;
+ 145   2        }
+ 146   1        return 1;
+ 147   1      }
+ 148          
+ 149          /*===================================================*/
+ 150          
+ 151          
+ 152          /* QT-2832TSWUG02/ZJY-2832TSWZG02 */
+ 153          static const uint8_t u8x8_d_ssd1316_128x32_init_seq[] = {
+ 154              
+ 155            U8X8_START_TRANSFER(),              /* enable chip, delay is part of the transfer start */
+ 156            
+ 157            
+ 158            U8X8_C(0x0ae),            /* display off */
+ 159            U8X8_C(0x040),            /* start line */
+ 160            U8X8_CA(0x081, 0x045),    /* QG-2832TSWZG02 datasheet */
+ 161          
+ 162            U8X8_C(0x0a6),      /* none inverted normal display mode */
+ 163            U8X8_CA(0x0a8, 0x01f),    /* multiplex ratio, duty = 1/32 */
+ 164          
+ 165            U8X8_C(0x0a1),      /* segment remap a0/a1*/
+ 166            U8X8_C(0x0c0),      /* c0: scan dir normal, c8: reverse */
+ 167          
+ 168            U8X8_CA(0x0d3, 0x000),    /* display offset */
+C51 COMPILER V9.01   U8X8_D_SSD1316                                                        04/30/2021 10:55:28 PAGE 4   
+
+ 169            U8X8_CA(0x0d5, 0x080),    /* clock divide ratio (0x00=1) and oscillator frequency (0x8) */
+ 170            U8X8_CA(0x0d9, 0x022),    /* [2] pre-charge period 0x022/f1*/
+ 171            U8X8_CA(0x0da, 0x012),    /* com pin HW config, sequential com pin config (bit 4), disable left/right rema
+             -p (bit 5) */
+ 172            U8X8_CA(0x0db, 0x020),    /* vcomh deselect level */  
+ 173            U8X8_CA(0x08d, 0x015),    /* [2] charge pump setting (p62): 0x014 enable, 0x010 disable, */
+ 174            
+ 175            //U8X8_CA(0x0a2, 0x000),    /* set display start line to 0 */
+ 176            //U8X8_CA(0x020, 0x000),    /* page addressing mode */
+ 177            
+ 178            
+ 179            // Flipmode
+ 180            //U8X8_C(0x0a1),      /* segment remap a0/a1*/
+ 181            //U8X8_C(0x0c0),      /* c0: scan dir normal, c8: reverse */
+ 182            
+ 183            U8X8_C(0x02e),      /* Deactivate scroll */ 
+ 184            //U8X8_C(0x0a4),      /* output ram to display */
+ 185              
+ 186            U8X8_END_TRANSFER(),              /* disable chip */
+ 187            U8X8_END()                /* end of sequence */
+ 188          };
+ 189          
+ 190          
+ 191          
+ 192          
+ 193          static const u8x8_display_info_t u8x8_ssd1316_128x32_display_info =
+ 194          {
+ 195            /* chip_enable_level = */ 0,
+ 196            /* chip_disable_level = */ 1,
+ 197            
+ 198            /* post_chip_enable_wait_ns = */ 20,
+ 199            /* pre_chip_disable_wait_ns = */ 10,
+ 200            /* reset_pulse_width_ms = */ 100,   /* reset time */
+ 201            /* post_reset_wait_ms = */ 100, /* reset delay */
+ 202            /* sda_setup_time_ns = */ 50,   /* SSD1306: 15ns, but cycle time is 100ns, so use 100/2 */
+ 203            /* sck_pulse_width_ns = */ 50,  /* SSD1306: 20ns, but cycle time is 100ns, so use 100/2, AVR: below 70: 8
+             - MHz, >= 70 --> 4MHz clock */
+ 204            /* sck_clock_hz = */ 8000000UL, /* since Arduino 1.6.0, the SPI bus speed in Hz. Should be  1000000000/s
+             -ck_pulse_width_ns */
+ 205            /* spi_mode = */ 0,   /* active high, rising edge */
+ 206            /* i2c_bus_clock_100kHz = */ 4,
+ 207            /* data_setup_time_ns = */ 40,
+ 208            /* write_pulse_width_ns = */ 150, /* SSD1306: cycle time is 300ns, so use 300/2 = 150 */
+ 209            /* tile_width = */ 16,
+ 210            /* tile_hight = */ 4,
+ 211            /* default_x_offset = */ 0,
+ 212            /* flipmode_x_offset = */ 0,
+ 213            /* pixel_width = */ 128,
+ 214            /* pixel_height = */ 32
+ 215          };
+ 216          
+ 217          uint8_t u8x8_d_ssd1316_128x32(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
+ 218          {
+ 219   1          
+ 220   1        if ( u8x8_d_ssd1316_generic(u8x8, msg, arg_int, arg_ptr) != 0 )
+ 221   1          return 1;
+ 222   1        
+ 223   1        switch(msg)
+ 224   1        {
+ 225   2          case U8X8_MSG_DISPLAY_INIT:
+ 226   2            u8x8_d_helper_display_init(u8x8);
+ 227   2            u8x8_cad_SendSequence(u8x8, u8x8_d_ssd1316_128x32_init_seq);    
+C51 COMPILER V9.01   U8X8_D_SSD1316                                                        04/30/2021 10:55:28 PAGE 5   
+
+*** ERROR C208 IN LINE 227 OF ..\U8G2\CSRC\U8X8_D_SSD1316.C: '_u8x8_cad_SendSequence': too many actual parameters
+ 228   2            break;
+ 229   2          case U8X8_MSG_DISPLAY_SETUP_MEMORY:
+ 230   2            u8x8_d_helper_display_setup_memory(u8x8, &u8x8_ssd1316_128x32_display_info);
+ 231   2            break;
+ 232   2          default:
+ 233   2            return 0;
+ 234   2        }
+ 235   1        return 1;
+ 236   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  9 ERROR(S)
