@@ -26,7 +26,7 @@ void SilenceMode()
 }
 
 void OpenpumpMode()
-{
+{ 
 	valve1=0;
 	valve2=1;
 	valve3=0;

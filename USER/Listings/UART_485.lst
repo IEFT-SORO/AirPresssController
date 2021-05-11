@@ -1,0 +1,134 @@
+C51 COMPILER V9.01   UART_485                                                              05/11/2021 15:11:42 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE UART_485
+OBJECT MODULE PLACED IN .\Objects\UART_485.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\BSP\BSP_485\UART_485.C LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) BROWSE
+                    - INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP;..\BSP\BSP_IO) DEBUG OBJE
+                    -CTEXTEND PRINT(.\Listings\UART_485.lst) TABS(2) OBJECT(.\Objects\UART_485.obj)
+
+line level    source
+
+   1          /*
+   2           * @Author: your name
+   3           * @Date: 2021-04-30 09:38:30
+   4           * @LastEditTime: 2021-05-11 11:17:37
+   5           * @LastEditors: Please set LastEditors
+   6           * @Description: In User Settings Edit
+   7           * @FilePath: \AirPressControl\BSP\BSP_485\UART_485.C
+   8           */
+   9          
+  10          
+  11          #include "CH551.H"                                                          
+  12          #include "Debug.H"
+  13          #include "UART_485.H"
+  14          #include "OLED_IIC.h"
+  15          enum MSG_FLG msg_flg;
+  16          UINT8 Rx_Buf[BUFMAXSIZE];    
+  17          UINT8 Tx_Buf[10];       
+  18          UINT16 RxCount;  
+  19          
+  20          void UART0Alter()
+  21          {
+  22   1          PIN_FUNC |= bUART0_PIN_X;                                                  //����ӳ�䵽P1.2�
+             -���P1.3
+  23   1      }
+  24          /*******************************************************************************
+  25          * Function Name  : CH554UART0RcvByte()
+  26          * Description    : CH554UART0接收一个字节
+  27          * Input          : None
+  28          * Output         : None
+  29          * Return         : SBUF
+  30          *******************************************************************************/
+  31          UINT8  UART0RcvByte( )
+  32          {
+  33   1          while(RI == 0);                                                            //查询接收，中断方�
+             -��可不用
+  34   1          RI = 0;
+  35   1          return SBUF;
+  36   1      }
+  37          
+  38          /*******************************************************************************
+  39          * Function Name  : CH554UART0SendByte(UINT8 SendDat)
+  40          * Description    : CH554UART0发送一个字节
+  41          * Input          : UINT8 SendDat；要发送的数据
+  42          * Output         : None
+  43          * Return         : None
+  44          *******************************************************************************/
+  45          void UART0SendByte(UINT8 SendDat)
+  46          {
+  47   1        SBUF = SendDat;                                                              //查询发送，中断方�
+             -�可不用下面2条语句,但发送前需TI=0
+  48   1        while(TI ==0);
+  49   1        TI = 0;
+  50   1      }
+C51 COMPILER V9.01   UART_485                                                              05/11/2021 15:11:42 PAGE 2   
+
+  51          UINT8 RXDAT;
+  52          #if UART0_INTERRUPT
+  53          /*******************************************************************************
+  54          * Function Name  : UART0Interrupt(void)
+  55          * Description    : UART0 �жϷ������
+  56          *******************************************************************************/
+  57          void UART0Interrupt( void ) interrupt INT_NO_UART0 using 1                       //����1�жϷ�
+             -�����,ʹ�üĴ�����1
+  58          {
+  59   1        UINT8 dat;
+  60   1      
+  61   1          
+  62   1        if(RI)
+  63   1        {
+  64   2          dat= SBUF;
+  65   2          RI = 0;
+  66   2              UART0SendByte(dat); 
+  67   2              RXDAT=dat;
+  68   2        }
+  69   1      }
+  70          
+  71          #endif
+  72          
+  73          /**
+  74           * @description: 
+  75           * @param {UINT8} id
+  76           * @return {*}
+  77           */
+  78          UINT8 MsgAnalyze(UINT8 id)
+  79          {
+  80   1          UINT8 cmd;
+  81   1          UINT8 temp;
+  82   1          temp=RXDAT;
+  83   1          if(id==((temp&0X3C)>>2))
+  84   1          {
+  85   2              cmd=RXDAT&0x03;
+  86   2              return cmd;
+  87   2          }
+  88   1          else
+  89   1          {
+  90   2              return 0;
+  91   2          }
+  92   1      }
+  93          /**
+  94           * @description: 
+  95           * @param {*}
+  96           * @return {*}
+  97           */
+  98          void MsgClear()
+  99          {
+ 100   1          RXDAT=0;
+ 101   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     85    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     17    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V9.01   UART_485                                                              05/11/2021 15:11:42 PAGE 3   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

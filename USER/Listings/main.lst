@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   MAIN                                                                  04/30/2021 17:39:13 PAGE 1   
+C51 COMPILER V9.01   MAIN                                                                  05/11/2021 15:11:42 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
@@ -12,58 +12,37 @@ line level    source
    1          /*
    2           * @Author: your name
    3           * @Date: 2021-04-30 09:38:30
-   4           * @LastEditTime: 2021-04-30 17:39:08
+   4           * @LastEditTime: 2021-05-11 08:54:00
    5           * @LastEditors: Please set LastEditors
    6           * @Description: In User Settings Edit
    7           * @FilePath: \AirPressControl\USER\main.c
    8           */
    9          #include <CH551.H>
   10          #include "Debug.H"
-  11          #include "KEY.H"
-  12          #include <OLED_IIC.h>
-  13          #include <intrins.h>
-  14          #include "ADC.H"
-  15          #include "IO.H"
-  16          #include <string.h>
-  17          #include <stdlib.h>
-  18          #include <stdio.h>
-  19          #include "ScreenComponent.h"
-  20          #pragma  NOAREGS
-  21          float airpress;
-  22          void main()
-  23          {
-  24   1        
-  25   1        CfgFsys(); 
-  26   1        mDelaymS(5);
-  27   1        ConfigT0(8); 
-  28   1        OLED_Init();  
-  29   1        OLED_Clear();  
-  30   1        KeyInit();
-  31   1        ValvePumpInit();
-  32   1        ADCInit( 1 );  
-  33   1        EA = 1; 
-  34   1        StartScreen();
-  35   1        ADC_ChannelSelect( 3 );                                         
-  36   1        ADC_START = 1;
-  37   1      
-  38   1        while(1)
-  39   1        {
-  40   2          OLED_RevShowCHinese(2,0,26);
-  41   2          mDelaymS(1000);
-  42   2          airpress=ADC_DATA/255*1000;
-  43   2          OLED_ShowCHinese(2,0,26);
-  44   2          mDelaymS(1000);
-  45   2        }
-  46   1      }
+  11          #include "ScreenComponent.h"
+  12          #include "UART_485.H"
+  13          #pragma  NOAREGS
+  14          
+  15          void main()
+  16          {
+  17   1        
+  18   1        CfgFsys(); 
+  19   1        mDelaymS(5); 
+  20   1        
+  21   1        TaskInit();
+  22   1        EA = 1;  
+  23   1        while(1)
+  24   1        {
+  25   2        TaskRun();
+  26   2        }
+  27   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    110    ----
+   CODE SIZE        =     20    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =      4    ----
+   XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-C51 COMPILER V9.01   MAIN                                                                  04/30/2021 17:39:13 PAGE 2   
-
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----

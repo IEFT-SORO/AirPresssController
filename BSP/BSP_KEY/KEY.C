@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2021-04-30 09:38:30
+ * @LastEditTime: 2021-05-10 16:38:32
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \AirPressControl\BSP\BSP_KEY\KEY.C
+ */
 
 #include "CH551.H"                                                          
 #include "Debug.H"
@@ -9,29 +17,26 @@ sbit key1=P1^1;
 sbit key2=P1^4;
 sbit key3=P1^5;
 
-UINT8 KeyState[3] = {1,1,1}; 
-UINT8 BackState[3] = {1,1,1}; 
-UINT8C key_code_map[6] = {0x31,0x32,0x33};       
-unsigned long  TimeThr[3] = {1000, 1000, 1000};
+UINT8 KeyState[3] = {1,1,1};     
 unsigned long  KeyDownTime[3]= {0, 0, 0};
 
-void KeyInit()
-{
-	Port1Cfg(1,1);//key1
-	Port1Cfg(1,4);//key2
-	Port1Cfg(1,5);//key3
-	key1 = 1;
-	key2 = 1;
-	key3 = 1;
-}
 
 UINT8 GetKeyStation(UINT8 i)
 {
-return  KeyState[i];
+	return  KeyState[i];
 }
-unsigned long GetKeyDOWNTim(UINT8 i)
+UINT8 KeyPressLong(UINT8 i)
 {
-return KeyDownTime[i];
+	UINT8 PressLong;
+	if(KeyDownTime[i]>PressTime)
+	{
+	PressLong=1;
+	}
+	else
+	{
+	PressLong=0;
+	}
+return PressLong;
 }
 
 
@@ -73,7 +78,7 @@ void KeyScan()
 			KeyState[i] = 0;
 			if(i>=3)
 			    break;
-			KeyDownTime[i] += 4;  
+			KeyDownTime[i] += 10;  
 		}
 		else if((keybuffer[i] & 0x0F) == 0x0F)
 		{
@@ -85,9 +90,20 @@ void KeyScan()
 	} 
 }
 
-void InterruptTimer0() interrupt INT_NO_TMR0 using 1 
+void InterruptTimer0() interrupt INT_NO_TMR0 using 1
 {
 	TH0 = T0RH;
 	TL0 = T0RL;
 	KeyScan(); 
+}
+
+void KeyInit()
+{
+	ConfigT0(200); 
+	Port1Cfg(3,1);//key1
+	Port1Cfg(3,4);//key2
+	Port1Cfg(3,5);//key3
+	key1 = 1;
+	key2 = 1;
+	key3 = 1;
 }

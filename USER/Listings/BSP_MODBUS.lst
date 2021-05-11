@@ -1,0 +1,863 @@
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE BSP_MODBUS
+OBJECT MODULE PLACED IN .\Objects\BSP_MODBUS.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE ..\BSP\BSP_MODBUS\BSP_MODBUS.c LARGE WARNINGLEVEL(1) OPTIMIZE(8,SPEED) B
+                    -ROWSE INCDIR(..\USER;..\SYS;..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_KEY;..\BSP\BSP_OLED_IIC;..\APP;..\BSP\BSP_IO) DEBUG
+                    - OBJECTEXTEND PRINT(.\Listings\BSP_MODBUS.lst) TABS(2) OBJECT(.\Objects\BSP_MODBUS.obj)
+
+line level    source
+
+   1          /*
+   2           * @Author: your name
+   3           * @Date: 2021-05-08 14:16:24
+   4           * @LastEditTime: 2021-05-10 11:24:25
+   5           * @LastEditors: Please set LastEditors
+   6           * @Description: In User Settings Edit
+   7           * @FilePath: \AirPressControl\BSP\BSP_MODBUS\BSP_MODBUS.c
+   8           */
+   9          #include "UART_485.H"
+*** ERROR C230 IN LINE 21 OF ..\BSP\BSP_485\UART_485.H: 'MSG_FLG': unknown struct/union/enum tag
+  10          #include "CH551.H"                                                          
+  11          #include "Debug.H"
+  12          #include "BSP_MODBUS.h"
+  13          
+  14          PDUData_TypeDef PduData;
+  15          REG_VALUE R_value;
+  16          
+  17          // CRC 高位字节值表
+  18          static const UINT8 auchCRCHi[] = {
+  19              0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
+  20              0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+  21              0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
+  22              0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
+  23              0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1,
+  24              0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
+  25              0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1,
+  26              0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+  27              0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
+  28              0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40,
+  29              0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1,
+  30              0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
+  31              0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
+  32              0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40,
+  33              0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
+  34              0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
+  35              0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
+  36              0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+  37              0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
+  38              0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+  39              0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
+  40              0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40,
+  41              0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1,
+  42              0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41,
+  43              0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0,
+  44              0x80, 0x41, 0x00, 0xC1, 0x81, 0x40
+  45          } ;
+  46          // CRC 低位字节值表
+  47          static const UINT8 auchCRCLo[] = {
+  48            0x00, 0xC0, 0xC1, 0x01, 0xC3, 0x03, 0x02, 0xC2, 0xC6, 0x06,
+  49            0x07, 0xC7, 0x05, 0xC5, 0xC4, 0x04, 0xCC, 0x0C, 0x0D, 0xCD,
+  50            0x0F, 0xCF, 0xCE, 0x0E, 0x0A, 0xCA, 0xCB, 0x0B, 0xC9, 0x09,
+  51            0x08, 0xC8, 0xD8, 0x18, 0x19, 0xD9, 0x1B, 0xDB, 0xDA, 0x1A,
+  52            0x1E, 0xDE, 0xDF, 0x1F, 0xDD, 0x1D, 0x1C, 0xDC, 0x14, 0xD4,
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 2   
+
+  53            0xD5, 0x15, 0xD7, 0x17, 0x16, 0xD6, 0xD2, 0x12, 0x13, 0xD3,
+  54            0x11, 0xD1, 0xD0, 0x10, 0xF0, 0x30, 0x31, 0xF1, 0x33, 0xF3,
+  55            0xF2, 0x32, 0x36, 0xF6, 0xF7, 0x37, 0xF5, 0x35, 0x34, 0xF4,
+  56            0x3C, 0xFC, 0xFD, 0x3D, 0xFF, 0x3F, 0x3E, 0xFE, 0xFA, 0x3A,
+  57            0x3B, 0xFB, 0x39, 0xF9, 0xF8, 0x38, 0x28, 0xE8, 0xE9, 0x29,
+  58            0xEB, 0x2B, 0x2A, 0xEA, 0xEE, 0x2E, 0x2F, 0xEF, 0x2D, 0xED,
+  59            0xEC, 0x2C, 0xE4, 0x24, 0x25, 0xE5, 0x27, 0xE7, 0xE6, 0x26,
+  60            0x22, 0xE2, 0xE3, 0x23, 0xE1, 0x21, 0x20, 0xE0, 0xA0, 0x60,
+  61            0x61, 0xA1, 0x63, 0xA3, 0xA2, 0x62, 0x66, 0xA6, 0xA7, 0x67,
+  62            0xA5, 0x65, 0x64, 0xA4, 0x6C, 0xAC, 0xAD, 0x6D, 0xAF, 0x6F,
+  63            0x6E, 0xAE, 0xAA, 0x6A, 0x6B, 0xAB, 0x69, 0xA9, 0xA8, 0x68,
+  64            0x78, 0xB8, 0xB9, 0x79, 0xBB, 0x7B, 0x7A, 0xBA, 0xBE, 0x7E,
+  65            0x7F, 0xBF, 0x7D, 0xBD, 0xBC, 0x7C, 0xB4, 0x74, 0x75, 0xB5,
+  66            0x77, 0xB7, 0xB6, 0x76, 0x72, 0xB2, 0xB3, 0x73, 0xB1, 0x71,
+  67            0x70, 0xB0, 0x50, 0x90, 0x91, 0x51, 0x93, 0x53, 0x52, 0x92,
+  68            0x96, 0x56, 0x57, 0x97, 0x55, 0x95, 0x94, 0x54, 0x9C, 0x5C,
+  69            0x5D, 0x9D, 0x5F, 0x9F, 0x9E, 0x5E, 0x5A, 0x9A, 0x9B, 0x5B,
+  70            0x99, 0x59, 0x58, 0x98, 0x88, 0x48, 0x49, 0x89, 0x4B, 0x8B,
+  71            0x8A, 0x4A, 0x4E, 0x8E, 0x8F, 0x4F, 0x8D, 0x4D, 0x4C, 0x8C,
+  72            0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42,
+  73            0x43, 0x83, 0x41, 0x81, 0x80, 0x40
+  74          };
+  75          
+  76          UINT8  LED_state=0;
+  77          
+  78          
+  79          /* 扩展变量 ------------------------------------------------------------------*/
+  80          /* 私有函数原形 --------------------------------------------------------------*/
+  81          static UINT8 MB_JudgeAddr(UINT16 _Addr,UINT16 _RegNum);
+  82          static UINT8 MB_JudgeNum(UINT16 _RegNum,UINT8 _FunCode,UINT16 _ByteNum);
+  83          static UINT16 MB_RSP_01H(UINT16 _TxCount,UINT16 _AddrOffset ,UINT16 _CoilNum );
+  84          static UINT16 MB_RSP_02H(UINT16 _TxCount,UINT16 _AddrOffset ,UINT16 _CoilNum);
+  85          static UINT8 MB_RSP_03H(UINT16 _TxCount,UINT16 *_AddrOffset,UINT16 _RegNum );
+  86          static UINT8 MB_RSP_04H(UINT16 _TxCount,UINT16 _AddrOffset,UINT16 _RegNum );
+  87          static UINT8 MB_RSP_05H(UINT16 _TxCount,UINT16 _AddrOffset ,UINT16 _RegDATA);
+  88          static UINT8 MB_RSP_06H(UINT16 _TxCount,UINT16 _AddrOffset ,UINT16 _RegNum ,UINT16 *_AddrAbs);
+  89          static UINT8 MB_RSP_10H(UINT16 _TxCount,UINT16 _AddrOffset,UINT16 _RegNum ,UINT16 *_AddrAbs ,UINT8* _Dateb
+             -uf);
+  90          
+  91          /* 函数体 --------------------------------------------------------------------*/
+  92          
+  93          /** 
+  94            * 函数功能: Modbus CRC16 校验计算函数
+  95            * 输入参数: pushMsg:待计算的数据首地址,usDataLen:数据长度
+  96            * 返 回 值: CRC16 计算结果
+  97            * 说    明: 计算结果是高位在前,需要转换才能发送
+  98            */
+  99          UINT16 MB_CRC16(UINT8 *_pushMsg,UINT8 _usDataLen)
+ 100          {
+ 101   1        UINT8 uchCRCHi = 0xFF;
+ 102   1        UINT8 uchCRCLo = 0xFF;
+ 103   1        UINT16 uIndex;
+ 104   1        while(_usDataLen--)
+ 105   1        {
+ 106   2          uIndex = uchCRCLo ^ *_pushMsg++;
+ 107   2          uchCRCLo = uchCRCHi^auchCRCHi[uIndex];
+ 108   2          uchCRCHi = auchCRCLo[uIndex];
+ 109   2        }
+ 110   1        return (uchCRCHi<<8|uchCRCLo);
+ 111   1      }
+ 112          
+ 113          /* 提取数据帧,进行解析数据帧 */
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 3   
+
+ 114          void MB_Parse_Data()
+ 115          {
+ 116   1        PduData.Code = Rx_Buf[1];                   // 功能码
+ 117   1        PduData.Addr = ((Rx_Buf[2]<<8) | Rx_Buf[3]);// 寄存器起始地址
+ 118   1        PduData.Num  = ((Rx_Buf[4]<<8) | Rx_Buf[5]);// 数量(Coil,Input,Holding Reg,Input Reg)
+ 119   1        PduData._CRC = MB_CRC16((UINT8*)&Rx_Buf,RxCount-2);             // CRC校验码
+ 120   1        PduData.byteNums = Rx_Buf[6];                                     // 获得字节数
+ 121   1        PduData.ValueReg = (UINT8*)&Rx_Buf[7];                          // 寄存器值起始地址
+ 122   1        PduData.PtrHoldingOffset = PduData.PtrHoldingbase + PduData.Addr; // 保持寄存器的起始地址
+ 123   1      }
+ 124          
+ 125          /** 
+ 126            * 函数功能: 对接收到的数据进行分析并执行
+ 127            * 输入参数: 无
+ 128            * 返 回 值: 异常码或0x00
+ 129            * 说    明: 判断功能码,验证地址是否正确.数值内容是否溢出,数据没错误就发送
+             -响应信号
+ 130            */
+ 131          UINT8 MB_Analyze_Execute(void )
+ 132          {
+ 133   1        UINT16 ExCode = EX_CODE_NONE;
+ 134   1        /* 校验功能码 */
+ 135   1        if( IS_NOT_FUNCODE(PduData.Code) ) // 不支持的功能码
+ 136   1        {
+ 137   2          /* Modbus异常响应 */
+ 138   2          ExCode = EX_CODE_01H;            // 异常码01H
+ 139   2          return ExCode;
+ 140   2        }
+ 141   1        /* 根据功能码分别做判断 */
+ 142   1        switch(PduData.Code)
+ 143   1        {
+ 144   2          /* 这里认为01H功能码和02功能码是一样的,其实也没什么不一样
+ 145   2           * 只是操作地址可能不一样,这一点结合具体来实现,可以在main函数
+ 146   2           * 申请单独的内存使用不同的功能码,在实际应用中必须加以区分使用
+ 147   2           * 不同的内存空间
+ 148   2           */
+ 149   2      /* ---- 01H  02H 读取离散量输入(Coil Input)---------------------- */
+ 150   2          case FUN_CODE_01H:
+ 151   2          case FUN_CODE_02H:
+ 152   2            /* 判断线圈数量是否正确 */  
+ 153   2            ExCode = MB_JudgeNum(PduData.Num,PduData.Code,1);
+ 154   2            if(ExCode != EX_CODE_NONE )
+ 155   2              return ExCode;      
+ 156   2            
+ 157   2            /* 判断地址是否正确*/
+ 158   2            ExCode = MB_JudgeAddr( PduData.Addr,PduData.Num);
+ 159   2            if(ExCode != EX_CODE_NONE )
+ 160   2              return ExCode;  
+ 161   2            break;
+ 162   2      /* ---- 03H  04H 读取保持/输入寄存器---------------------- */
+ 163   2          case FUN_CODE_03H:
+ 164   2          case FUN_CODE_04H:
+ 165   2            /* 判断寄存器数量是否正确 */
+ 166   2            ExCode = MB_JudgeNum(PduData.Num,PduData.Code,PduData.byteNums);
+ 167   2            if(ExCode != EX_CODE_NONE )
+ 168   2              return ExCode;  
+ 169   2            
+ 170   2            /* 判断地址是否正确*/
+ 171   2            ExCode = MB_JudgeAddr( PduData.Addr,PduData.Num);
+ 172   2            if(ExCode != EX_CODE_NONE )
+ 173   2              return ExCode;  
+ 174   2            break;
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 4   
+
+ 175   2      /* ---- 05H 写入单个离散量---------------------- */
+ 176   2          case FUN_CODE_05H:
+ 177   2            break;
+ 178   2      /* ---- 06H 写单个保持寄存器 ---------------------- */
+ 179   2          case FUN_CODE_06H:     
+ 180   2            break;
+ 181   2      /* ---- 10H 写多个保持寄存器 ---------------------- */
+ 182   2          case FUN_CODE_10H:
+ 183   2            /* 判断寄存器数量是否正确 */
+ 184   2            ExCode = MB_JudgeNum(PduData.Num,PduData.Code,PduData.byteNums);
+ 185   2            if(ExCode != EX_CODE_NONE )
+ 186   2              return ExCode;          
+ 187   2            /* 判断地址是否正确*/
+ 188   2            ExCode = MB_JudgeAddr( PduData.Addr,PduData.Num);             
+ 189   2            if(ExCode != EX_CODE_NONE )
+ 190   2              return ExCode;        
+ 191   2            break;
+ 192   2        }
+ 193   1        /* 数据帧没有异常 */
+ 194   1        return ExCode; //   EX_CODE_NONE
+ 195   1      }
+ 196          
+ 197          /**
+ 198            * 函数功能: 正常响应
+ 199            * 输入参数: _FunCode :功能码
+ 200            * 返 回 值: 无
+ 201            * 说    明: 当通信数据帧没有异常时并且成功执行之后,发送响应数据帧
+ 202            */
+ 203          void MB_RSP(UINT8 _FunCode)
+ 204          {
+ 205   1          UINT16 TxCount = 0;
+ 206   1          UINT8 i;
+ 207   1          UINT16 crc = 0; Tx_Buf[TxCount++] = MB_SLAVEADDR;    /* 从站地址 */
+ 208   1          Tx_Buf[TxCount++] = _FunCode;        /* 功能码   */  
+ 209   1          switch(_FunCode)
+ 210   1          {
+ 211   2          case FUN_CODE_01H:
+ 212   2                  /* 读取线圈状态 */
+ 213   2                  TxCount = MB_RSP_01H(TxCount,PduData.Addr,PduData.Num);
+ 214   2                  break;
+ 215   2          case FUN_CODE_02H:
+ 216   2                  /* 读取离散输入 */
+ 217   2              TxCount = MB_RSP_02H(TxCount,PduData.Addr,PduData.Num);
+ 218   2              break;     
+ 219   2          case FUN_CODE_03H:
+ 220   2                      /* 读取保持寄存器 */
+ 221   2                  TxCount = MB_RSP_03H(TxCount,(UINT16*)PduData.PtrHoldingOffset,PduData.Num);
+ 222   2              break;
+ 223   2          case FUN_CODE_04H:
+ 224   2                  /* 读取输入寄存器 */
+ 225   2                  TxCount = MB_RSP_04H(TxCount,PduData.Addr,PduData.Num);      
+ 226   2              break;
+ 227   2          case FUN_CODE_05H:
+ 228   2                  /* 写单个线圈 */
+ 229   2              TxCount = MB_RSP_05H(TxCount,PduData.Addr,PduData.Num);
+ 230   2              break;
+ 231   2          case FUN_CODE_06H:
+ 232   2                  /* 写单个保持寄存器 */
+ 233   2              TxCount = MB_RSP_06H(TxCount,PduData.Addr,PduData.Num, (UINT16*)PduData.PtrHoldingOffset);
+ 234   2              break;
+ 235   2          case FUN_CODE_10H:
+ 236   2                  /* 写多个保持寄存器 */
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 5   
+
+ 237   2              TxCount = MB_RSP_10H(TxCount,PduData.Addr,PduData.Num ,(UINT16*)PduData.PtrHoldingOffset,(UINT8*)P
+             -duData.ValueReg);
+ 238   2              break;
+ 239   2          }
+ 240   1          crc = MB_CRC16((UINT8*)&Tx_Buf,TxCount);
+ 241   1          Tx_Buf[TxCount++] = crc;            /* crc 低字节 */
+ 242   1          Tx_Buf[TxCount++] = crc>>8;         /* crc 高字节 */
+ 243   1      
+ 244   1        for(i=0;i<TxCount;++i)
+ 245   1        {
+ 246   2              UART0SendByte(Tx_Buf[i]);
+ 247   2          }
+ 248   1      }
+ 249          
+ 250          /**
+ 251            * 函数功能: 读取线圈状态（读/写）
+ 252            * 输入参数: _TxCount :发送计数器,_AddrOffset地址偏移量,_CoilNum:线圈数量
+ 253            * 返 回 值: Tx_Buf的数组元素坐标
+ 254            * 说    明: 读取离散输出,并且填充Tx_Buf
+ 255            */
+ 256          static UINT16 MB_RSP_01H(UINT16 _TxCount,UINT16 _AddrOffset ,UINT16 _CoilNum )
+ 257          {
+ 258   1        /*
+ 259   1          主机发送:
+ 260   1            01 从机地址
+ 261   1            01 功能码
+ 262   1            00 寄存器起始地址高字节
+ 263   1            02 寄存器起始地址低字节
+ 264   1            00 寄存器数量高字节
+ 265   1            08 寄存器数量低字节
+ 266   1            9C CRC校验高字节
+ 267   1            0C CRC校验低字节
+ 268   1      
+ 269   1          从机应答:   1代表ON，0代表OFF（使用LED的状态来代替）。若返回的线圈数不为8的
+             -倍数，则在最后数据字节未尾使用0代替. BIT0对应第1个
+ 270   1            01 从机地址
+ 271   1            01 功能码
+ 272   1            01 返回字节数
+ 273   1            02 数据1(线圈0002H-线圈0011H)
+ 274   1            D0 CRC校验高字节
+ 275   1            49 CRC校验低字节
+ 276   1      
+ 277   1          例子1:
+ 278   1          发送： 01 01 00 02 00 08   9C 0C   --- 查询D02开始的8个继电器状态
+ 279   1          返回： 01 01 01 01         90 48   --- 查询到8个状态为：0000 0001 第二个LED为亮
+ 280   1          
+ 281   1          例子2:
+ 282   1          发送： 01 01 00 01 00 10   6C 06   --- 查询D01开始的16个继电器状态
+ 283   1          返回： 01 01 02 FF FF      B8 4C   --- 查询到两个字节数据为0xFFFF
+ 284   1              
+ 285   1        */  
+ 286   1      //  UINT16 i = 0;
+ 287   1      //  UINT16 m; 
+ 288   1      //  UINT8 status[10]; 
+ 289   1      //  
+ 290   1      //  /* 计算返回字节数（_CoilNum变量是以位为单位） */
+ 291   1      //  m = (_CoilNum+7)/8;
+ 292   1      //  /* 返回字节数（数量）*/
+ 293   1      //  Tx_Buf[_TxCount++] = m; 
+ 294   1      //  if ((_AddrOffset >= COIL_D01) && (_CoilNum > 0))
+ 295   1      //  {
+ 296   1      //    /* 将获取的线圈状态首先清零 */
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 6   
+
+ 297   1      //    for (i = 0; i < m; i++)
+ 298   1      //    {
+ 299   1      //      status[i] = 0;
+ 300   1      //    }   
+ 301   1      //    /* 获取对应线圈状态，并将其写入status[] */
+ 302   1      //    for (i = 0; i < _CoilNum; i++)
+ 303   1      //    {
+ 304   1      //      /* 读LED的状态，写入状态寄存器的每一位 */
+ 305   1      //      if (Get_LEDx_State(i + 1 + _AddrOffset - COIL_D01))   
+ 306   1      //      {  
+ 307   1      //        status[i / 8] |= (1 << (i % 8));
+ 308   1      //      }     
+ 309   1      //    }       
+ 310   1      //  }
+ 311   1      //  /* 填充发送内容 */
+ 312   1      //  for (i = 0; i < m; i++)
+ 313   1      //  {
+ 314   1      //    Tx_Buf[_TxCount++] = status[i]; /* 继电器状态 */
+ 315   1      //  }   
+ 316   1        
+ 317   1        /*----------------------------分割线----------------------------------*/
+ 318   1        Tx_Buf[_TxCount++] = 2; 
+ 319   1        /* 填充返回内容 */  
+ 320   1        if (_AddrOffset == COIL_D01)
+ 321   1        {
+ 322   2          Tx_Buf[_TxCount++] = R_value.D01>>8;
+ 323   2          Tx_Buf[_TxCount++] = R_value.D01; 
+ 324   2        }
+ 325   1        else if (_AddrOffset == COIL_D02)
+ 326   1        {
+ 327   2          Tx_Buf[_TxCount++] = R_value.D02>>8;
+ 328   2          Tx_Buf[_TxCount++] = R_value.D02; 
+ 329   2        }
+ 330   1        else if (_AddrOffset == COIL_D03)
+ 331   1        {
+ 332   2          Tx_Buf[_TxCount++] = R_value.D03>>8;
+ 333   2          Tx_Buf[_TxCount++] = R_value.D03; 
+ 334   2        }
+ 335   1        else if (_AddrOffset == COIL_D04)
+ 336   1        {
+ 337   2          Tx_Buf[_TxCount++] = R_value.D04>>8;
+ 338   2          Tx_Buf[_TxCount++] = R_value.D04; 
+ 339   2        }
+ 340   1        else
+ 341   1        {
+ 342   2          Tx_Buf[_TxCount++] = 0;
+ 343   2          Tx_Buf[_TxCount++] = 0; 
+ 344   2        }   
+ 345   1      
+ 346   1          return _TxCount;
+ 347   1      }
+ 348          
+ 349          /**
+ 350            * 函数功能: 读取离散输入（只读）
+ 351            * 输入参数: _TxCount :发送计数器,_AddrOffset地址偏移量,_CoilNum:线圈数量
+ 352            * 返 回 值: Tx_Buf的数组元素坐标
+ 353            * 说    明: 读取离散输出,并且填充Tx_Buf
+ 354            */
+ 355          static UINT16 MB_RSP_02H(UINT16 _TxCount,UINT16 _AddrOffset ,UINT16 _CoilNum)
+ 356          {
+ 357   1        /*
+ 358   1          主机发送:
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 7   
+
+ 359   1            01 从机地址
+ 360   1            02 功能码
+ 361   1            00 寄存器起始地址高字节
+ 362   1            01 寄存器起始地址低字节
+ 363   1            00 寄存器数量高字节
+ 364   1            08 寄存器数量低字节
+ 365   1            28 CRC校验高字节
+ 366   1            0C CRC校验低字节
+ 367   1      
+ 368   1          从机应答:   1代表ON，0代表OFF（使用LED的状态来代替）。若返回的线圈数不为8的
+             -倍数，则在最后数据字节未尾使用0代替. BIT0对应第1个
+ 369   1            01 从机地址
+ 370   1            02 功能码
+ 371   1            01 返回字节数
+ 372   1            02 数据1(线圈0002H-线圈0011H)
+ 373   1            D0 CRC校验高字节
+ 374   1            49 CRC校验低字节
+ 375   1      
+ 376   1          例子:
+ 377   1          发送： 01 01 00 02 00 08   9C 0C   --- 查询D02开始的8个继电器状态
+ 378   1          返回： 01 01 01 02         D0 49   --- 查询到8个状态为：0000 0010 第二个LED为亮
+ 379   1        */  
+ 380   1        UINT16 i = 0;
+ 381   1        UINT16 m; 
+ 382   1          UINT8 j=0;
+ 383   1        UINT8 status[10]; 
+ 384   1        
+ 385   1        /* 计算返回字节数（_CoilNum变量是以位为单位） */
+ 386   1        m = (_CoilNum+7)/8;
+ 387   1        /* 返回字节数（数量）*/
+ 388   1        Tx_Buf[_TxCount++] = m; 
+ 389   1          
+ 390   1        if ((_AddrOffset >= COIL_D01) && (_CoilNum > 0))
+ 391   1        {
+ 392   2          /* 将获取的线圈状态首先清零 */
+ 393   2          for (i = 0; i < m; i++)
+ 394   2          {
+ 395   3            status[i] = 0;
+ 396   3          }   
+ 397   2          /* 获取对应线圈状态，并将其写入status[] */
+ 398   2          for (i = 0; i < _CoilNum; i++)
+ 399   2          {
+ 400   3              status[i / 8] |= (1 << (i % 8));      
+ 401   3          }
+ 402   2        }
+ 403   1        /* 填充发送内容 */
+ 404   1      
+ 405   1        for (j = 0; j < m; j++)
+ 406   1        {
+ 407   2          /* 继电器状态 */
+ 408   2          Tx_Buf[_TxCount++] = status[i]; 
+ 409   2        } 
+ 410   1        return _TxCount;
+ 411   1      }
+ 412          
+ 413          /**
+ 414            * 函数功能: 读取保持寄存器（读/写）
+ 415            * 输入参数: _TxCount :发送计数器,_AddrOffset地址偏移量,_RegNum:寄存器数量
+ 416            * 返 回 值: Tx_Buf的数组元素坐标
+ 417            * 说    明: 读取保持寄存器的内容,并且填充Tx_Buf
+ 418            */
+ 419          static UINT8 MB_RSP_03H(UINT16 _TxCount,UINT16 *_AddrOffset,UINT16 _RegNum )
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 8   
+
+ 420          {
+ 421   1        /*
+ 422   1          从机地址为11H。保持寄存器的起始地址为0301H，结束地址为0303H。该次查询总共�
+             -��问3个保持寄存器。
+ 423   1          主机发送:
+ 424   1            01 从机地址
+ 425   1            03 功能码
+ 426   1            03 寄存器地址高字节
+ 427   1            01 寄存器地址低字节
+ 428   1            00 寄存器数量高字节
+ 429   1            03 寄存器数量低字节
+ 430   1            54 CRC高字节
+ 431   1            4F CRC低字节
+ 432   1      
+ 433   1          从机应答:   保持寄存器的长度为2个字节。对于单个保持寄存器而言，寄存器高�
+             -��节数据先被传输，
+ 434   1                低字节数据后被传输。保持寄存器之间，低地址寄存器先被传输，高地址寄�
+             -�器后被传输。
+ 435   1            01 从机地址
+ 436   1            03 功能码
+ 437   1            03 字节数
+ 438   1            00 数据1高字节(0301H)
+ 439   1            00 数据1低字节(0301H)
+ 440   1            00 数据2高字节(0302H)
+ 441   1            00 数据2低字节(0302H)
+ 442   1            00 数据3高字节(0303H)
+ 443   1            00 数据3低字节(0303H)
+ 444   1            74 CRC高字节
+ 445   1            75 CRC低字节
+ 446   1      
+ 447   1          例子:
+ 448   1            发送： 01 03 03 01 0003             54 4F            ---- 读 0301H~0303H三个寄存器内容
+ 449   1            返回： 01 03 03 0A 01 BB CC DD FF   B4 D4 ---- 返回10H功能码写入的内容（10H功能码会�
+             -�绍）
+ 450   1        */
+ 451   1          UINT8 i=0;
+ 452   1        /* 填充返回寄存器数量 */
+ 453   1        Tx_Buf[_TxCount++] = _RegNum*2;
+ 454   1      
+ 455   1        /* 返回保持寄存器内的数据 */
+ 456   1        for( i = 0;i< _RegNum;i++)
+ 457   1        {
+ 458   2          Tx_Buf[_TxCount++] = ((*_AddrOffset)>>8);
+ 459   2          Tx_Buf[_TxCount++] = *_AddrOffset++;
+ 460   2        }
+ 461   1        return _TxCount;
+ 462   1      }
+ 463          
+ 464          /**
+ 465            * 函数功能: 读取输入寄存器（与上述03H指令类似，返回内容也类似）（只读）
+ 466            * 输入参数: _TxCount :发送计数器,_AddrOffset地址偏移量,_RegNum:寄存器数量
+ 467            * 返 回 值: Tx_Buf的数组元素坐标
+ 468            * 说    明: 读取保持寄存器的内容,并且填充Tx_Buf
+ 469            */
+ 470          static UINT8 MB_RSP_04H(UINT16 _TxCount,UINT16 _AddrOffset,UINT16 _RegNum )
+ 471          {
+ 472   1        /*
+ 473   1          主机发送:
+ 474   1            01 从机地址
+ 475   1            04 功能码
+ 476   1            04 寄存器起始地址高字节
+ 477   1            01 寄存器起始地址低字节
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 9   
+
+ 478   1            00 寄存器个数高字节
+ 479   1            02 寄存器个数低字节
+ 480   1            21 CRC高字节
+ 481   1            3B CRC低字节
+ 482   1      
+ 483   1          从机应答:  输入寄存器长度为2个字节。对于单个输入寄存器而言，寄存器高字�
+             -��数据先被传输，
+ 484   1              低字节数据后被传输。输入寄存器之间，低地址寄存器先被传输，高地址寄存
+             -器后被传输。
+ 485   1            01 从机地址
+ 486   1            04 功能码
+ 487   1            02 字节数
+ 488   1            02 数据1高字节(0401H)
+ 489   1            03 数据1低字节(0401H)
+ 490   1            00 数据2高字节(0402H)
+ 491   1            00 数据2低字节(0402H)
+ 492   1            82 CRC高字节
+ 493   1            3C CRC低字节
+ 494   1      
+ 495   1          例子:
+ 496   1            发送： 01 04 04 01 00 02      21 3B  --- 读 0401H IN1 开始的4个数据
+ 497   1            返回： 01 04 02 02 03 00 00   82 3C  --- 返回：02 03 00 00 4个数据（按下KEY1按键后改变
+             - R_value.IN1的值）
+ 498   1        */  
+ 499   1        UINT8 i;
+ 500   1        UINT16 reg_value[64];
+ 501   1        /* 填充返回寄存器数量 */
+ 502   1        Tx_Buf[_TxCount++] = _RegNum;
+ 503   1        /* 读取保持寄存器内容 */
+ 504   1        for(i = 0; i < _RegNum; i++)
+ 505   1        {
+ 506   2          switch (_AddrOffset)
+ 507   2          {
+ 508   3            /* 测试参数 */
+ 509   3            case REG_IN1:
+ 510   3              reg_value[i] = R_value.IN1;
+ 511   3              break;
+ 512   3          
+ 513   3            default:
+ 514   3              reg_value[i] = 0;
+ 515   3              break;
+ 516   3          }
+ 517   2          _AddrOffset++;
+ 518   2        }
+ 519   1        
+ 520   1        /* 填充返回内容 */
+ 521   1        for(i = 0;i< _RegNum;i++)
+ 522   1        {
+ 523   2          
+ 524   2        Tx_Buf[_TxCount++] = reg_value[i]>>8;
+ 525   2        Tx_Buf[_TxCount++] = reg_value[i]& 0xFF;
+ 526   2        }
+ 527   1        return _TxCount;
+ 528   1      }
+ 529          
+ 530          /**
+ 531            * 函数功能: 写单个线圈（读/写）
+ 532            * 输入参数: _TxCount :发送计数器,_AddrOffset地址偏移量,_RegDATA:写入数据
+ 533            * 返 回 值: Tx_Buf的数组元素坐标
+ 534            * 说    明: 填充Tx_Buf
+ 535            */
+ 536          static UINT8 MB_RSP_05H(UINT16 _TxCount,UINT16 _AddrOffset ,UINT16 _RegDATA)
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 10  
+
+ 537          {
+ 538   1        /*
+ 539   1          主机发送: 写单个线圈寄存器。简单的01~03寄存器地址对应LED1~LED3,将数据存放于
+             -D01、D02、D03、D04等4个成员中
+ 540   1          05H指令设置单个线圈的状态
+ 541   1            01 从机地址
+ 542   1            05 功能码
+ 543   1            00 寄存器地址高字节
+ 544   1            01 寄存器地址低字节
+ 545   1            FF 数据1高字节
+ 546   1            FF 数据1低字节
+ 547   1            9D CRC校验高字节
+ 548   1            BA CRC校验低字节
+ 549   1      
+ 550   1          从机应答:
+ 551   1            01 从机地址
+ 552   1            05 功能码
+ 553   1            00 寄存器地址高字节
+ 554   1            01 寄存器地址低字节
+ 555   1            FF 寄存器1高字节
+ 556   1            FF 寄存器1低字节
+ 557   1            9D CRC校验高字节
+ 558   1            BA CRC校验低字节
+ 559   1      
+ 560   1          例子:
+ 561   1          发送： 01 05 00 04 FF FF   8D BB   -- 发送数据0xFFFF至0x04地址线圈中
+ 562   1          返回： 01 05 00 04 FF FF   8D BB   -- 返回原始数据
+ 563   1        */  
+ 564   1        
+ 565   1        /* 填充地址值 */
+ 566   1        Tx_Buf[_TxCount++] = _AddrOffset>>8;
+ 567   1        Tx_Buf[_TxCount++] = _AddrOffset;
+ 568   1        
+ 569   1        if (_AddrOffset == COIL_D01)
+ 570   1        {
+ 571   2          R_value.D01 = _RegDATA;   
+ 572   2        }
+ 573   1        else if (_AddrOffset == COIL_D02)
+ 574   1        {
+ 575   2          R_value.D02 = _RegDATA;
+ 576   2        }
+ 577   1        else if (_AddrOffset == COIL_D03)
+ 578   1        {
+ 579   2          R_value.D03 = _RegDATA;
+ 580   2        }
+ 581   1        else if (_AddrOffset == COIL_D04)
+ 582   1        {
+ 583   2          R_value.D04 = _RegDATA;
+ 584   2        }
+ 585   1        else
+ 586   1        {
+ 587   2          R_value.D01 = 0;
+ 588   2          R_value.D02 = 0;
+ 589   2          R_value.D03 = 0;
+ 590   2          R_value.D04 = 0;
+ 591   2        }
+ 592   1      
+ 593   1        Tx_Buf[_TxCount++] = _RegDATA>>8;
+ 594   1        Tx_Buf[_TxCount++] = _RegDATA;  
+ 595   1        return _TxCount;
+ 596   1      }
+ 597          
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 11  
+
+ 598          /**
+ 599            * 函数功能: 写单个保持寄存器（读/写）
+ 600            * 输入参数: _TxCount :发送计数器,_AddrOffset:地址偏移量,_RegNum: 写入数据，_AddrAbs�
+             -�保持寄存器地址
+ 601            * 返 回 值: Tx_Buf的数组元素坐标
+ 602            * 说    明: 填充Tx_Buf
+ 603            */
+ 604          static UINT8 MB_RSP_06H(UINT16 _TxCount,UINT16 _AddrOffset ,UINT16 _RegNum ,UINT16 *_AddrAbs)
+ 605          {
+ 606   1        /*
+ 607   1          写保持寄存器。注意06指令只能操作单个保持寄存器，10H指令可以设置单个或多
+             -个保持寄存器
+ 608   1          主机发送:
+ 609   1            01 从机地址
+ 610   1            06 功能码
+ 611   1            03 寄存器地址高字节
+ 612   1            01 寄存器地址低字节
+ 613   1            00 数据1高字节
+ 614   1            12 数据1低字节
+ 615   1            58 CRC校验高字节
+ 616   1            43 CRC校验低字节
+ 617   1      
+ 618   1          从机响应:
+ 619   1            01 从机地址
+ 620   1            06 功能码
+ 621   1            03 寄存器地址高字节
+ 622   1            01 寄存器地址低字节
+ 623   1            00 数据1高字节
+ 624   1            12 数据1低字节
+ 625   1            58 CRC校验高字节
+ 626   1            43 CRC校验低字节
+ 627   1      
+ 628   1          例子:
+ 629   1            发送： 01 06 03 01 00 12  58 43    ---- 将301地址寄存器设置为00 12
+ 630   1            返回： 01 06 03 01 00 12  58 43    ---- 返回同样数据
+ 631   1      */    
+ 632   1        /* 填充地址值 */
+ 633   1        Tx_Buf[_TxCount++] = _AddrOffset>>8;
+ 634   1        Tx_Buf[_TxCount++] = _AddrOffset; 
+ 635   1      
+ 636   1        /* 将数据写入保持寄存器内 */ 
+ 637   1        *_AddrAbs = _RegNum;
+ 638   1      
+ 639   1        /* 填充返回内容 */
+ 640   1        Tx_Buf[_TxCount++] = PduData.Num>>8;
+ 641   1        Tx_Buf[_TxCount++] = PduData.Num;
+ 642   1      
+ 643   1        return _TxCount;  
+ 644   1      }
+ 645          
+ 646          /**
+ 647            * 函数功能: 写多个保持寄存器（读/写）
+ 648            * 输入参数: _TxCount :发送计数器,_AddrOffset地址偏移量,_RegNum:字节数量，_Datebuf:数
+             -据
+ 649            * 返 回 值: Tx_Buf的数组元素坐标
+ 650            * 说    明: 填充Tx_Buf
+ 651            */
+ 652          static UINT8 MB_RSP_10H(UINT16 _TxCount,UINT16  _AddrOffset,UINT16 _RegNum, UINT16 *_AddrAbs, UINT8* _Date
+             -buf)
+ 653          {
+ 654   1        /*
+ 655   1          主机发送:
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 12  
+
+ 656   1            01 从机地址
+ 657   1            10 功能码
+ 658   1            03 寄存器起始地址高字节
+ 659   1            01 寄存器起始地址低字节
+ 660   1            00 寄存器数量高字节
+ 661   1            03 寄存器数量低字节
+ 662   1            06 字节数
+ 663   1            0A 数据1高字节
+ 664   1            01 数据1低字节
+ 665   1            BB 数据2高字节
+ 666   1            CC 数据2低字节
+ 667   1            DD 数据3高字节
+ 668   1            FF 数据3低字节 
+ 669   1            78 CRC校验高字节
+ 670   1            A0 CRC校验低字节
+ 671   1      
+ 672   1          从机响应:
+ 673   1            01 从机地址
+ 674   1            10 功能码
+ 675   1            03 寄存器地址高字节
+ 676   1            01 寄存器地址低字节
+ 677   1            00 寄存器数量高字节
+ 678   1            03 寄存器数量低字节
+ 679   1            D1 CRC校验高字节
+ 680   1            8C  CRC校验低字节
+ 681   1      
+ 682   1          例子:
+ 683   1            发送： 01 10 03 01 00 03 06   0A 01  BB CC  DD FF     78 A0    ----  向0301写入 0A 01 BB CC DD FF
+             -六个字节数据
+ 684   1            返回： 01 10 03 01 00 03                               D1 8C    ----  返回内容
+ 685   1      
+ 686   1        */    
+ 687   1        UINT16 i = 0; 
+ 688   1        UINT16 Value = 0;
+ 689   1        /* 填充地址值 */
+ 690   1        Tx_Buf[_TxCount++] = _AddrOffset>>8;
+ 691   1        Tx_Buf[_TxCount++] = _AddrOffset;
+ 692   1      
+ 693   1        /* 写入多个保持寄存器 */
+ 694   1        for(i=0;i<_RegNum;i++)
+ 695   1        {
+ 696   2        Value = (UINT16)((*_Datebuf<<8 ) | (*(_Datebuf+1)));
+ 697   2        *_AddrAbs++ = Value ;
+ 698   2        _Datebuf+=2;
+ 699   2        }
+ 700   1      
+ 701   1        Tx_Buf[_TxCount++] = _RegNum>>8;
+ 702   1        Tx_Buf[_TxCount++] = _RegNum; 
+ 703   1        return _TxCount;
+ 704   1      }
+ 705          
+ 706          /**
+ 707            * 函数功能: 异常响应
+ 708            * 输入参数: _FunCode :发送异常的功能码,_ExCode:异常码
+ 709            * 返 回 值: 无
+ 710            * 说    明: 当通信数据帧发生异常时,发送异常响应
+ 711            */
+ 712          void MB_Exception_RSP(UINT8 _FunCode,UINT8 _ExCode)
+ 713          {
+ 714   1          UINT16 TxCount = 0;
+ 715   1          UINT16 crc = 0;
+ 716   1          UINT8 i=0;
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 13  
+
+ 717   1          Tx_Buf[TxCount++] = MB_SLAVEADDR;       /* 从站地址 */
+ 718   1          Tx_Buf[TxCount++] = _FunCode|0x80;      /* 功能码 + 0x80*/ 
+ 719   1          Tx_Buf[TxCount++] = _ExCode ;           /* 异常码*/
+ 720   1      
+ 721   1          crc = MB_CRC16((UINT8*)&Tx_Buf,TxCount);
+ 722   1          Tx_Buf[TxCount++] = crc;            /* crc 低字节 */
+ 723   1          Tx_Buf[TxCount++] = crc>>8;         /* crc 高字节 */
+ 724   1          for( i=0;i<TxCount;++i)
+ 725   1          {
+ 726   2              UART0SendByte(Tx_Buf[i]);
+ 727   2          }
+ 728   1      }
+ 729          
+ 730          /**
+ 731            * 函数功能: 判断地址是否符合协议范围
+ 732            * 输入参数: _Addr:起始地址,_RegNum:寄存器数量,_FunCode:功能码
+ 733            * 返 回 值: 异常码:02H或NONE
+ 734            * 说    明: 地址范围是0x0000~0xFFFF,可操作的空间范围不能超过这个区域
+ 735            */
+ 736          UINT8 MB_JudgeAddr(UINT16 _Addr,UINT16 _RegNum)
+ 737          {
+ 738   1        UINT8 Excode = EX_CODE_NONE;
+ 739   1        /* 地址+寄存器数量不能超过0xFFFF */
+ 740   1        if( ((UINT32)_RegNum+(UINT32)_Addr) > (UINT32)0xFFFF)
+ 741   1        {
+ 742   2        Excode = EX_CODE_02H;// 异常码 02H
+ 743   2        }
+ 744   1        return Excode;
+ 745   1      }
+ 746          /**
+ 747            * 函数功能: 判断操作的数据量是否符合协议范围
+ 748            * 输入参数: _RegNum:寄存器数量,_FunCode:功能码,_ByteNum:字节数量
+ 749            * 返 回 值: 异常码:03或NONE
+ 750            * 说    明: 对可操作连续内存空间的功能码需要验证操作的地址是否符合范围
+ 751            */
+ 752          UINT8 MB_JudgeNum(UINT16 _RegNum,UINT8 _FunCode,UINT16 _ByteNum)
+ 753          {
+ 754   1        UINT8 Excode = EX_CODE_NONE;
+ 755   1        UINT16 _CoilNum = _RegNum; // 线圈(离散量)的数量
+ 756   1        switch(_FunCode)
+ 757   1        {
+ 758   2        case FUN_CODE_01H: 
+ 759   2        case FUN_CODE_02H:
+ 760   2          if( (_CoilNum<0x0001) || (_CoilNum>0x07D0))
+ 761   2          Excode = EX_CODE_03H;// 异常码03H;
+ 762   2          break;
+ 763   2        case FUN_CODE_03H:
+ 764   2        case FUN_CODE_04H:
+ 765   2          if( (_RegNum<0x0001) || (_RegNum>0x007D))
+ 766   2          Excode = EX_CODE_03H;// 异常码03H;      
+ 767   2          break;
+ 768   2        case FUN_CODE_10H:
+ 769   2          if( (_RegNum<0x0001) || (_RegNum>0x007B))
+ 770   2          Excode = EX_CODE_03H;// 异常码03H
+ 771   2          if( _ByteNum != (_RegNum<<1))
+ 772   2          Excode = EX_CODE_03H;// 异常码03H
+ 773   2          break;
+ 774   2        }
+ 775   1        return Excode;
+ 776   1      }
+ 777          
+ 778          UINT8 T2RH = 0; 
+C51 COMPILER V9.01   BSP_MODBUS                                                            05/10/2021 13:56:49 PAGE 14  
+
+ 779          UINT8 T2RL = 0; 
+ 780          void ConfigT2(UINT8 ms)//TODO add 
+ 781          {
+ 782   1          unsigned long tmp = 0;
+ 783   1      
+ 784   1        tmp = 12000000/12;
+ 785   1        tmp = (tmp * ms)/1000;
+ 786   1        tmp = 65536 - tmp;
+ 787   1        tmp = tmp + 1;
+ 788   1          T2RH = (UINT8)(tmp >> 8);
+ 789   1        T2RL = (UINT8)tmp;
+ 790   1      
+ 791   1        T2MOD = ( T2MOD & ~( bT0_GATE | bT0_CT | bT0_M1 ) ) | bT0_M0;
+ 792   1        TH2 = T2RH;
+ 793   1        TL2 = T2RL;
+ 794   1        TF2 = 0;
+ 795   1        ET2 = 1;
+ 796   1        TR2 = 1;
+ 797   1      }
+ 798          void InterruptTimer2() interrupt INT_NO_TMR2 using 1 //TODO
+ 799          {
+ 800   1        TH2 = T2RH;
+ 801   1        TL2 = T2RL;
+ 802   1      
+ 803   1      }
+ 804          
+ 805          /******************* (C) COPYRIGHT 2015-2020  *****END OF FILE****/
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  1 ERROR(S)

@@ -1,10 +1,29 @@
+/*
+ * @Author: your name
+ * @Date: 2021-04-30 09:38:30
+ * @LastEditTime: 2021-05-11 15:07:09
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \AirPressControl\APP\ScreenComponent.c
+ */
 #include <OLED_IIC.h>
 #include "Debug.H"
 #include "ScreenComponent.h"
 #include "KEY.H"
 #include "ADC.H"
-#include <stdio.h>
-#include <stdlib.h>
+#include "UART_485.H"
+
+UINT8 PressValGet()
+{
+	static UINT8 press;
+	if(!ADC_START);//TODO add Filter
+	{
+		press=ADC_DATA;
+			
+		ADC_START = 1;			
+	}
+	return press;
+}
 void StartScreen()
 {
 	OLED_ShowCHinese(8,1,0);
@@ -14,105 +33,254 @@ void StartScreen()
 	OLED_ShowCHinese(72,1,4);
 	OLED_ShowCHinese(88,1,5);
 	OLED_ShowCHinese(104,1,6);
-	OLED_ShowString(2,4," Welcome! ",16);
 	OLED_Clear();
 }
-unsigned int last_ConNum;
-void ModeSlect(unsigned int Pos)
+
+enum  SCREENID screen_id;
+UINT8 CurPos=0;
+UINT8 deviceID=0;
+enum MODE temp_mode;
+int press;
+
+void MainScreen(enum MODE mode)
 {
-	if(Pos==0)
-	{
-	OLED_ShowCHinese(96,4,24);
-	OLED_ShowCHinese(112,4,25);
-	}
-	if(Pos==1)
-	{
-	OLED_ShowCHinese(96,4,23);
-	OLED_ShowCHinese(112,4,7);
-
-	}
-	if(Pos==2)
-	{
-	OLED_ShowCHinese(96,4,22);
-	OLED_ShowCHinese(112,4,7);
-
-	}
-	if(Pos==3)
-	{
-	OLED_ShowCHinese(96,4,26);
-	OLED_ShowCHinese(112,4,27);
-	}
-	if(Pos==4)
-	{
-	OLED_ShowCHinese(96,4,28);
-	OLED_ShowCHinese(112,4,30);
-
-	}
-	
+		OLED_ShowCHinese(8,0,0);
+		OLED_ShowCHinese(24,0,1);
+		OLED_ShowCHinese(40,0,2);
+		OLED_ShowCHinese(56,0,3);
+		OLED_ShowCHinese(72,0,4);
+		OLED_ShowCHinese(88,0,5);
+		OLED_ShowCHinese(104,0,6);
+		switch(mode)
+			{
+			case POSITIVEPRESS:
+			OLED_ShowCHinese(17,4,23);
+			OLED_ShowCHinese(33,4,12);
+			OLED_ShowString(49,4,":",16);
+			press= PressValGet()-70;
+			if(press<0)press=0;
+			OLED_ShowString(90,4,"kpa",16);
+			OLED_ShowString(65,4,"   ",16);
+			OLED_ShowIntegerNumber(65,4,press,16);
+			break;
+			case NEGTIVEPRESS:
+			OLED_ShowCHinese(17,4,24);
+			OLED_ShowCHinese(33,4,12);
+			OLED_ShowString(49,4,":",16);
+			OLED_ShowString(90,4,"kpa",16);
+			OLED_ShowString(65,4,"   ",16);
+			press= PressValGet()-55;
+			OLED_ShowIntegerNumber(65,4,press,16);
+			break;
+			case CLOSE:
+			OLED_ShowCHinese(17,4,15);
+			OLED_ShowCHinese(33,4,16);
+			OLED_ShowString(49,4,":",16);
+			OLED_ShowString(90,4,"kpa",16);
+			OLED_ShowString(65,4,"   ",16);
+			press= PressValGet()-27;
+			OLED_ShowIntegerNumber(65,4,press,16);
+			break;
+			}
 }
-void MainScreen()
+void MenueScreen()
 {
 	OLED_ShowCHinese(8,0,0);
-  OLED_ShowCHinese(24,0,1);
-  OLED_ShowCHinese(40,0,2); 
-  OLED_ShowCHinese(56,0,3);
-  OLED_ShowCHinese(72,0,4);
- 	OLED_ShowCHinese(88,0,5);
+	OLED_ShowCHinese(24,0,1);
+	OLED_ShowCHinese(40,0,2);
+	OLED_ShowCHinese(56,0,3);
+	OLED_ShowCHinese(72,0,4);
+	OLED_ShowCHinese(88,0,5);
 	OLED_ShowCHinese(104,0,6);
-	OLED_ShowString(0,2," press: ",16);
-	OLED_ShowString(100,2,"kPa ",16);
-	OLED_ShowString(0,4," air pump:",16);
-	OLED_ShowCHinese(0,6,14);
-	OLED_ShowCHinese(16,6,15);
-	OLED_ShowCHinese(96,6,18);
-	OLED_ShowCHinese(112,6,19);
-}
-void MenuSreenS0()
-{
-	OLED_ShowCHinese(48,2,16);//���
-	OLED_ShowCHinese(64,2,17);
-  OLED_ShowString(80,2,":");
-	OLED_ShowCHinese(48,4,28);//ģʽ
-	OLED_ShowCHinese(64,4,29);
-
-	OLED_ShowCHinese(96,6,10);//ȷ��
-	OLED_ShowCHinese(112,6,11);
-	OLED_ShowCHinese(0,6,12);//����
-	OLED_ShowCHinese(16,6,13);
-
-}
-
-
-
-unsigned int deviceNum=0;
-
-unsigned int last_curpos;
-unsigned int last_ComfirmKEYvalue;
-
-void DeviceNumShow()
-{
-	NumScreen();
-	OLED_ShowNum(88,2,deviceNum,2,16);
-}
-
-
-void ShowScreen()
-{
-	if(!ADC_START);
+switch(CurPos)
 	{
-		int press=ADC_DATA-105;
-			if(press<0)
-			{
-				OLED_ShowString(55,2,"-",16);
-				press=-press;
-			}
-			else
-			{
-				OLED_ShowString(55,2," ",16);
-			}
-		press=press/2;
-		OLED_ShowNum(63,2,press/10,2,16);
-		ADC_START = 1;			
+	case 0:
+	OLED_RevShowCHinese(32,2,17);
+	OLED_RevShowCHinese(48,2,18);
+	OLED_RevShowCHinese(64,2,21);
+	OLED_RevShowCHinese(80,2,22);
+
+	OLED_ShowCHinese(48,4,19);
+	OLED_ShowCHinese(64,4,20);
+	break;
+	case 1:
+	OLED_ShowCHinese(32,2,17);
+	OLED_ShowCHinese(48,2,18);
+	OLED_ShowCHinese(64,2,21);
+	OLED_ShowCHinese(80,2,22);
+
+	OLED_RevShowCHinese(48,4,19);
+	OLED_RevShowCHinese(64,4,20);
+	break;
 	}
 
+	OLED_ShowCHinese(8,6,9);
+	OLED_ShowCHinese(24,6,10);
+
+	OLED_ShowCHinese(88,6,7);
+	OLED_ShowCHinese(104,6,8);
+
 }
+void DeviceNumScreen()
+{
+	OLED_ShowCHinese(8,0,0);
+	OLED_ShowCHinese(24,0,1);
+	OLED_ShowCHinese(40,0,2);
+	OLED_ShowCHinese(56,0,3);
+	OLED_ShowCHinese(72,0,4);
+	OLED_ShowCHinese(88,0,5);
+	OLED_ShowCHinese(104,0,6);
+
+	OLED_ShowCHinese(32,3,17);
+	OLED_ShowCHinese(48,3,18);
+	OLED_ShowCHinese(64,3,21);
+	OLED_ShowCHinese(80,3,22);
+
+	OLED_ShowString(96,3,":",16);
+	
+	OLED_ShowIntegerNumber(104,3,deviceID,16);
+
+	OLED_ShowCHinese(8,6,9);
+	OLED_ShowCHinese(24,6,10);
+}
+
+
+enum MODE keytask(enum SCREENID id)//TODO 
+{
+switch(id)
+	{
+		case MAIN:
+			MainScreen(temp_mode);
+			if(GetKeyStation(KEY3)==0)
+			{
+				PositivepressMode();
+				temp_mode=POSITIVEPRESS;
+			}
+			if(GetKeyStation(KEY1)==0)
+			{
+				NegtivepressMode();
+				temp_mode=NEGTIVEPRESS;
+			}
+			if(GetKeyStation(KEY2)==0)
+			{
+				SilenceMode();
+				temp_mode=CLOSE;
+			}
+			if( KeyPressLong(KEY2)==1)
+			{
+				screen_id=1;
+				OLED_Clear();
+			}
+		break;
+			return temp_mode;
+		case MENU:
+			
+			MenueScreen();
+			if(GetKeyStation(KEY3)==0)
+			{
+				CurPos++;
+				if(CurPos>2)
+				{
+					CurPos=0;
+				}
+			}
+			if(GetKeyStation(KEY1)==0)
+			{
+				screen_id=2;
+				OLED_Clear();
+			}
+			if(GetKeyStation(KEY2)==0)
+			{
+				CurPos=0;
+				screen_id=0;
+				OLED_Clear();
+			}
+		break;
+		case NUMID:
+			DeviceNumScreen();
+			if(GetKeyStation(KEY1)==0)
+			{
+				deviceID--;
+			}
+			if(GetKeyStation(KEY3)==0)
+			{
+				deviceID++;
+			}
+			if(deviceID>16)
+			{
+				deviceID=0;
+			}
+			if(GetKeyStation(KEY2)==0)
+			{
+				CurPos=0;
+				screen_id=1;
+				OLED_Clear();
+			}
+		break;
+		case ABOUT:
+		if(GetKeyStation(KEY1)==0)
+			{
+			}
+			if(GetKeyStation(KEY3)==0)
+			{
+			}
+			if(deviceID>20)
+			{
+			}
+			if(GetKeyStation(KEY2)==0)
+			{
+				OLED_Clear();
+			}
+		break;
+	}
+}
+
+void TaskInit()
+{
+
+	OLED_Init();	
+	OLED_Clear();  
+	KeyInit();
+	ValvePumpInit(); 
+	ADCInit( 1 );  
+	mInitSTDIO( );
+	screen_id=MAIN;
+	deviceID=0;
+	temp_mode=CLOSE;
+}
+
+void CtrlRun(UINT8 cmd)
+{
+	switch (cmd)
+	{
+		case 0x01:
+		PositivepressMode();
+		temp_mode=POSITIVEPRESS;
+		break;
+		case 0x02:
+		NegtivepressMode();
+		temp_mode=NEGTIVEPRESS;
+		break;
+		case 0x03:
+		SilenceMode();
+		temp_mode=CLOSE;
+		break;
+	}
+}
+
+void TaskRun()
+{
+	UINT8 cmd=0;
+	keytask(screen_id);
+	if(MsgAnalyze(deviceID))
+	{
+		cmd=MsgAnalyze(deviceID);
+		CtrlRun(cmd);
+		MsgClear();
+	}
+}
+
+
+
+
+

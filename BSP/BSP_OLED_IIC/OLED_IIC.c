@@ -16,8 +16,6 @@ sbit IIC_SDA=P3^3;
 
 
 
-
-//����һ���ֽ�
 void Send_Byte(unsigned char c)
 {
 	unsigned char dat;
@@ -64,11 +62,12 @@ void Write_IIC_Data(unsigned char IIC_Data)
 void OLED_WR_Byte(unsigned char dat,unsigned char cmd)
 {
 	if(cmd) 
-	  {
-       Write_IIC_Data(dat); 
-	  }
-	else {
-       Write_IIC_Command(dat); 
+	{
+	Write_IIC_Data(dat); 
+	}
+	else 
+	{
+	Write_IIC_Command(dat); 
 	}
 }
 //
@@ -176,7 +175,7 @@ void OLED_ShowNum(unsigned char x,unsigned char y,unsigned int num,unsigned char
 } 
 
 void OLED_ShowIntegerNumber(unsigned char x,unsigned char y,int num,unsigned char Char_Size)
-{
+{//TODO 
 	unsigned char len=0;
 	int buf=num;
 	while(buf)
@@ -185,8 +184,10 @@ void OLED_ShowIntegerNumber(unsigned char x,unsigned char y,int num,unsigned cha
 		buf/=10;
 	}
 	if(num>0)
+	{
 		OLED_ShowNum(x,y,num,len,Char_Size);
-	else
+	}
+	else if(num<0)
 	{
 		OLED_ShowChar(x,y,'-',Char_Size);
 		num=abs(num);
@@ -195,13 +196,16 @@ void OLED_ShowIntegerNumber(unsigned char x,unsigned char y,int num,unsigned cha
 		else
 			OLED_ShowNum(x+6,y,num,len,Char_Size);
 	}
+	else if(num==0)
+	{
+		OLED_ShowNum(x,y,0,1,Char_Size);
+	}
 }
 
 void OLED_ShowFloatNumber(unsigned char  x,unsigned char  y,float num,unsigned char  Char_Size)
-{
+{//TODO
 	unsigned char zheng_len=0,xiao_len=0,polarity_flag=0;
-	int zheng=0,xiao=0;		//经读者“迷迷惘惘”提醒，为这两行局部变量赋值
-	//附注：为防止程序运行过程中程序行为异常，需要对局部变量赋值
+	int zheng=0,xiao=0;		
 	if(num>0)
 		polarity_flag=1;
 	else
@@ -211,10 +215,16 @@ void OLED_ShowFloatNumber(unsigned char  x,unsigned char  y,float num,unsigned c
 	}
 	zheng=(int)num;
 	xiao=((num-zheng)*100)/1;	//显示小数点后两位
-	while(zheng)	//计算整数部分位数
+	if(zheng)
 	{
-		zheng_len++;
-		zheng/=10;
+		while(zheng)	//计算整数部分位数
+		{
+			zheng_len++;
+			zheng/=10;
+		}
+	}
+	else{
+		zheng_len=1;
 	}
 	xiao_len=2;
 	zheng=(int)num;	//在计算整数部分数值时，原赋值被篡改，这里重新赋值
@@ -272,12 +282,12 @@ void OLED_RevShowCHinese(unsigned char x,unsigned char y,unsigned char no)
 				OLED_WR_Byte(~Hzk[2*no][t],OLED_DATA);
 				adder+=1; 
      }	
-		OLED_Set_Pos(x,y+1); 
+	OLED_Set_Pos(x,y+1); 
     for(t=0;t<16;t++)
 			{	
 				OLED_WR_Byte(~Hzk[2*no+1][t],OLED_DATA);
 				adder+=1;
-      }
+	}
 }
 void OLED_ShowCHinese(unsigned char x,unsigned char y,unsigned char no)
 {      			    
@@ -285,16 +295,15 @@ void OLED_ShowCHinese(unsigned char x,unsigned char y,unsigned char no)
 	OLED_Set_Pos(x,y);	
     for(t=0;t<16;t++) 
 		{
-				OLED_WR_Byte(Hzk[2*no][t],OLED_DATA);
-				adder+=1; 
-     }	
-		OLED_Set_Pos(x,y+1); 
+			OLED_WR_Byte(Hzk[2*no][t],OLED_DATA);
+			adder+=1; 
+	}	
+	OLED_Set_Pos(x,y+1); 
     for(t=0;t<16;t++)
 			{	
-				OLED_WR_Byte(Hzk[2*no+1][t],OLED_DATA);
-				adder+=1;
-      }
-				
+			OLED_WR_Byte(Hzk[2*no+1][t],OLED_DATA);
+			adder+=1;
+	}
 }
 
 void OLED_Showdecimal(unsigned char x,unsigned char y,float num,unsigned char len,unsigned char size2)

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-30 09:43:14
- * @LastEditTime: 2021-04-30 14:46:55
+ * @LastEditTime: 2021-05-07 15:34:33
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \AirPressControl\BSP\BSP_IO\IO.h
@@ -12,11 +12,11 @@
 #define __IO_H__
 
 void SilenceMode();
-void OpenpumpMode();	
+//void OpenpumpMode();	
 void PositivepressMode();	
 void NegtivepressMode();
-void HoldeMode();
-void ExhaustMode();
+//void HoldeMode();
+//void ExhaustMode();
 
 void ValvePumpInit();
 #endif

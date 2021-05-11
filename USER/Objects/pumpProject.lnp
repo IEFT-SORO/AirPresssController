@@ -2,8 +2,8 @@
 ".\Objects\ADC.obj",
 ".\Objects\OLED_IIC.obj",
 ".\Objects\KEY.obj",
-".\Objects\UART0_485.obj",
 ".\Objects\IO.obj",
+".\Objects\UART_485.obj",
 ".\Objects\Debug.obj",
 ".\Objects\main.obj",
 ".\Objects\ScreenComponent.obj" 

@@ -4,7 +4,7 @@
 * Author             : WCH
 * Version            : V1.0
 * Date               : 2019/07/22
-* Description        : CH554 ADC²ÉÑùÊ±ÖÓÉèÖÃ£¬ADCÍ¨µÀÉèÖÃº¯Êý£¬µçÑ¹±È½ÏÄ£Ê½ÉèÖÃ 
+* Description        : CH554 ADCï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ADCÍ¨ï¿½ï¿½ï¿½ï¿½ï¿½Ãºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹ï¿½È½ï¿½Ä£Ê½ï¿½ï¿½ï¿½ï¿½ 
 *******************************************************************************/
 
 #include "CH551.H"                                                          
@@ -18,31 +18,33 @@ UINT16 AdcData;
 sbit press_adcpin=P3^2;
 /*******************************************************************************
 * Function Name  : ADCInit(UINT8 div)
-* Description    : ADC²ÉÑùÊ±ÖÓÉèÖÃ,Ä£¿é¿ªÆô£¬ÖÐ¶Ï¿ªÆô
-* Input          : UINT8 div Ê±ÖÓÉèÖÃ 
-                   1 Âý  384¸öFosc                   								
-                   0 ¿ì  96¸öFosc									 
+* Description    : ADCï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Ä£ï¿½é¿ªï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï¿ï¿½ï¿½ï¿½
+* Input          : UINT8 div Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+                   1 ï¿½ï¿½  384ï¿½ï¿½Fosc                   								
+                   0 ï¿½ï¿½  96ï¿½ï¿½Fosc									 
 * Output         : None
 * Return         : None
 *******************************************************************************/
 void ADCInit(UINT8 div)
 {
-	  Port3Cfg(0,2);//P3^2
+    Port3Cfg(0,2);//P3^2
     ADC_CFG &= ~bADC_CLK | div;
-    ADC_CFG |= bADC_EN;                                                        //ADCµçÔ´Ê¹ÄÜ
+    ADC_CFG |= bADC_EN;                                                        //ADCï¿½ï¿½Ô´Ê¹ï¿½ï¿½
 #if ADC_INTERRUPT
-    ADC_IF = 0;                                                                //Çå¿ÕÖÐ¶Ï
-    IE_ADC = 1;                                                                //Ê¹ÄÜADCÖÐ¶Ï
+    ADC_IF = 0;                                                                //ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
+    IE_ADC = 1;                                                                //Ê¹ï¿½ï¿½ADCï¿½Ð¶ï¿½
 #endif
+    ADC_ChannelSelect(3);
+    ADC_START = 1;
 }
 
 /*******************************************************************************
 * Function Name  : ADC_ChannelSelect(UINT8 ch)
-* Description    : ADC²ÉÑùÆôÓÃ
-* Input          : UINT8 ch ²ÉÓÃÍ¨µÀ
+* Description    : ADCï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+* Input          : UINT8 ch ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½
 * Output         : None
-* Return         : ³É¹¦ SUCCESS
-                   Ê§°Ü FAIL
+* Return         : ï¿½É¹ï¿½ SUCCESS
+                   Ê§ï¿½ï¿½ FAIL
 *******************************************************************************/
 UINT8 ADC_ChannelSelect(UINT8 ch)
 {
@@ -56,32 +58,32 @@ UINT8 ADC_ChannelSelect(UINT8 ch)
 
 /*******************************************************************************
 * Function Name  : VoltageCMPModeInit()
-* Description    : µçÑ¹±È½ÏÆ÷Ä£Ê½³õÊ¼»¯
-* Input          : UINT8 fo ÕýÏò¶Ë¿Ú 0\1\2\3
-                   UINT8 re ·´Ïò¶Ë¿Ú 1\3
+* Description    : ï¿½ï¿½Ñ¹ï¿½È½ï¿½ï¿½ï¿½Ä£Ê½ï¿½ï¿½Ê¼ï¿½ï¿½
+* Input          : UINT8 fo ï¿½ï¿½ï¿½ï¿½Ë¿ï¿½ 0\1\2\3
+                   UINT8 re ï¿½ï¿½ï¿½ï¿½Ë¿ï¿½ 1\3
 * Output         : None
-* Return         : ³É¹¦ SUCCESS
-                   Ê§°Ü FAIL
+* Return         : ï¿½É¹ï¿½ SUCCESS
+                   Ê§ï¿½ï¿½ FAIL
 *******************************************************************************/
 UINT8 VoltageCMPModeInit(UINT8 fo,UINT8 re)
 {
-    ADC_CFG |= bCMP_EN;                                                        //µçÆ½±È½ÏµçÔ´Ê¹ÄÜ
+    ADC_CFG |= bCMP_EN;                                                        //ï¿½ï¿½Æ½ï¿½È½Ïµï¿½Ô´Ê¹ï¿½ï¿½
     if(re == 1){
-      if(fo == 0) {ADC_CHAN1 =0;ADC_CHAN0=0;CMP_CHAN =0;}                      //AIN0ºÍAIN1
-      else if(fo == 2) {ADC_CHAN1 =1;ADC_CHAN0=0;CMP_CHAN =0;}                 //AIN2ºÍAIN1
-      else if(fo == 3) {ADC_CHAN1 =1;ADC_CHAN0=1;CMP_CHAN =0; }                //AIN3ºÍAIN1			
+      if(fo == 0) {ADC_CHAN1 =0;ADC_CHAN0=0;CMP_CHAN =0;}                      //AIN0ï¿½ï¿½AIN1
+      else if(fo == 2) {ADC_CHAN1 =1;ADC_CHAN0=0;CMP_CHAN =0;}                 //AIN2ï¿½ï¿½AIN1
+      else if(fo == 3) {ADC_CHAN1 =1;ADC_CHAN0=1;CMP_CHAN =0; }                //AIN3ï¿½ï¿½AIN1			
       else return FAIL;
     }			     
     else if(re == 3){
-      if(fo == 0) {ADC_CHAN1 =0;ADC_CHAN0=0;CMP_CHAN =0;}                      //AIN0ºÍAIN1
-      else if(fo == 1) {ADC_CHAN1 =0;ADC_CHAN0=1;CMP_CHAN =0;}                 //AIN1ºÍAIN1
-      else if(fo == 2) {ADC_CHAN1 =1;ADC_CHAN0=0;CMP_CHAN =0;}                 //AIN2ºÍAIN1			
+      if(fo == 0) {ADC_CHAN1 =0;ADC_CHAN0=0;CMP_CHAN =0;}                      //AIN0ï¿½ï¿½AIN1
+      else if(fo == 1) {ADC_CHAN1 =0;ADC_CHAN0=1;CMP_CHAN =0;}                 //AIN1ï¿½ï¿½AIN1
+      else if(fo == 2) {ADC_CHAN1 =1;ADC_CHAN0=0;CMP_CHAN =0;}                 //AIN2ï¿½ï¿½AIN1			
       else return FAIL;
     }
     else return FAIL;
 #if ADC_INTERRUPT
-    CMP_IF = 0;                                                                //Çå¿ÕÖÐ¶Ï
-    IE_ADC = 1;                                                                //Ê¹ÄÜADCÖÐ¶Ï
+    CMP_IF = 0;                                                                //ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
+    IE_ADC = 1;                                                                //Ê¹ï¿½ï¿½ADCï¿½Ð¶ï¿½
 #endif
 
      return SUCCESS;
@@ -90,20 +92,20 @@ UINT8 VoltageCMPModeInit(UINT8 fo,UINT8 re)
 #if ADC_INTERRUPT
 /*******************************************************************************
 * Function Name  : ADCInterrupt(void)
-* Description    : ADC ÖÐ¶Ï·þÎñ³ÌÐò
+* Description    : ADC ï¿½Ð¶Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 *******************************************************************************/
-void	ADCInterrupt( void ) interrupt INT_NO_ADC using 1                       //ADCÖÐ¶Ï·þÎñ³ÌÐò,Ê¹ÓÃ¼Ä´æÆ÷×é1
+void	ADCInterrupt( void ) interrupt INT_NO_ADC using 1                       //ADCï¿½Ð¶Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,Ê¹ï¿½Ã¼Ä´ï¿½ï¿½ï¿½ï¿½ï¿½1
 { 
-    if(ADC_IF ==  1)                                                          //ADCÍê³ÉÖÐ¶Ï
+    if(ADC_IF ==  1)                                                          //ADCï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
     { 
-      AdcData = ADC_DATA;                                                    //È¡×ßADC²ÉÑùÊý¾Ý
-      ADC_IF = 0;		                                                          //Çå¿ÕADCÖÐ¶Ï±êÖ¾
+      AdcData = ADC_DATA;                                                    //È¡ï¿½ï¿½ADCï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+      ADC_IF = 0;		                                                          //ï¿½ï¿½ï¿½ADCï¿½Ð¶Ï±ï¿½Ö¾
 //	  printf(" %d ",UserData);
     }
-    if(CMP_IF ==  1)                                                          //µçÑ¹±È½ÏÍê³ÉÖÐ¶Ï
+    if(CMP_IF ==  1)                                                          //ï¿½ï¿½Ñ¹ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
     {	
-//       UserData = ADC_CTRL&0x80 >> 7);	                                        //±£´æ±È½ÏÆ÷½á¹û		
-      CMP_IF = 0;		                                                          //Çå¿Õ±È½ÏÆ÷Íê³ÉÖÐ¶Ï
+//       UserData = ADC_CTRL&0x80 >> 7);	                                        //ï¿½ï¿½ï¿½ï¿½È½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		
+      CMP_IF = 0;		                                                          //ï¿½ï¿½Õ±È½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
     }
 }
 #endif

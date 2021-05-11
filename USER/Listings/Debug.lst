@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   DEBUG                                                                 04/30/2021 15:09:25 PAGE 1   
+C51 COMPILER V9.01   DEBUG                                                                 05/11/2021 15:11:42 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE DEBUG
@@ -15,10 +15,10 @@ line level    source
    4          * Version            : V1.2
    5          * Date               : 2018/02/26
    6          * Description        : CH554 DEBUG Interface
-   7                               CH554жВф╣пч╦д║╒ясй╠╨╞йЩ╤╗рЕ
-   8                               ╢╝©з0╨м╢╝©з1ЁУй╪╩╞
-   9                               ╢╝©з0╨м╢╝©з1╣дйу╥╒вс╨╞йЩ
-  10                               ©╢це╧╥ЁУй╪╩╞                    
+   7                               CH554О©╫О©╫ф╣О©╫ч╦д║О©╫О©╫О©╫й╠О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫
+   8                               О©╫О©╫О©╫О©╫0О©╫м╢О©╫О©╫О©╫1О©╫О©╫й╪О©╫О©╫
+   9                               О©╫О©╫О©╫О©╫0О©╫м╢О©╫О©╫О©╫1О©╫О©╫О©╫у╥О©╫О©╫с╨О©╫О©╫О©╫
+  10                               О©╫О©╫О©╫е╧О©╫О©╫О©╫й╪О©╫О©╫                    
   11          *******************************************************************************/
   12          
   13          #include "CH551.H"
@@ -26,9 +26,11 @@ line level    source
   15          
   16          /*******************************************************************************
   17          * Function Name  : CfgFsys( )
-  18          * Description    : CH554й╠жся║тЯ╨меДжц╨╞йЩ,д╛хой╧сцFsys 6MHzё╛FREQ_SYS©иртм╗╧Щ
-  19                             CLOCK_CFGеДжц╣ц╣╫ё╛╧╚й╫хГобё╨
-  20                             Fsys = (Fosc * 4/(CLOCK_CFG & MASK_SYS_CK_SEL);╬ълЕй╠жспХр╙вт╪╨еДжц 
+  18          * Description    : CH554й╠О©╫О©╫я║О©╫О©╫О©╫О©╫О©╫О©╫ц╨О©╫О©╫О©╫,д╛О©╫О©╫й╧О©╫О©╫Fsys 6MHzО©╫О©╫FREQ_SYSО©╫
+             -О©╫О©╫О©╫м╗О©╫О©╫
+  19                             CLOCK_CFGО©╫О©╫О©╫ц╣ц╣О©╫О©╫О©╫О©╫О©╫й╫О©╫О©╫О©╫бёО©╫
+  20                             Fsys = (Fosc * 4/(CLOCK_CFG & MASK_SYS_CK_SEL);О©╫О©╫О©╫О©╫й╠О©╫О©╫О©╫О©╫р╙О©╫т╪О©╫О©╫О
+             -©╫О©╫О©╫ 
   21          * Input          : None
   22          * Output         : None
   23          * Return         : None
@@ -38,8 +40,8 @@ line level    source
   27   1      #if OSC_EN_XT 
                   SAFE_MOD = 0x55;
                   SAFE_MOD = 0xAA;
-                  CLOCK_CFG |= bOSC_EN_XT;                          //й╧дэмБ╡©╬╖уЯ
-                  CLOCK_CFG &= ~bOSC_EN_INT;                        //╧ь╠удз╡©╬╖уЯ 
+                  CLOCK_CFG |= bOSC_EN_XT;                          //й╧О©╫О©╫О©╫Б╡©О©╫О©╫О©╫О©╫
+                  CLOCK_CFG &= ~bOSC_EN_INT;                        //О©╫ь╠О©╫О©╫з╡О©╫О©╫О©╫О©╫О©╫ 
               #endif  
   33   1          SAFE_MOD = 0x55;
   34   1          SAFE_MOD = 0xAA;
@@ -60,10 +62,10 @@ line level    source
               #endif
   50   1      #if FREQ_SYS == 750000  
                   CLOCK_CFG = CLOCK_CFG & ~ MASK_SYS_CK_SEL | 0x01;  // 750KHz
+C51 COMPILER V9.01   DEBUG                                                                 05/11/2021 15:11:42 PAGE 2   
+
               #endif
   53   1      #if FREQ_SYS == 187500  
-C51 COMPILER V9.01   DEBUG                                                                 04/30/2021 15:09:25 PAGE 2   
-
                   CLOCK_CFG = CLOCK_CFG & ~ MASK_SYS_CK_SEL | 0x00;  // 187.5KHz  
               #endif
   56   1          SAFE_MOD = 0x00;
@@ -71,12 +73,12 @@ line level    source
   58          
   59          /*******************************************************************************
   60          * Function Name  : mDelayus(UNIT16 n)
-  61          * Description    : usясй╠╨╞йЩ
+  61          * Description    : usО©╫О©╫й╠О©╫О©╫О©╫О©╫
   62          * Input          : UNIT16 n
   63          * Output         : None
   64          * Return         : None
   65          *******************************************************************************/ 
-  66          void  mDelayuS( UINT16 n )  // ртuSн╙╣╔н╩ясй╠
+  66          void  mDelayuS( UINT16 n )  // О©╫О©╫uSн╙О©╫О©╫н╩О©╫О©╫й╠
   67          {
   68   1      #ifdef  FREQ_SYS
   69   1      #if   FREQ_SYS <= 6000000
@@ -117,172 +119,186 @@ line level    source
  104          
  105          /*******************************************************************************
  106          * Function Name  : mDelayms(UNIT16 n)
- 107          * Description    : msясй╠╨╞йЩ
+ 107          * Description    : msО©╫О©╫й╠О©╫О©╫О©╫О©╫
  108          * Input          : UNIT16 n
  109          * Output         : None
  110          * Return         : None
  111          *******************************************************************************/
- 112          void  mDelaymS( UINT16 n )                                                  // ртmSн╙╣╔н╩ясй╠
- 113          {
- 114   1        while ( n ) {
- 115   2      #ifdef  DELAY_MS_HW
-C51 COMPILER V9.01   DEBUG                                                                 04/30/2021 15:09:25 PAGE 3   
+ 112          #define DELAY_MS_HW
+ 113          void  mDelaymS( UINT16 n )
+C51 COMPILER V9.01   DEBUG                                                                 05/11/2021 15:11:42 PAGE 3   
 
-                  while ( ( TKEY_CTRL & bTKC_IF ) == 0 );
-                  while ( TKEY_CTRL & bTKC_IF );
-              #else
- 119   2          mDelayuS( 1000 );
- 120   2      #endif
- 121   2          -- n;
- 122   2        }
- 123   1      }                                         
- 124          
- 125          /*******************************************************************************
- 126          * Function Name  : CH554WDTModeSelect(UINT8 mode)
- 127          * Description    : CH554©╢це╧╥дёй╫я║тЯ
- 128          * Input          : UINT8 mode 
- 129                             0  timer
- 130                             1  watchDog
- 131          * Output         : None
- 132          * Return         : None
- 133          *******************************************************************************/
- 134          void CH554WDTModeSelect(UINT8 mode)
- 135          {
- 136   1         SAFE_MOD = 0x55;
- 137   1         SAFE_MOD = 0xaa;                                                             //╫ЬхК╟╡х╚дёй╫
- 138   1         if(mode){
- 139   2           GLOBAL_CFG |= bWDOG_EN;                                                    //фТ╤╞©╢це╧╥╦╢н╩
- 140   2         }
- 141   1         else GLOBAL_CFG &= ~bWDOG_EN;                                              //фТ╤╞©╢це╧╥╫Ж╫ЖвВн╙╤╗й╠фВ
- 142   1         SAFE_MOD = 0x00;                                                             //мкЁЖ╟╡х╚дёй╫
- 143   1         WDOG_COUNT = 0;                                                              //©╢це╧╥╦ЁЁУж╣
- 144   1      }
- 145          
- 146          /*******************************************************************************
- 147          * Function Name  : CH554WDTFeed(UINT8 tim)
- 148          * Description    : CH554©╢це╧╥╤╗й╠й╠╪ДиХжц
- 149          * Input          : UINT8 tim ©╢це╧╥╦╢н╩й╠╪ДиХжц
- 150                             00H(6MHz)=2.8s
- 151                             80H(6MHz)=1.4s
- 152          * Output         : None
- 153          * Return         : None
- 154          *******************************************************************************/
- 155          void CH554WDTFeed(UINT8 tim)
- 156          {
- 157   1         WDOG_COUNT = tim;                                                             //©╢це╧╥╪фйЩфВ╦Ёж╣ 
- 158   1      }
- 159          
- 160          // /*******************************************************************************
- 161          // * Function Name  : CH554SoftReset()
- 162          // * Description    : CH554хМ╦╢н╩
- 163          // * Input          : None
- 164          // * Output         : None
- 165          // * Return         : None
- 166          // *******************************************************************************/
- 167          // void CH554SoftReset( )
- 168          // {
- 169          //     SAFE_MOD = 0x55;
- 170          //     SAFE_MOD = 0xAA;
- 171          //     GLOBAL_CFG |=bSW_RESET;
- 172          // }
- 173          
- 174          // /*******************************************************************************
- 175          // * Function Name  : CH554USBDevWakeup()
- 176          // * Description    : CH554иХ╠╦дёй╫╩╫пяжВ╩Зё╛╥╒кмKпе╨е
- 177          // * Input          : None
-C51 COMPILER V9.01   DEBUG                                                                 04/30/2021 15:09:25 PAGE 4   
+ 114          {
+ 115   1        while ( n ) {
+ 116   2      #ifdef  DELAY_MS_HW
+ 117   2          while ( ( TKEY_CTRL & bTKC_IF ) == 0 );
+ 118   2          while ( TKEY_CTRL & bTKC_IF );
+ 119   2      #else
+                  mDelayuS( 1000 );
+              #endif
+ 122   2          -- n;
+ 123   2        }
+ 124   1      }                                         
+ 125          
+ 126          /*******************************************************************************
+ 127          * Function Name  : CH554WDTModeSelect(UINT8 mode)
+ 128          * Description    : CH554О©╫О©╫О©╫е╧О©╫дёй╫я║О©╫О©╫
+ 129          * Input          : UINT8 mode 
+ 130                             0  timer
+ 131                             1  watchDog
+ 132          * Output         : None
+ 133          * Return         : None
+ 134          *******************************************************************************/
+ 135          void WDTModeSelect(UINT8 mode)
+ 136          {
+ 137   1         SAFE_MOD = 0x55;
+ 138   1         SAFE_MOD = 0xaa;                                                             //О©╫О©╫О©╫К╟╡х╚дёй╫
+ 139   1         if(mode){
+ 140   2           GLOBAL_CFG |= bWDOG_EN;                                                    //О©╫О©╫О©╫О©╫О©╫О©╫О©╫е╧О
+             -©╫О©╫О©╫н╩
+ 141   2         }
+ 142   1         else GLOBAL_CFG &= ~bWDOG_EN;                                              //О©╫О©╫О©╫О©╫О©╫О©╫О©╫е╧О©╫О
+             -©╫О©╫О©╫О©╫О©╫О©╫н╙О©╫О©╫й╠О©╫О©╫
+ 143   1         SAFE_MOD = 0x00;                                                             //О©╫кЁО©╫О©╫О©╫х╚дёй╫
+ 144   1         WDOG_COUNT = 0;                                                              //О©╫О©╫О©╫е╧О©╫О©╫О©╫О©╫О
+             -©╫ж╣
+ 145   1      }
+ 146          
+ 147          /*******************************************************************************
+ 148          * Function Name  : CH554WDTFeed(UINT8 tim)
+ 149          * Description    : CH554О©╫О©╫О©╫е╧О©╫О©╫О©╫й╠й╠О©╫О©╫О©╫О©╫О©╫О©╫
+ 150          * Input          : UINT8 tim О©╫О©╫О©╫е╧О©╫О©╫О©╫н╩й╠О©╫О©╫О©╫О©╫О©╫О©╫
+ 151                             00H(6MHz)=2.8s
+ 152                             80H(6MHz)=1.4s
+ 153          * Output         : None
+ 154          * Return         : None
+ 155          *******************************************************************************/
+ 156          void WDTFeed(UINT8 tim)
+ 157          {
+ 158   1         WDOG_COUNT = tim;                                                             //О©╫О©╫О©╫е╧О©╫О©╫О©╫О©╫
+             -О©╫О©╫О©╫О©╫О©╫ж╣ 
+ 159   1      }
+ 160          
+ 161          
+ 162          /*******************************************************************************
+ 163          * Function Name  : Port1Cfg()
+ 164          * Description    : О©╫к©О©╫1О©╫О©╫О©╫О©╫
+ 165          * Input          : Mode  0 = О©╫О©╫О©╫О©╫О©╫О©╫О©╫Кё╛О©╫О©╫О©╫О©╫О©╫О©╫
+ 166                                   1 = О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫
+ 167                                   2 = О©╫О©╫б╘О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫
+ 168                                   3 = О©╫О©╫51дёй╫О©╫О©╫О©╫О©╫б╘О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫
+             -О©╫з╡О©╫О©╫О©╫б╥О©╫О©╫О©╫т╪О©╫О©╫О©╫О©╫и╣м╣О©╫О©╫ъ╣д╣О©╫ф╫О©╫О©╫О©╫О©╫    
+ 169                             ,UINT8 Pin (0-7)                      
+ 170          * Output         : None
+C51 COMPILER V9.01   DEBUG                                                                 05/11/2021 15:11:42 PAGE 4   
 
- 178          // * Output         : None
- 179          // * Return         : None
- 180          // *******************************************************************************/
- 181          // void CH554USBDevWakeup( )
- 182          // {
- 183          //#ifdef Fullspeed
- 184          //  UDEV_CTRL |= bUD_LOW_SPEED;
- 185          //  mDelaymS(2);
- 186          //  UDEV_CTRL &= ~bUD_LOW_SPEED;    
- 187          //#else
- 188          //  UDEV_CTRL &= ~bUD_LOW_SPEED;
- 189          //  mDelaymS(2);
- 190          //  UDEV_CTRL |= bUD_LOW_SPEED; 
- 191          //#endif  
- 192          // }
- 193          /*******************************************************************************
- 194          * Function Name  : Port1Cfg()
- 195          * Description    : ╤к©з1еДжц
- 196          * Input          : Mode  0 = ╦║©уйДхКё╛нчиою╜
- 197                                   1 = мфмЛйДхКйДЁЖ
- 198                                   2 = ©╙б╘йДхКйДЁЖё╛нчиою╜
- 199                                   3 = юЮ51дёй╫ё╛©╙б╘йДхКйДЁЖё╛спиою╜ё╛дз╡©╣Гб╥©ирт╪скыси╣м╣╫╦ъ╣д╣Гф╫еюиЩ   
- 200                             ,UINT8 Pin (0-7)                      
- 201          * Output         : None
- 202          * Return         : None
- 203          *******************************************************************************/
- 204          void Port1Cfg(UINT8 Mode,UINT8 Pin)
- 205          {
- 206   1        switch(Mode){
- 207   2          case 0:
- 208   2            P1_MOD_OC = P1_MOD_OC & ~(1<<Pin);
- 209   2            P1_DIR_PU = P1_DIR_PU & ~(1<<Pin);  
- 210   2            break;
- 211   2          case 1:
- 212   2            P1_MOD_OC = P1_MOD_OC & ~(1<<Pin);
- 213   2            P1_DIR_PU = P1_DIR_PU | (1<<Pin);       
- 214   2            break;    
- 215   2          case 2:
- 216   2            P1_MOD_OC = P1_MOD_OC | (1<<Pin);
- 217   2            P1_DIR_PU = P1_DIR_PU & ~(1<<Pin);        
- 218   2            break;    
- 219   2          case 3:
- 220   2            P1_MOD_OC = P1_MOD_OC | (1<<Pin);
- 221   2            P1_DIR_PU = P1_DIR_PU | (1<<Pin);     
- 222   2            break;
- 223   2          default:
- 224   2            break;      
- 225   2        }
- 226   1      }
- 227          /*******************************************************************************
- 228          * Function Name  : Port3Cfg()
- 229          * Description    : ╤к©з3еДжц
- 230          * Input          : Mode  0 = ╦║©уйДхКё╛нчиою╜
- 231                                   1 = мфмЛйДхКйДЁЖ
- 232                                   2 = ©╙б╘йДхКйДЁЖё╛нчиою╜
- 233                                   3 = юЮ51дёй╫ё╛©╙б╘йДхКйДЁЖё╛спиою╜ё╛дз╡©╣Гб╥©ирт╪скыси╣м╣╫╦ъ╣д╣Гф╫еюиЩ   
- 234                             ,UINT8 Pin (0-7)                      
+ 171          * Return         : None
+ 172          *******************************************************************************/
+ 173          void Port1Cfg(UINT8 Mode,UINT8 Pin)
+ 174          {
+ 175   1        switch(Mode){
+ 176   2          case 0:
+ 177   2            P1_MOD_OC = P1_MOD_OC & ~(1<<Pin);
+ 178   2            P1_DIR_PU = P1_DIR_PU & ~(1<<Pin);  
+ 179   2            break;
+ 180   2          case 1:
+ 181   2            P1_MOD_OC = P1_MOD_OC & ~(1<<Pin);
+ 182   2            P1_DIR_PU = P1_DIR_PU | (1<<Pin);       
+ 183   2            break;    
+ 184   2          case 2:
+ 185   2            P1_MOD_OC = P1_MOD_OC | (1<<Pin);
+ 186   2            P1_DIR_PU = P1_DIR_PU & ~(1<<Pin);        
+ 187   2            break;    
+ 188   2          case 3:
+ 189   2            P1_MOD_OC = P1_MOD_OC | (1<<Pin);
+ 190   2            P1_DIR_PU = P1_DIR_PU | (1<<Pin);     
+ 191   2            break;
+ 192   2          default:
+ 193   2            break;      
+ 194   2        }
+ 195   1      }
+ 196          /*******************************************************************************
+ 197          * Function Name  : Port3Cfg()
+ 198          * Description    : О©╫к©О©╫3О©╫О©╫О©╫О©╫
+ 199          * Input          : Mode  0 = О©╫О©╫О©╫О©╫О©╫О©╫О©╫Кё╛О©╫О©╫О©╫О©╫О©╫О©╫
+ 200                                   1 = О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫
+ 201                                   2 = О©╫О©╫б╘О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫
+ 202                                   3 = О©╫О©╫51дёй╫О©╫О©╫О©╫О©╫б╘О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫
+             -О©╫з╡О©╫О©╫О©╫б╥О©╫О©╫О©╫т╪О©╫О©╫О©╫О©╫и╣м╣О©╫О©╫ъ╣д╣О©╫ф╫О©╫О©╫О©╫О©╫    
+ 203                             ,UINT8 Pin (0-7)                      
+ 204          * Output         : None
+ 205          * Return         : None
+ 206          *******************************************************************************/
+ 207          void Port3Cfg(UINT8 Mode,UINT8 Pin)
+ 208          {
+ 209   1        switch(Mode){
+ 210   2          case 0:
+ 211   2            P3_MOD_OC = P3_MOD_OC & ~(1<<Pin);
+ 212   2            P3_DIR_PU = P3_DIR_PU & ~(1<<Pin);  
+ 213   2            break;
+ 214   2          case 1:
+ 215   2            P3_MOD_OC = P3_MOD_OC & ~(1<<Pin);
+ 216   2            P3_DIR_PU = P3_DIR_PU | (1<<Pin);       
+ 217   2            break;    
+ 218   2          case 2:
+ 219   2            P3_MOD_OC = P3_MOD_OC | (1<<Pin);
+ 220   2            P3_DIR_PU = P3_DIR_PU & ~(1<<Pin);        
+ 221   2            break;    
+ 222   2          case 3:
+ 223   2            P3_MOD_OC = P3_MOD_OC | (1<<Pin);
+ 224   2            P3_DIR_PU = P3_DIR_PU | (1<<Pin);     
+ 225   2            break;
+ 226   2          default:
+ 227   2            break;      
+ 228   2        }
+ 229   1      }
+ 230          /*******************************************************************************
+ 231          * Function Name  : mInitSTDIO()
+C51 COMPILER V9.01   DEBUG                                                                 05/11/2021 15:11:42 PAGE 5   
+
+ 232          * Description    : CH554Д╦╡Е▐ё0Е┬²Е╖▀Е▄√,И╩≤Х╝╓Д╫©Г■╗T1Д╫°UART0Г └ФЁ╒Г┴╧Г▌┤Е▐▒Г■÷Е≥╗,Д╧÷Е▐╞Д╩╔Д╫©Г■╗T2
+ 233                             Д╫°Д╦╨ФЁ╒Г┴╧Г▌┤Е▐▒Г■÷Е≥╗
+ 234          * Input          : None
  235          * Output         : None
  236          * Return         : None
  237          *******************************************************************************/
- 238          void Port3Cfg(UINT8 Mode,UINT8 Pin)
+ 238          void  mInitSTDIO( )
  239          {
-C51 COMPILER V9.01   DEBUG                                                                 04/30/2021 15:09:25 PAGE 5   
-
- 240   1        switch(Mode){
- 241   2          case 0:
- 242   2            P3_MOD_OC = P3_MOD_OC & ~(1<<Pin);
- 243   2            P3_DIR_PU = P3_DIR_PU & ~(1<<Pin);  
- 244   2            break;
- 245   2          case 1:
- 246   2            P3_MOD_OC = P3_MOD_OC & ~(1<<Pin);
- 247   2            P3_DIR_PU = P3_DIR_PU | (1<<Pin);       
- 248   2            break;    
- 249   2          case 2:
- 250   2            P3_MOD_OC = P3_MOD_OC | (1<<Pin);
- 251   2            P3_DIR_PU = P3_DIR_PU & ~(1<<Pin);        
- 252   2            break;    
- 253   2          case 3:
- 254   2            P3_MOD_OC = P3_MOD_OC | (1<<Pin);
- 255   2            P3_DIR_PU = P3_DIR_PU | (1<<Pin);     
- 256   2            break;
- 257   2          default:
- 258   2            break;      
- 259   2        }
- 260   1      }
+ 240   1          UINT32 x;
+ 241   1          UINT8 x2; 
+ 242   1      
+ 243   1          SM0 = 0;
+ 244   1          SM1 = 1;
+ 245   1          SM2 = 0;                                                                   //Д╦╡Е▐ё0Д╫©Г■╗Ф╗║Е╪▐1
+ 246   1                                                                                     //Д╫©Г■╗Timer1Д╫°Д╦╨ФЁ╒Г┴╧Г
+             -▌┤Е▐▒Г■÷Е≥╗
+ 247   1          RCLK = 0;                                                                  //UART0Ф▌╔Ф■╤Ф≈╤И▓÷
+ 248   1          TCLK = 0;                                                                  //UART0Е▐▒И─│Ф≈╤И▓÷
+ 249   1          PCON |= SMOD;
+ 250   1          x = 10 * FREQ_SYS / UART0_BUAD / 16;                                       //Е╕┌Ф·°Ф⌡╢Ф■╧Д╦╩И╒▒О╪▄ФЁ╗Ф
+             -└▐xГ └Е─╪Д╦█Х╕│Ф╨╒Е┤╨                            
+ 251   1          x2 = x % 10;
+ 252   1          x /= 10;
+ 253   1          if ( x2 >= 5 ) x ++;                                                       //Е⌡⌡Х┬█Д╨■Е┘╔
+ 254   1      
+ 255   1          TMOD = TMOD & ~ bT1_GATE & ~ bT1_CT & ~ MASK_T1_MOD | bT1_M1;              //0X20О╪▄Timer1Д╫°Д╦╨8Д╫█Х┤
+             -╙Е┼╗И┤█Х╫╫Е╝ Ф≈╤Е≥╗
+ 256   1          T2MOD = T2MOD | bTMR_CLK | bT1_CLK;                                        //Timer1Ф≈╤И▓÷И─┴Ф▀╘
+ 257   1          TH1 = 0-x;                                                                 //12MHzФ≥╤Ф▄╞,buad/12Д╦╨Е╝·
+             -И≥┘И°─Х╝╬Г╫╝ФЁ╒Г┴╧Г▌┤
+ 258   1          TR1 = 1;                                                                   //Е░╞Е┼╗Е╝ Ф≈╤Е≥╗1
+ 259   1          TI = 1;
+ 260   1          REN = 1;   
+ 261   1          TI = 1;
+ 262   1          ES = 1;   
+ 263   1                                                              //Д╦╡Е▐ё0Ф▌╔Ф■╤Д╫©Х┐╫
+ 264   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    251    ----
+   CODE SIZE        =    403    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----    ----
+   XDATA SIZE       =   ----       5
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

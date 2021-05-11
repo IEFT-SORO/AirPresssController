@@ -1,10 +1,17 @@
-/* µ÷ÊÔ */
-/* Ìá¹©printf×Ó³ÌÐòºÍÑÓÊ±º¯Êý */
+/*
+ * @Author: ZZz
+ * @Date: 2021-04-30 09:38:30
+ * @LastEditTime: 2021-05-11 08:57:37
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \AirPressControl\SYS\Debug.H
+ */
+
 
 #ifndef	__DEBUG_H__
 #define __DEBUG_H__
 
-//¶¨Òåº¯Êý·µ»ØÖµ
+//ï¿½ï¿½ï¿½åº¯ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
 #ifndef  SUCCESS
 #define  SUCCESS  0
 #endif
@@ -12,7 +19,7 @@
 #define  FAIL    0xFF
 #endif
 
-//¶¨Òå¶¨Ê±Æ÷ÆðÊ¼
+//ï¿½ï¿½ï¿½å¶¨Ê±ï¿½ï¿½ï¿½ï¿½Ê¼
 #ifndef  START
 #define  START  1
 #endif
@@ -20,26 +27,27 @@
 #define  STOP    0
 #endif
 
-#define	 FREQ_SYS	     12000000	         //ÏµÍ³Ö÷Æµ12MHz
-#define  OSC_EN_XT     0                 //Íâ²¿¾§ÕñÊ¹ÄÜ£¬Ä¬ÈÏ¿ªÆôÄÚ²¿¾§Õñ
+#define	 FREQ_SYS	   12000000	         //ÏµÍ³ï¿½ï¿½Æµ12MHz
+#define  OSC_EN_XT     0                 //ï¿½â²¿ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ü£ï¿½Ä¬ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½
 #ifndef  UART0_BUAD
-#define  UART0_BUAD    57600
+#define  UART0_BUAD    4800
 #define  UART1_BUAD    57600
 #endif
-#ifndef  DE_PRINTF                      //³ÌÐòPirntfÊä³ö¿ªÆô
+#ifndef  DE_PRINTF                      //ï¿½ï¿½ï¿½ï¿½Pirntfï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define  DE_PRINTF     1
 #endif
 #define uchar unsigned char
 #define uint unsigned int
-void	CfgFsys( );                        //CH554Ê±ÖÓÑ¡ÔñºÍÅäÖÃ
-void	mDelayuS( UINT16 n );              // ÒÔuSÎªµ¥Î»ÑÓÊ±
-void	mDelaymS( UINT16 n );              // ÒÔmSÎªµ¥Î»ÑÓÊ±
+void	CfgFsys( );                        //CH554Ê±ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+void	mDelayuS( UINT16 n );              // ï¿½ï¿½uSÎªï¿½ï¿½Î»ï¿½ï¿½Ê±
+void	mDelaymS( UINT16 n );              // ï¿½ï¿½mSÎªï¿½ï¿½Î»ï¿½ï¿½Ê±
+void	mInitSTDIO( );
 
-void    CH554WDTModeSelect(UINT8 mode);     //CH554¿´ÃÅ¹·Ä£Ê½ÉèÖÃ 
-void    CH554WDTFeed(UINT8 tim);            //CH554¿´ÃÅ¹·Î¹¹·
+void    WDTModeSelect(UINT8 mode);     //CH554ï¿½ï¿½ï¿½Å¹ï¿½Ä£Ê½ï¿½ï¿½ï¿½ï¿½ 
+void    WDTFeed(UINT8 tim);            //CH554ï¿½ï¿½ï¿½Å¹ï¿½Î¹ï¿½ï¿½
 void Port1Cfg(UINT8 Mode,UINT8 Pin);
 void Port3Cfg(UINT8 Mode,UINT8 Pin);
-// void CH554SoftReset( );                  //CH554Èí¸´Î»
-// void CH554USBDevWakeup( );               //CH554×öUSBÉè±¸»½ÐÑÖ÷»ú
+// void CH554SoftReset( );                  //CH554ï¿½ï¿½ï¿½ï¿½Î»
+// void CH554USBDevWakeup( );               //CH554ï¿½ï¿½USBï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //  
 #endif
