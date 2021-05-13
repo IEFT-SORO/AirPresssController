@@ -282,7 +282,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_OLED_IIC;..\USER;..\SYS;..\BSP\BSP_KEY;..\SYS;..\BSP\BSP_KEY;..\u8g2\clib;..\u8g2\csrc;..\u8g2\u8g2_driver;..\BSP\BSP_IO;..\BSP\BSP_IO</IncludePath>
+              <IncludePath>..\BSP\BSP_485;..\BSP\BSP_ADC;..\BSP\BSP_OLED_IIC;..\USER;..\SYS;..\BSP\BSP_KEY;..\SYS;..\BSP\BSP_KEY;..\u8g2\clib;..\u8g2\csrc;..\u8g2\u8g2_driver;..\BSP\BSP_IO;..\BSP\BSP_IO;..\BSP\BSP_MODBUS</IncludePath>
             </VariousControls>
           </Ax51>
           <Lx51>

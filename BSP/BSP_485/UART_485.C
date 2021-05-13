@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-30 09:38:30
- * @LastEditTime: 2021-05-11 11:17:37
+ * @LastEditTime: 2021-05-13 08:54:32
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \AirPressControl\BSP\BSP_485\UART_485.C
@@ -12,10 +12,6 @@
 #include "Debug.H"
 #include "UART_485.H"
 #include "OLED_IIC.h"
-enum MSG_FLG msg_flg;
-UINT8 Rx_Buf[BUFMAXSIZE];    
-UINT8 Tx_Buf[10];       
-UINT16 RxCount;  
 
 void UART0Alter()
 {
@@ -28,11 +24,23 @@ void UART0Alter()
 * Output         : None
 * Return         : SBUF
 *******************************************************************************/
+UINT8 DATA;
 UINT8  UART0RcvByte( )
 {
-    while(RI == 0);                                                            //查询接收，中断方式可不用
-    RI = 0;
-    return SBUF;
+    // while(RI == 0);                                                            //查询接收，中断方式可不用
+    // RI = 0;
+    // DATA=SBUF;
+    // return DATA;
+    if(RI)
+    {
+    DATA=SBUF;
+    return DATA;
+    RI=0;
+    }
+    else
+    {
+    return 0;
+    }
 }
 
 /*******************************************************************************
@@ -44,28 +52,34 @@ UINT8  UART0RcvByte( )
 *******************************************************************************/
 void UART0SendByte(UINT8 SendDat)
 {
-	SBUF = SendDat;                                                              //查询发送，中断方式可不用下面2条语句,但发送前需TI=0
-	while(TI ==0);
-	TI = 0;
+    if(TI)
+    {
+	SBUF = SendDat;
+    TI = 0; 
+    }                                                            //查询发送，中断方式可不用下面2条语句,但发送前需TI=0
+	// while(TI ==0);
+	// TI = 0;
+    // SBUF = SendDat;  
 }
-UINT8 RXDAT;
+
 #if UART0_INTERRUPT
 /*******************************************************************************
 * Function Name  : UART0Interrupt(void)
 * Description    : UART0 �жϷ������
 *******************************************************************************/
-void UART0Interrupt( void ) interrupt INT_NO_UART0 using 1                       //����1�жϷ������,ʹ�üĴ�����1
+void UART0Interrupt( void ) interrupt INT_NO_UART0 using 1                      //����1�жϷ������,ʹ�üĴ�����1
 {
 	UINT8 dat;
-
     
 	if(RI)
 	{
-		dat= SBUF;
-		RI = 0;
-        UART0SendByte(dat); 
-        RXDAT=dat;
+		DATA= SBUF;
+        RI = 0;
+        SBUF=DATA;
+        while(!TI);
+        TI = 0;
 	}
+    SBUF=DATA;
 }
 
 #endif
@@ -78,11 +92,11 @@ void UART0Interrupt( void ) interrupt INT_NO_UART0 using 1                      
 UINT8 MsgAnalyze(UINT8 id)
 {
     UINT8 cmd;
-    UINT8 temp;
-    temp=RXDAT;
-    if(id==((temp&0X3C)>>2))
+    RI=0;
+    DATA=SBUF;
+    if(id==((DATA&0X3C)>>2))
     {
-        cmd=RXDAT&0x03;
+        cmd=DATA&0x03;
         return cmd;
     }
     else
@@ -90,6 +104,7 @@ UINT8 MsgAnalyze(UINT8 id)
         return 0;
     }
 }
+
 /**
  * @description: 
  * @param {*}
@@ -97,5 +112,5 @@ UINT8 MsgAnalyze(UINT8 id)
  */
 void MsgClear()
 {
-    RXDAT=0;
+    DATA=0;
 }

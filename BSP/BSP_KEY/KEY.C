@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-30 09:38:30
- * @LastEditTime: 2021-05-10 16:38:32
+ * @LastEditTime: 2021-05-13 09:27:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \AirPressControl\BSP\BSP_KEY\KEY.C
@@ -90,7 +90,7 @@ void KeyScan()
 	} 
 }
 
-void InterruptTimer0() interrupt INT_NO_TMR0 using 1
+void InterruptTimer0() interrupt INT_NO_TMR0 using 2
 {
 	TH0 = T0RH;
 	TL0 = T0RL;
@@ -99,7 +99,7 @@ void InterruptTimer0() interrupt INT_NO_TMR0 using 1
 
 void KeyInit()
 {
-	ConfigT0(200); 
+	ConfigT0(100); 
 	Port1Cfg(3,1);//key1
 	Port1Cfg(3,4);//key2
 	Port1Cfg(3,5);//key3

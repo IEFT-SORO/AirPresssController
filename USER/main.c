@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-30 09:38:30
- * @LastEditTime: 2021-05-11 08:54:00
+ * @LastEditTime: 2021-05-12 13:27:43
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \AirPressControl\USER\main.c
@@ -17,9 +17,9 @@ void main()
 	
 	CfgFsys(); 
 	mDelaymS(5); 
-	
-	TaskInit();
 	EA = 1;  
+	TaskInit();
+	
 	while(1)
 	{
 	TaskRun();

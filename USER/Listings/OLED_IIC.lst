@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   OLED_IIC                                                              05/11/2021 15:11:42 PAGE 1   
+C51 COMPILER V9.01   OLED_IIC                                                              05/12/2021 16:57:03 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE OLED_IIC
@@ -62,7 +62,7 @@ line level    source
   51          {
   52   1          Start_I2c();
   53   1          Send_Byte(0x78);  //д��ӻ���ַ��SD0 = 0
-C51 COMPILER V9.01   OLED_IIC                                                              05/11/2021 15:11:42 PAGE 2   
+C51 COMPILER V9.01   OLED_IIC                                                              05/12/2021 16:57:03 PAGE 2   
 
   54   1          Read_ACK();
   55   1          Send_Byte(0x40);  //д������
@@ -126,7 +126,7 @@ line level    source
  113          unsigned int OLED_GRAM[144][8];
  114          //�����Դ浽OLED  
  115          void OLED_Refresh(void)
-C51 COMPILER V9.01   OLED_IIC                                                              05/11/2021 15:11:42 PAGE 3   
+C51 COMPILER V9.01   OLED_IIC                                                              05/12/2021 16:57:03 PAGE 3   
 
  116          {
  117   1        unsigned int i,n;
@@ -190,7 +190,7 @@ line level    source
  172   3          }
  173   2          OLED_ShowChar(x+(size2/2)*t,y,temp+'0',size2); //��ʾһ��λ��x+(size2/2)*t������
              -����Сƫ�Ƶ�������8��
-C51 COMPILER V9.01   OLED_IIC                                                              05/11/2021 15:11:42 PAGE 4   
+C51 COMPILER V9.01   OLED_IIC                                                              05/12/2021 16:57:03 PAGE 4   
 
  174   2        }
  175   1      } 
@@ -254,7 +254,7 @@ line level    source
  233   2          if(Char_Size==16)
  234   2          {
  235   3            OLED_ShowNum(x,y,zheng,zheng_len,Char_Size);
-C51 COMPILER V9.01   OLED_IIC                                                              05/11/2021 15:11:42 PAGE 5   
+C51 COMPILER V9.01   OLED_IIC                                                              05/12/2021 16:57:03 PAGE 5   
 
  236   3            OLED_ShowChar(x+zheng_len*8,y,'.',Char_Size);
  237   3            OLED_ShowNum(x+(zheng_len+1)*8,y,xiao,xiao_len,Char_Size);
@@ -318,7 +318,7 @@ line level    source
  295   1        OLED_Set_Pos(x,y);  
  296   1          for(t=0;t<16;t++) 
  297   1          {
-C51 COMPILER V9.01   OLED_IIC                                                              05/11/2021 15:11:42 PAGE 6   
+C51 COMPILER V9.01   OLED_IIC                                                              05/12/2021 16:57:03 PAGE 6   
 
  298   2            OLED_WR_Byte(Hzk[2*no][t],OLED_DATA);
  299   2            adder+=1; 
@@ -382,7 +382,7 @@ line level    source
  356   2          {
  357   3            if(temp==0)
  358   3            {
-C51 COMPILER V9.01   OLED_IIC                                                              05/11/2021 15:11:42 PAGE 7   
+C51 COMPILER V9.01   OLED_IIC                                                              05/12/2021 16:57:03 PAGE 7   
 
  359   4              OLED_ShowChar(x+(size2/2)*t,y,' ',size2);
  360   4              continue;
@@ -446,7 +446,7 @@ line level    source
  417   1        OLED_WR_Byte(0x00,OLED_CMD);//
  418   1        
  419   1        OLED_WR_Byte(0xD5,OLED_CMD);//set osc division
-C51 COMPILER V9.01   OLED_IIC                                                              05/11/2021 15:11:42 PAGE 8   
+C51 COMPILER V9.01   OLED_IIC                                                              05/12/2021 16:57:03 PAGE 8   
 
  420   1        OLED_WR_Byte(0x80,OLED_CMD);//
  421   1        
@@ -510,7 +510,7 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =   3454    ----
    CONSTANT SIZE    =   4184    ----
    XDATA SIZE       =   2304      92
-C51 COMPILER V9.01   OLED_IIC                                                              05/11/2021 15:11:42 PAGE 9   
+C51 COMPILER V9.01   OLED_IIC                                                              05/12/2021 16:57:03 PAGE 9   
 
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----

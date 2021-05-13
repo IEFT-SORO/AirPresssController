@@ -251,14 +251,12 @@ void	mInitSTDIO( )
     x2 = x % 10;
     x /= 10;
     if ( x2 >= 5 ) x ++;                                                       //四舍五入
-
     TMOD = TMOD & ~ bT1_GATE & ~ bT1_CT & ~ MASK_T1_MOD | bT1_M1;              //0X20，Timer1作为8位自动重载定时器
     T2MOD = T2MOD | bTMR_CLK | bT1_CLK;                                        //Timer1时钟选择
     TH1 = 0-x;                                                                 //12MHz晶振,buad/12为实际需设置波特率
-    TR1 = 1;                                                                   //启动定时器1
+    TR1 = 1;                                                                   //启动定时器1   
+    // ES = 1;   
     TI = 1;
-    REN = 1;   
-    TI = 1;
-    ES = 1;   
+    REN = 1;  
                                                         //串口0接收使能
 }

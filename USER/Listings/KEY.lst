@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   KEY                                                                   05/11/2021 15:11:42 PAGE 1   
+C51 COMPILER V9.01   KEY                                                                   05/13/2021 09:27:55 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE KEY
@@ -12,7 +12,7 @@ line level    source
    1          /*
    2           * @Author: your name
    3           * @Date: 2021-04-30 09:38:30
-   4           * @LastEditTime: 2021-05-10 16:38:32
+   4           * @LastEditTime: 2021-05-13 09:27:38
    5           * @LastEditors: Please set LastEditors
    6           * @Description: In User Settings Edit
    7           * @FilePath: \AirPressControl\BSP\BSP_KEY\KEY.C
@@ -62,7 +62,7 @@ line level    source
   51   1        tmp = (tmp * ms)/1000;
   52   1        tmp = 65536 - tmp;
   53   1        tmp = tmp + 1;
-C51 COMPILER V9.01   KEY                                                                   05/11/2021 15:11:42 PAGE 2   
+C51 COMPILER V9.01   KEY                                                                   05/13/2021 09:27:55 PAGE 2   
 
   54   1          T0RH = (UINT8)(tmp >> 8);
   55   1        T0RL = (UINT8)tmp;
@@ -103,7 +103,7 @@ line level    source
   90   2        } 
   91   1      }
   92          
-  93          void InterruptTimer0() interrupt INT_NO_TMR0 using 1
+  93          void InterruptTimer0() interrupt INT_NO_TMR0 using 2
   94          {
   95   1        TH0 = T0RH;
   96   1        TL0 = T0RL;
@@ -112,7 +112,7 @@ line level    source
   99          
  100          void KeyInit()
  101          {
- 102   1        ConfigT0(200); 
+ 102   1        ConfigT0(100); 
  103   1        Port1Cfg(3,1);//key1
  104   1        Port1Cfg(3,4);//key2
  105   1        Port1Cfg(3,5);//key3
@@ -126,7 +126,7 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =    543    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =     20       6
-C51 COMPILER V9.01   KEY                                                                   05/11/2021 15:11:42 PAGE 3   
+C51 COMPILER V9.01   KEY                                                                   05/13/2021 09:27:55 PAGE 3   
 
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-30 09:38:30
- * @LastEditTime: 2021-05-11 15:07:09
+ * @LastEditTime: 2021-05-13 09:32:10
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \AirPressControl\APP\ScreenComponent.c
@@ -16,7 +16,7 @@
 UINT8 PressValGet()
 {
 	static UINT8 press;
-	if(!ADC_START);//TODO add Filter
+	if(!ADC_START);//TODO add filter/Temperature compensation/Linearity correction
 	{
 		press=ADC_DATA;
 			
@@ -57,7 +57,7 @@ void MainScreen(enum MODE mode)
 			OLED_ShowCHinese(17,4,23);
 			OLED_ShowCHinese(33,4,12);
 			OLED_ShowString(49,4,":",16);
-			press= PressValGet()-70;
+			press= PressValGet()-70;//TODO ADD calibration
 			if(press<0)press=0;
 			OLED_ShowString(90,4,"kpa",16);
 			OLED_ShowString(65,4,"   ",16);
@@ -69,7 +69,7 @@ void MainScreen(enum MODE mode)
 			OLED_ShowString(49,4,":",16);
 			OLED_ShowString(90,4,"kpa",16);
 			OLED_ShowString(65,4,"   ",16);
-			press= PressValGet()-55;
+			press= PressValGet()-55;//TODO ADD calibration
 			OLED_ShowIntegerNumber(65,4,press,16);
 			break;
 			case CLOSE:
@@ -78,7 +78,7 @@ void MainScreen(enum MODE mode)
 			OLED_ShowString(49,4,":",16);
 			OLED_ShowString(90,4,"kpa",16);
 			OLED_ShowString(65,4,"   ",16);
-			press= PressValGet()-27;
+			press= PressValGet()-27;//TODO ADD calibration
 			OLED_ShowIntegerNumber(65,4,press,16);
 			break;
 			}
@@ -137,7 +137,7 @@ void DeviceNumScreen()
 	OLED_ShowCHinese(80,3,22);
 
 	OLED_ShowString(96,3,":",16);
-	
+	OLED_ShowString(104,3,"   ",16);
 	OLED_ShowIntegerNumber(104,3,deviceID,16);
 
 	OLED_ShowCHinese(8,6,9);
@@ -145,30 +145,30 @@ void DeviceNumScreen()
 }
 
 
-enum MODE keytask(enum SCREENID id)//TODO 
+enum MODE keytask(enum SCREENID id)//TODO fix key status
 {
 switch(id)
 	{
 		case MAIN:
 			MainScreen(temp_mode);
-			if(GetKeyStation(KEY3)==0)
+			if(GetKeyStation(KEY2)==0)
 			{
 				PositivepressMode();
 				temp_mode=POSITIVEPRESS;
 			}
-			if(GetKeyStation(KEY1)==0)
+			if(GetKeyStation(KEY3)==0)
 			{
 				NegtivepressMode();
 				temp_mode=NEGTIVEPRESS;
 			}
-			if(GetKeyStation(KEY2)==0)
+			if(GetKeyStation(KEY1)==0)
 			{
 				SilenceMode();
 				temp_mode=CLOSE;
 			}
-			if( KeyPressLong(KEY2)==1)
+			if( KeyPressLong(KEY1)==1)
 			{
-				screen_id=1;
+				screen_id=MENU;
 				OLED_Clear();
 			}
 		break;
@@ -186,13 +186,13 @@ switch(id)
 			}
 			if(GetKeyStation(KEY1)==0)
 			{
-				screen_id=2;
+				screen_id=NUMID;
 				OLED_Clear();
 			}
 			if(GetKeyStation(KEY2)==0)
 			{
 				CurPos=0;
-				screen_id=0;
+				screen_id=MAIN;
 				OLED_Clear();
 			}
 		break;
@@ -201,6 +201,10 @@ switch(id)
 			if(GetKeyStation(KEY1)==0)
 			{
 				deviceID--;
+			if(deviceID<0)
+			{
+				deviceID=0;
+			}
 			}
 			if(GetKeyStation(KEY3)==0)
 			{
@@ -213,7 +217,7 @@ switch(id)
 			if(GetKeyStation(KEY2)==0)
 			{
 				CurPos=0;
-				screen_id=1;
+				screen_id=MENU;
 				OLED_Clear();
 			}
 		break;
@@ -222,9 +226,6 @@ switch(id)
 			{
 			}
 			if(GetKeyStation(KEY3)==0)
-			{
-			}
-			if(deviceID>20)
 			{
 			}
 			if(GetKeyStation(KEY2)==0)
@@ -267,17 +268,20 @@ void CtrlRun(UINT8 cmd)
 		break;
 	}
 }
-
-void TaskRun()
+void Msgprcess()
 {
-	UINT8 cmd=0;
-	keytask(screen_id);
-	if(MsgAnalyze(deviceID))
+		UINT8 cmd=0;
+	if(RI)
 	{
 		cmd=MsgAnalyze(deviceID);
 		CtrlRun(cmd);
-		MsgClear();
 	}
+	MsgClear();
+}
+void TaskRun()
+{
+	keytask(screen_id);
+	Msgprcess();
 }
 
 

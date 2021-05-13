@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   MAIN                                                                  05/11/2021 15:11:42 PAGE 1   
+C51 COMPILER V9.01   MAIN                                                                  05/12/2021 17:28:15 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
@@ -12,7 +12,7 @@ line level    source
    1          /*
    2           * @Author: your name
    3           * @Date: 2021-04-30 09:38:30
-   4           * @LastEditTime: 2021-05-11 08:54:00
+   4           * @LastEditTime: 2021-05-12 13:27:43
    5           * @LastEditors: Please set LastEditors
    6           * @Description: In User Settings Edit
    7           * @FilePath: \AirPressControl\USER\main.c
@@ -28,9 +28,9 @@ line level    source
   17   1        
   18   1        CfgFsys(); 
   19   1        mDelaymS(5); 
-  20   1        
+  20   1        EA = 1;  
   21   1        TaskInit();
-  22   1        EA = 1;  
+  22   1        
   23   1        while(1)
   24   1        {
   25   2        TaskRun();
