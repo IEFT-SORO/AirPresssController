@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   KEY                                                                   05/13/2021 09:27:55 PAGE 1   
+C51 COMPILER V9.01   KEY                                                                   05/14/2021 15:03:45 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE KEY
@@ -12,7 +12,7 @@ line level    source
    1          /*
    2           * @Author: your name
    3           * @Date: 2021-04-30 09:38:30
-   4           * @LastEditTime: 2021-05-13 09:27:38
+   4           * @LastEditTime: 2021-05-14 15:03:41
    5           * @LastEditors: Please set LastEditors
    6           * @Description: In User Settings Edit
    7           * @FilePath: \AirPressControl\BSP\BSP_KEY\KEY.C
@@ -31,103 +31,222 @@ line level    source
   20          UINT8 KeyState[3] = {1,1,1};     
   21          unsigned long  KeyDownTime[3]= {0, 0, 0};
   22          
-  23          
-  24          UINT8 GetKeyStation(UINT8 i)
-  25          {
-  26   1        return  KeyState[i];
-  27   1      }
-  28          UINT8 KeyPressLong(UINT8 i)
-  29          {
-  30   1        UINT8 PressLong;
-  31   1        if(KeyDownTime[i]>PressTime)
+  23          /**
+  24            * @brief  按键读取
+  25            * @param  NULL
+  26            * @retval 1  : 按下
+  27            * @retval 0 : 弹起
+  28          ***/
+  29          UINT8 GetKeyStation(UINT8 i)
+  30          {
+  31   1        if(KeyState[i])
   32   1        {
-  33   2        PressLong=1;
+  33   2          KeyState[i]=0;
   34   2        }
-  35   1        else
-  36   1        {
-  37   2        PressLong=0;
-  38   2        }
-  39   1      return PressLong;
-  40   1      }
+  35   1        else{
+  36   2          KeyState[i]=1;
+  37   2        }
+  38   1        return  KeyState[i];
+  39   1      }
+  40          Button_Typedef KEY[KEYNUM];
   41          
-  42          
-  43          UINT8 T0RH = 0; 
-  44          UINT8 T0RL = 0; 
-  45          
-  46          void ConfigT0(UINT8 ms)
-  47          {
-  48   1          unsigned long tmp = 0;
-  49   1      
-  50   1        tmp = 12000000/12;
-  51   1        tmp = (tmp * ms)/1000;
-  52   1        tmp = 65536 - tmp;
-  53   1        tmp = tmp + 1;
-C51 COMPILER V9.01   KEY                                                                   05/13/2021 09:27:55 PAGE 2   
+  42          UINT8 T0RH = 0; 
+  43          UINT8 T0RL = 0; 
+  44          
+  45          void ConfigT0(UINT8 ms)
+  46          {
+  47   1          unsigned long tmp = 0;
+  48   1      
+  49   1        tmp = 12000000/12;
+  50   1        tmp = (tmp * ms)/1000;
+  51   1        tmp = 65536 - tmp;
+  52   1        tmp = tmp + 1;
+  53   1          T0RH = (UINT8)(tmp >> 8);
+C51 COMPILER V9.01   KEY                                                                   05/14/2021 15:03:45 PAGE 2   
 
-  54   1          T0RH = (UINT8)(tmp >> 8);
-  55   1        T0RL = (UINT8)tmp;
-  56   1      
-  57   1        TMOD = ( TMOD & ~( bT0_GATE | bT0_CT | bT0_M1 ) ) | bT0_M0;
-  58   1        TH0 = T0RH;
-  59   1        TL0 = T0RL;
-  60   1        TF0 = 0;
-  61   1        ET0 = 1;
-  62   1        TR0 = 1;
-  63   1      }
-  64          
-  65          void KeyScan()
-  66          {
-  67   1        UINT8 i;
-  68   1        static UINT8 keybuffer[3] = {0xFF,0xFF,0xFF};
-  69   1      
-  70   1        keybuffer[0] = (keybuffer[0] <<1) | key1;
-  71   1        keybuffer[1] = (keybuffer[1] <<1) | key2;
-  72   1        keybuffer[2] = (keybuffer[2] <<1) | key3;
-  73   1      
-  74   1        for(i=0;i<3;i++)
-  75   1        {
-  76   2          if((keybuffer[i] & 0x0F) == 0x00)
-  77   2          {
-  78   3            KeyState[i] = 0;
-  79   3            if(i>=3)
-  80   3                break;
-  81   3            KeyDownTime[i] += 10;  
-  82   3          }
-  83   2          else if((keybuffer[i] & 0x0F) == 0x0F)
-  84   2          {
-  85   3            KeyState[i] = 1;
-  86   3            if(i>=3)
-  87   3                break;
-  88   3            KeyDownTime[i] = 0;  
-  89   3          }
-  90   2        } 
-  91   1      }
-  92          
-  93          void InterruptTimer0() interrupt INT_NO_TMR0 using 2
-  94          {
-  95   1        TH0 = T0RH;
-  96   1        TL0 = T0RL;
-  97   1        KeyScan(); 
-  98   1      }
-  99          
- 100          void KeyInit()
- 101          {
- 102   1        ConfigT0(100); 
- 103   1        Port1Cfg(3,1);//key1
- 104   1        Port1Cfg(3,4);//key2
- 105   1        Port1Cfg(3,5);//key3
- 106   1        key1 = 1;
- 107   1        key2 = 1;
- 108   1        key3 = 1;
- 109   1      }
+  54   1        T0RL = (UINT8)tmp;
+  55   1      
+  56   1        TMOD = ( TMOD & ~( bT0_GATE | bT0_CT | bT0_M1 ) ) | bT0_M0;
+  57   1        TH0 = T0RH;
+  58   1        TL0 = T0RL;
+  59   1        TF0 = 0;
+  60   1        ET0 = 1;
+  61   1        TR0 = 1;
+  62   1      }
+  63          
+  64          void KeyScan()
+  65          {
+  66   1        UINT8 i=0;
+  67   1        static UINT8 keybuffer[3] = {0xFF,0xFF,0xFF};
+  68   1      
+  69   1        keybuffer[0] = (keybuffer[0] <<1) | key1;
+  70   1        keybuffer[1] = (keybuffer[1] <<1) | key2;
+  71   1        keybuffer[2] = (keybuffer[2] <<1) | key3;
+  72   1      
+  73   1        for(i=0;i<3;i++)
+  74   1        {
+  75   2          if((keybuffer[i] & 0x0F) == 0x00)
+  76   2          {
+  77   3            KeyState[i] = 0;
+  78   3            if(i>=3)
+  79   3                break;
+  80   3            KeyDownTime[i] += 10;  
+  81   3          }
+  82   2          else if((keybuffer[i] & 0x0F) == 0x0F)
+  83   2          {
+  84   3            KeyState[i] = 1;
+  85   3            if(i>=3)
+  86   3                break;
+  87   3            KeyDownTime[i] = 0;  
+  88   3          }
+  89   2        } 
+  90   1      }
+  91          /**
+  92            * @brief  按键定时扫描
+  93            * @param  NULL
+  94            * @retval NULL
+  95          ***/
+  96          void Button_Scan_ms(UINT32 _time)
+  97          {
+  98   1        int i=0;
+  99   1        for(i=0; i<KEYNUM; i++)
+ 100   1        {
+ 101   2          //提取按键
+ 102   2          KEY[i].level = GetKeyStation(i);
+ 103   2      
+ 104   2          //按键状态处理
+ 105   2          switch(KEY[i].state)
+ 106   2          {
+ 107   3            //状态_弹起
+ 108   3            case Button_Bit_Up:
+ 109   3              if(KEY[i].level){
+ 110   4                KEY[i].state = Button_Bit_Shake;
+ 111   4                KEY[i].time_ms = 0;
+ 112   4              }
+ 113   3            break;
+ 114   3            //状态_抖动
+ 115   3            case Button_Bit_Shake:
+C51 COMPILER V9.01   KEY                                                                   05/14/2021 15:03:45 PAGE 3   
+
+ 116   3              if(KEY[i].level){
+ 117   4                KEY[i].time_ms += _time;
+ 118   4                if(KEY[i].time_ms > Button_Shake_Time)
+ 119   4                {
+ 120   5                  KEY[i].state = Button_Bit_Drop;
+ 121   5                  KEY[i].time_ms = 0;
+ 122   5                }
+ 123   4              }
+ 124   3              else{
+ 125   4                KEY[i].state = Button_Bit_Up;
+ 126   4                KEY[i].time_ms = 0;
+ 127   4              }
+ 128   3            break;
+ 129   3            //状态_按下
+ 130   3            case Button_Bit_Press:
+ 131   3              if(KEY[i].level){
+ 132   4                KEY[i].time_ms += _time;
+ 133   4                if(KEY[i].time_ms > Button_Long_Time)
+ 134   4                {
+ 135   5                  KEY[i].state = Button_Bit_LongDrop;
+ 136   5                  KEY[i].time_ms = 0;
+ 137   5                }
+ 138   4              }
+ 139   3              else{
+ 140   4                KEY[i].state = Button_Bit_Rise;
+ 141   4                KEY[i].time_ms = 0;
+ 142   4              }
+ 143   3            break;
+ 144   3            //状态_长按
+ 145   3            case Button_Bit_Long:
+ 146   3              if(KEY[i].level){
+ 147   4                KEY[i].state = Button_Bit_Long;
+ 148   4              }
+ 149   3              else{
+ 150   4                KEY[i].state = Button_Bit_LongRise;
+ 151   4              }
+ 152   3            break;
+ 153   3            //边沿_按下
+ 154   3            case Button_Bit_Drop:
+ 155   3              if(KEY[i].level){
+ 156   4                KEY[i].state = Button_Bit_Press;
+ 157   4                KEY[i].time_ms = 0;
+ 158   4              }
+ 159   3              else{
+ 160   4                KEY[i].state = Button_Bit_Up;
+ 161   4              }
+ 162   3            break;
+ 163   3            //边沿_弹起
+ 164   3            case Button_Bit_Rise:
+ 165   3              KEY[i].state = Button_Bit_Up;
+ 166   3            break;
+ 167   3            //边沿_长按按下
+ 168   3            case Button_Bit_LongDrop:
+ 169   3              if(KEY[i].level){
+ 170   4                KEY[i].state = Button_Bit_Long;
+ 171   4                KEY[i].time_ms = 0;
+ 172   4              }
+ 173   3              else{
+ 174   4                KEY[i].state = Button_Bit_Up;
+ 175   4              }
+ 176   3            break;
+ 177   3            //边沿_长按弹起
+C51 COMPILER V9.01   KEY                                                                   05/14/2021 15:03:45 PAGE 4   
+
+ 178   3            case Button_Bit_LongRise:
+ 179   3              KEY[i].state = Button_Bit_Up;
+ 180   3            break;
+ 181   3          } 
+ 182   2        }
+ 183   1      }
+ 184          void InterruptTimer0() interrupt INT_NO_TMR0 using 2
+ 185          {
+ 186   1        TH0 = T0RH;
+ 187   1        TL0 = T0RL;
+ 188   1        KeyScan(); 
+ 189   1        Button_Scan_ms(Button_Shake_Time);
+ 190   1      }
+ 191          
+ 192          void KeyInit()
+ 193          {
+ 194   1          UINT8 i=0;
+ 195   1        ConfigT0(20); 
+ 196   1        Port1Cfg(3,1);//key1
+ 197   1        Port1Cfg(3,4);//key2
+ 198   1        Port1Cfg(3,5);//key3
+ 199   1        key1 = 1;
+ 200   1        key2 = 1;
+ 201   1        key3 = 1;
+ 202   1        for(i=0; i<KEYNUM; i++)
+ 203   1        {
+ 204   2          //数据
+ 205   2          KEY[i].level = 0;
+ 206   2          KEY[i].state = Button_Bit_Up;
+ 207   2          KEY[i].time_ms = 0;
+ 208   2        }
+ 209   1      }
+ 210          
+ 211          /**
+ 212            * @brief  获取按键状态
+ 213            * @param  NULL
+ 214            * @retval NULL
+ 215          ***/
+ 216          Button_State_Typedef Button_Inquice_State(UINT8 button_num)
+ 217          {
+ 218   1        if(button_num < KEYNUM)
+ 219   1        {
+ 220   2          return KEY[button_num].state;
+ 221   2        }
+ 222   1        else
+ 223   1        {
+ 224   2          return Button_Bit_Up;
+ 225   2        }
+ 226   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    543    ----
+   CODE SIZE        =   1552    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =     20       6
-C51 COMPILER V9.01   KEY                                                                   05/13/2021 09:27:55 PAGE 3   
-
+   XDATA SIZE       =     38      11
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

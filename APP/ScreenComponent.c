@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-30 09:38:30
- * @LastEditTime: 2021-05-13 09:32:10
+ * @LastEditTime: 2021-05-14 12:01:19
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \AirPressControl\APP\ScreenComponent.c
@@ -151,22 +151,22 @@ switch(id)
 	{
 		case MAIN:
 			MainScreen(temp_mode);
-			if(GetKeyStation(KEY2)==0)
+			if(Button_Inquice_State(KEY2)==Button_Bit_Press)
 			{
 				PositivepressMode();
 				temp_mode=POSITIVEPRESS;
 			}
-			if(GetKeyStation(KEY3)==0)
+			if(Button_Inquice_State(KEY3)==Button_Bit_Press)
 			{
 				NegtivepressMode();
 				temp_mode=NEGTIVEPRESS;
 			}
-			if(GetKeyStation(KEY1)==0)
+			if(Button_Inquice_State(KEY1)==Button_Bit_Press)
 			{
 				SilenceMode();
 				temp_mode=CLOSE;
 			}
-			if( KeyPressLong(KEY1)==1)
+			if( Button_Inquice_State(KEY1)==Button_Bit_Long)
 			{
 				screen_id=MENU;
 				OLED_Clear();
@@ -176,7 +176,7 @@ switch(id)
 		case MENU:
 			
 			MenueScreen();
-			if(GetKeyStation(KEY3)==0)
+			if(Button_Inquice_State(KEY3)==Button_Bit_Press)
 			{
 				CurPos++;
 				if(CurPos>2)
@@ -184,12 +184,12 @@ switch(id)
 					CurPos=0;
 				}
 			}
-			if(GetKeyStation(KEY1)==0)
+			if(Button_Inquice_State(KEY1)==Button_Bit_Press)
 			{
 				screen_id=NUMID;
 				OLED_Clear();
 			}
-			if(GetKeyStation(KEY2)==0)
+			if(Button_Inquice_State(KEY2)==Button_Bit_Press)
 			{
 				CurPos=0;
 				screen_id=MAIN;
@@ -198,7 +198,7 @@ switch(id)
 		break;
 		case NUMID:
 			DeviceNumScreen();
-			if(GetKeyStation(KEY1)==0)
+			if(Button_Inquice_State(KEY1)==Button_Bit_Press)
 			{
 				deviceID--;
 			if(deviceID<0)
@@ -206,7 +206,7 @@ switch(id)
 				deviceID=0;
 			}
 			}
-			if(GetKeyStation(KEY3)==0)
+			if(Button_Inquice_State(KEY3)==Button_Bit_Press)
 			{
 				deviceID++;
 			}
@@ -214,7 +214,7 @@ switch(id)
 			{
 				deviceID=0;
 			}
-			if(GetKeyStation(KEY2)==0)
+			if(Button_Inquice_State(KEY2)==Button_Bit_Press)
 			{
 				CurPos=0;
 				screen_id=MENU;
@@ -222,13 +222,13 @@ switch(id)
 			}
 		break;
 		case ABOUT:
-		if(GetKeyStation(KEY1)==0)
+		if(Button_Inquice_State(KEY1)==Button_Bit_Press)
 			{
 			}
-			if(GetKeyStation(KEY3)==0)
+			if(Button_Inquice_State(KEY3)==Button_Bit_Press)
 			{
 			}
-			if(GetKeyStation(KEY2)==0)
+			if(Button_Inquice_State(KEY2)==Button_Bit_Press)
 			{
 				OLED_Clear();
 			}
