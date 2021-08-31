@@ -32,3 +32,5 @@ UINT8 ADC_ChannelSelect(UINT8 ch);
                    Ê§°Ü FAIL
 *******************************************************************************/
 UINT8 VoltageCMPModeInit(UINT8 fo,UINT8 re);
+UINT8 PressValGet();
+UINT16 FilterPress();

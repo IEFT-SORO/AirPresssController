@@ -9,6 +9,8 @@
 #ifndef	__SCREENCOMPONENT_H__
 #define __SCREENCOMPONENT_H__
 
+#define PRESSZERO 125.5
+
 enum MODE
 {
 	POSITIVEPRESS=1, 

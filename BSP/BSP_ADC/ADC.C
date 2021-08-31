@@ -108,5 +108,30 @@ void	ADCInterrupt( void ) interrupt INT_NO_ADC using 1                       //A
       CMP_IF = 0;		                                                          //��ձȽ�������ж�
     }
 }
+/************************************/
+UINT8 PressValGet()
+{
+	static UINT8 press;
+	if(!ADC_START);//TODO add filter/Temperature compensation/Linearity correction
+	{
+		press=ADC_DATA;
+			
+		ADC_START = 1;			
+	}
+	return press;
+}
+
+UINT16 FilterPress()
+{
+	UINT8 N=10;
+	UINT16 sum=0;
+	UINT8 count;
+	for(count=0;count<N;count++)
+	{
+		sum=sum+PressValGet();
+		mDelaymS(10); 
+	}
+	return sum/N;
+}
 #endif
 

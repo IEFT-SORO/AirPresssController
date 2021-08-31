@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   DEBUG                                                                 05/12/2021 17:01:37 PAGE 1   
+C51 COMPILER V9.01   DEBUG                                                                 08/18/2021 17:34:46 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE DEBUG
@@ -62,7 +62,7 @@ line level    source
               #endif
   50   1      #if FREQ_SYS == 750000  
                   CLOCK_CFG = CLOCK_CFG & ~ MASK_SYS_CK_SEL | 0x01;  // 750KHz
-C51 COMPILER V9.01   DEBUG                                                                 05/12/2021 17:01:37 PAGE 2   
+C51 COMPILER V9.01   DEBUG                                                                 08/18/2021 17:34:46 PAGE 2   
 
               #endif
   53   1      #if FREQ_SYS == 187500  
@@ -126,7 +126,7 @@ line level    source
  111          *******************************************************************************/
  112          #define DELAY_MS_HW
  113          void  mDelaymS( UINT16 n )
-C51 COMPILER V9.01   DEBUG                                                                 05/12/2021 17:01:37 PAGE 3   
+C51 COMPILER V9.01   DEBUG                                                                 08/18/2021 17:34:46 PAGE 3   
 
  114          {
  115   1        while ( n ) {
@@ -190,7 +190,7 @@ line level    source
              -�ڲ���·���Լ����ɵ͵��ߵĵ�ƽ����    
  169                             ,UINT8 Pin (0-7)                      
  170          * Output         : None
-C51 COMPILER V9.01   DEBUG                                                                 05/12/2021 17:01:37 PAGE 4   
+C51 COMPILER V9.01   DEBUG                                                                 08/18/2021 17:34:46 PAGE 4   
 
  171          * Return         : None
  172          *******************************************************************************/
@@ -254,7 +254,7 @@ line level    source
  229   1      }
  230          /*******************************************************************************
  231          * Function Name  : mInitSTDIO()
-C51 COMPILER V9.01   DEBUG                                                                 05/12/2021 17:01:37 PAGE 5   
+C51 COMPILER V9.01   DEBUG                                                                 08/18/2021 17:34:46 PAGE 5   
 
  232          * Description    : CH554串口0初始化,默认使用T1作UART0的波特率发生器,也可以使用T2
  233                             作为波特率发生器

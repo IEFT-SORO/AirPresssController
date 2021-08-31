@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   MAIN                                                                  05/12/2021 17:28:15 PAGE 1   
+C51 COMPILER V9.01   MAIN                                                                  08/26/2021 14:17:41 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
@@ -28,9 +28,9 @@ line level    source
   17   1        
   18   1        CfgFsys(); 
   19   1        mDelaymS(5); 
-  20   1        EA = 1;  
+  20   1       
   21   1        TaskInit();
-  22   1        
+  22   1          EA = 1; 
   23   1        while(1)
   24   1        {
   25   2        TaskRun();

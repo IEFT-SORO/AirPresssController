@@ -17,9 +17,9 @@ void main()
 	
 	CfgFsys(); 
 	mDelaymS(5); 
-	EA = 1;  
+ 
 	TaskInit();
-	
+		EA = 1; 
 	while(1)
 	{
 	TaskRun();

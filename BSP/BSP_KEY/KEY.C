@@ -193,9 +193,9 @@ void KeyInit()
 {
 		UINT8 i=0;
 	ConfigT0(20); 
-	Port1Cfg(3,1);//key1
-	Port1Cfg(3,4);//key2
-	Port1Cfg(3,5);//key3
+	Port1Cfg(1,1);//key1
+	Port1Cfg(1,4);//key2
+	Port1Cfg(1,5);//key3
 	key1 = 1;
 	key2 = 1;
 	key3 = 1;

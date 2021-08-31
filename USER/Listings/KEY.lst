@@ -1,4 +1,4 @@
-C51 COMPILER V9.01   KEY                                                                   05/14/2021 15:03:45 PAGE 1   
+C51 COMPILER V9.01   KEY                                                                   08/18/2021 17:38:33 PAGE 1   
 
 
 C51 COMPILER V9.01, COMPILATION OF MODULE KEY
@@ -62,7 +62,7 @@ line level    source
   51   1        tmp = 65536 - tmp;
   52   1        tmp = tmp + 1;
   53   1          T0RH = (UINT8)(tmp >> 8);
-C51 COMPILER V9.01   KEY                                                                   05/14/2021 15:03:45 PAGE 2   
+C51 COMPILER V9.01   KEY                                                                   08/18/2021 17:38:33 PAGE 2   
 
   54   1        T0RL = (UINT8)tmp;
   55   1      
@@ -126,7 +126,7 @@ line level    source
  113   3            break;
  114   3            //状态_抖动
  115   3            case Button_Bit_Shake:
-C51 COMPILER V9.01   KEY                                                                   05/14/2021 15:03:45 PAGE 3   
+C51 COMPILER V9.01   KEY                                                                   08/18/2021 17:38:33 PAGE 3   
 
  116   3              if(KEY[i].level){
  117   4                KEY[i].time_ms += _time;
@@ -190,7 +190,7 @@ line level    source
  175   4              }
  176   3            break;
  177   3            //边沿_长按弹起
-C51 COMPILER V9.01   KEY                                                                   05/14/2021 15:03:45 PAGE 4   
+C51 COMPILER V9.01   KEY                                                                   08/18/2021 17:38:33 PAGE 4   
 
  178   3            case Button_Bit_LongRise:
  179   3              KEY[i].state = Button_Bit_Up;
@@ -210,9 +210,9 @@ line level    source
  193          {
  194   1          UINT8 i=0;
  195   1        ConfigT0(20); 
- 196   1        Port1Cfg(3,1);//key1
- 197   1        Port1Cfg(3,4);//key2
- 198   1        Port1Cfg(3,5);//key3
+ 196   1        Port1Cfg(1,1);//key1
+ 197   1        Port1Cfg(1,4);//key2
+ 198   1        Port1Cfg(1,5);//key3
  199   1        key1 = 1;
  200   1        key2 = 1;
  201   1        key3 = 1;

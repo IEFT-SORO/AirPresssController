@@ -13,17 +13,7 @@
 #include "ADC.H"
 #include "UART_485.H"
 
-UINT8 PressValGet()
-{
-	static UINT8 press;
-	if(!ADC_START);//TODO add filter/Temperature compensation/Linearity correction
-	{
-		press=ADC_DATA;
-			
-		ADC_START = 1;			
-	}
-	return press;
-}
+
 void StartScreen()
 {
 	OLED_ShowCHinese(8,1,0);
@@ -57,7 +47,7 @@ void MainScreen(enum MODE mode)
 			OLED_ShowCHinese(17,4,23);
 			OLED_ShowCHinese(33,4,12);
 			OLED_ShowString(49,4,":",16);
-			press= PressValGet()-70;//TODO ADD calibration
+			press= FilterPress()-PRESSZERO;//TODO ADD calibration
 			if(press<0)press=0;
 			OLED_ShowString(90,4,"kpa",16);
 			OLED_ShowString(65,4,"   ",16);
@@ -67,18 +57,18 @@ void MainScreen(enum MODE mode)
 			OLED_ShowCHinese(17,4,24);
 			OLED_ShowCHinese(33,4,12);
 			OLED_ShowString(49,4,":",16);
+			press= FilterPress()-PRESSZERO;//TODO ADD calibration
 			OLED_ShowString(90,4,"kpa",16);
 			OLED_ShowString(65,4,"   ",16);
-			press= PressValGet()-55;//TODO ADD calibration
 			OLED_ShowIntegerNumber(65,4,press,16);
 			break;
 			case CLOSE:
 			OLED_ShowCHinese(17,4,15);
 			OLED_ShowCHinese(33,4,16);
 			OLED_ShowString(49,4,":",16);
+			press= FilterPress()-PRESSZERO;//TODO ADD calibration
 			OLED_ShowString(90,4,"kpa",16);
 			OLED_ShowString(65,4,"   ",16);
-			press= PressValGet()-27;//TODO ADD calibration
 			OLED_ShowIntegerNumber(65,4,press,16);
 			break;
 			}
