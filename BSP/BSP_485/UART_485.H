@@ -12,7 +12,7 @@
 #ifndef	__UART_485_H__
 #define __UART_485_H__
 
-#define UART0_INTERRUPT   0          //定义是否使用接收中断接收数据
+#define UART0_INTERRUPT   1          //定义是否使用接收中断接收数据
 #define UART0_PINMAP      0         //定义串口是否开启引脚映射。
 
 UINT8   MsgAnalyze(UINT8 id);

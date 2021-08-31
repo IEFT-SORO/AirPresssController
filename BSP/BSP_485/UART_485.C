@@ -68,18 +68,12 @@ void UART0SendByte(UINT8 SendDat)
 * Description    : UART0 �жϷ������
 *******************************************************************************/
 void UART0Interrupt( void ) interrupt INT_NO_UART0 using 1                      //����1�жϷ������,ʹ�üĴ�����1
-{
-	UINT8 dat;
-    
+{   
 	if(RI)
 	{
 		DATA= SBUF;
-        RI = 0;
-        SBUF=DATA;
-        while(!TI);
-        TI = 0;
+    RI = 0;
 	}
-    SBUF=DATA;
 }
 
 #endif
